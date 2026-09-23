@@ -17,4 +17,4 @@ Depois de salvar, faça commit e push: o GitHub Pages atualiza o site em cerca d
 
 ## Fotos
 
-Fotos do [Unsplash](https://unsplash.com/license), de uso livre: Jared Rice, Jon Cartagena, Anna Blake, Susie Ho, Kadarius Seegars, Andres Molina e Mitchell Luo.
+Fotos do [Unsplash](https://unsplash.com/license), de uso livre: Jared Rice, Jon Cartagena, Anna Blake, Susie Ho, Kadarius Seegars e Andres Molina.
