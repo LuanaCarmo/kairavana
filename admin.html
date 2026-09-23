@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#EFE3D8">
+<title>Kairavana · Gerenciar agenda</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%238E3A30'/%3E%3Cg fill='none' stroke='%23EFE3D8' stroke-linecap='round'%3E%3Ccircle cx='50' cy='50' r='27' stroke-width='9'/%3E%3Cpath stroke-width='7' d='M50 43V26M50 57v17M43 50H26M57 50h17M45 45 33 33M55 55l12 12M55 45l12-12M45 55 33 67'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Gloock&display=swap">
+<style>
+:root{
+  --tijolo:#8E3A30; --vinho:#3B1A16; --rosa:#D9A597; --ocre:#C58A4A;
+  --cal:#EFE3D8; --cal-clara:#F7EFE7; --marrom:#6B4A42; --verde:#4F6B4A;
+  --display:"Gloock", Georgia, serif;
+  --texto:"DM Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0; background:var(--cal); color:var(--vinho); font:16px/1.5 var(--texto); -webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display); font-weight:400; line-height:1.1; margin:0}
+p{margin:0}
+button,input{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--tijolo); outline-offset:3px}
+.wrap{max-width:980px; margin-inline:auto; padding-inline:16px}
+@media (min-width:700px){ .wrap{padding-inline:32px} }
+.apoio{color:var(--marrom); font-size:15px}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:46px; padding:10px 22px; border-radius:999px; border:2px solid transparent; font-weight:700; font-size:15.5px; cursor:pointer; text-decoration:none; transition:background .2s, color .2s, border-color .2s}
+.btn-primario{background:var(--tijolo); color:var(--cal)}
+.btn-primario:hover{background:var(--vinho)}
+.btn-primario:disabled{opacity:.45; cursor:not-allowed; background:var(--tijolo)}
+.btn-secundario{background:transparent; border-color:var(--vinho); color:var(--vinho)}
+.btn-secundario:hover{background:var(--cal-clara)}
+.btn-link{background:none; border:0; color:var(--tijolo); text-decoration:underline; text-underline-offset:4px; cursor:pointer; padding:8px 4px; min-height:44px; font-weight:500}
+
+/* topo */
+.topo{position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--cal) 94%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid color-mix(in srgb,var(--vinho) 12%,transparent)}
+.topo .wrap{display:flex; align-items:center; gap:14px; min-height:70px; flex-wrap:wrap; padding-block:8px}
+.logo{display:inline-flex; align-items:center; gap:.3em; font-family:var(--display); font-size:24px; text-decoration:none; color:var(--vinho)}
+.logo svg{width:.8em; height:.8em; color:var(--tijolo)}
+.logo small{font-family:var(--texto); font-size:13px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--marrom); margin-left:6px}
+.topo .acoes{margin-left:auto; display:flex; align-items:center; gap:10px}
+.situacao{font-size:14px; display:inline-flex; align-items:center; gap:8px; color:var(--marrom)}
+.situacao::before{content:""; width:9px; height:9px; border-radius:50%; background:var(--verde)}
+.situacao.pendente::before{background:var(--ocre)}
+.situacao.pendente{color:var(--vinho); font-weight:500}
+
+main{padding-block:32px 80px}
+.cartao{background:var(--cal-clara); border-radius:32px; padding:28px 22px}
+@media (min-width:700px){ .cartao{padding:36px 40px} }
+
+/* login */
+.login{max-width:520px; margin:40px auto; display:grid; gap:18px}
+.login h1{font-size:40px}
+.campo{display:grid; gap:6px}
+.campo label{font-weight:700; font-size:15px}
+.campo input[type=text], .campo input[type=password], .campo input[type=number], .campo input[type=tel]{width:100%; min-height:50px; padding:10px 18px; border-radius:999px; border:2px solid color-mix(in srgb,var(--vinho) 25%,transparent); background:var(--cal)}
+.campo input:focus{outline:2px solid var(--tijolo); outline-offset:3px; border-color:var(--vinho)}
+.check{display:flex; align-items:center; gap:10px; font-size:15px; min-height:44px}
+.check input{width:20px; height:20px; accent-color:var(--tijolo)}
+.ajuda{border-top:1px solid color-mix(in srgb,var(--vinho) 15%,transparent); padding-top:14px}
+.ajuda summary{cursor:pointer; font-weight:700; color:var(--tijolo); min-height:44px; display:flex; align-items:center}
+.ajuda ol{margin:8px 0 0; padding-left:20px; display:grid; gap:8px; font-size:15px; color:var(--marrom)}
+.ajuda code{background:var(--cal); padding:1px 6px; border-radius:6px; font-size:14px; color:var(--vinho)}
+.erro{color:var(--tijolo); font-weight:500; font-size:15px}
+
+/* abas */
+.abas{display:inline-flex; padding:4px; border-radius:999px; background:var(--cal-clara); border:2px solid color-mix(in srgb,var(--vinho) 15%,transparent); margin-bottom:22px; max-width:100%; overflow-x:auto}
+.abas button{border:0; background:transparent; min-height:42px; padding:6px 18px; border-radius:999px; font-weight:500; font-size:15px; cursor:pointer; white-space:nowrap}
+.abas button[aria-selected="true"]{background:var(--vinho); color:var(--cal)}
+.painel-aba{display:grid; gap:18px}
+.intro{display:grid; gap:6px; margin-bottom:4px}
+.intro h2{font-size:30px}
+
+/* dias */
+.faixa{display:flex; gap:8px; overflow-x:auto; padding:4px 2px 10px; scroll-snap-type:x mandatory}
+.dia{flex:none; scroll-snap-align:start; width:70px; min-height:92px; display:grid; justify-items:center; align-content:center; gap:1px; border-radius:20px; border:2px solid color-mix(in srgb,var(--vinho) 18%,transparent); background:var(--cal); cursor:pointer; font-variant-numeric:tabular-nums; position:relative}
+.dia .sem{font-size:11.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase}
+.dia .num{font-family:var(--display); font-size:26px; line-height:1.05}
+.dia .mes{font-size:12.5px}
+.dia .marca{font-size:11px; font-weight:700; margin-top:2px; color:var(--tijolo)}
+.dia.fechado{background:transparent; border-style:dashed; color:color-mix(in srgb,var(--vinho) 55%,transparent)}
+.dia.fechado .marca{color:var(--marrom)}
+.dia[aria-pressed="true"]{background:var(--tijolo); border-color:var(--tijolo); color:var(--cal)}
+.dia[aria-pressed="true"] .marca{color:var(--cal)}
+
+.dia-painel{display:grid; gap:18px}
+.dia-topo{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px}
+.dia-topo h3{font-size:26px}
+.interruptor{display:inline-flex; align-items:center; gap:12px; cursor:pointer; font-weight:500; min-height:44px}
+.interruptor input{position:absolute; opacity:0; width:1px; height:1px}
+.interruptor .trilho{width:50px; height:28px; border-radius:999px; background:color-mix(in srgb,var(--vinho) 25%,transparent); position:relative; transition:background .2s}
+.interruptor .trilho::after{content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:var(--cal-clara); transition:transform .2s}
+.interruptor input:checked + .trilho{background:var(--verde)}
+.interruptor input:checked + .trilho::after{transform:translateX(22px)}
+.interruptor input:focus-visible + .trilho{outline:2px solid var(--tijolo); outline-offset:3px}
+
+.slots{display:grid; grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:10px}
+.slot{position:relative; display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:54px; padding:8px 10px 8px 16px; border-radius:18px; border:2px solid var(--verde); background:var(--cal); cursor:pointer; text-align:left}
+.slot .hora{font-weight:700; font-size:17px; font-variant-numeric:tabular-nums}
+.slot .estado{font-size:12.5px; font-weight:700; color:var(--verde)}
+.slot.reservado{background:var(--vinho); border-color:var(--vinho); color:var(--cal)}
+.slot.reservado .estado{color:var(--rosa)}
+.slot-caixa{position:relative}
+.slot-remover{position:absolute; top:-8px; right:-8px; width:28px; height:28px; border-radius:50%; border:0; background:var(--tijolo); color:var(--cal); cursor:pointer; font-size:16px; line-height:1; display:grid; place-items:center}
+.extra-tag{font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ocre)}
+.legenda{display:flex; flex-wrap:wrap; gap:6px 18px; font-size:14px; color:var(--marrom)}
+.legenda span{display:inline-flex; align-items:center; gap:8px}
+.legenda i{width:12px; height:12px; border-radius:4px; display:inline-block}
+.adicionar{display:flex; flex-wrap:wrap; align-items:end; gap:10px}
+.adicionar input[type=time]{min-height:46px; padding:8px 14px; border-radius:999px; border:2px solid color-mix(in srgb,var(--vinho) 25%,transparent); background:var(--cal)}
+.aviso-fechado{padding:16px 20px; border-radius:20px; border:1.5px dashed var(--vinho); font-size:15px}
+
+/* semana */
+.semana{display:grid; gap:12px}
+.dia-semana{display:grid; gap:10px; padding:18px 18px; border-radius:22px; background:var(--cal)}
+@media (min-width:700px){ .dia-semana{grid-template-columns:150px 1fr; align-items:center} }
+.dia-semana h3{font-size:22px}
+.chips{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.chip{display:inline-flex; align-items:center; gap:4px; min-height:40px; padding:4px 6px 4px 14px; border-radius:999px; background:var(--cal-clara); border:2px solid color-mix(in srgb,var(--vinho) 20%,transparent); font-weight:700; font-variant-numeric:tabular-nums}
+.chip button{width:30px; height:30px; border-radius:50%; border:0; background:transparent; cursor:pointer; font-size:17px; color:var(--tijolo)}
+.chip button:hover{background:var(--cal)}
+.chips input[type=time]{min-height:40px; padding:4px 10px; border-radius:999px; border:2px dashed color-mix(in srgb,var(--vinho) 35%,transparent); background:transparent}
+.chips .mais{min-height:40px; padding:4px 14px; border-radius:999px; border:0; background:var(--tijolo); color:var(--cal); font-weight:700; cursor:pointer}
+.vazio{font-size:14.5px; color:var(--marrom); font-style:italic}
+
+.ajustes{display:grid; gap:16px; max-width:520px}
+
+.toast{position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translate(-50%,140%); background:var(--vinho); color:var(--cal); padding:12px 22px; border-radius:999px; font-weight:500; box-shadow:0 10px 30px color-mix(in srgb,var(--vinho) 30%,transparent); transition:transform .3s; z-index:50; max-width:calc(100% - 32px); text-align:center}
+.toast.visivel{transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="roda" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="50" cy="50" r="42" stroke-width="12"/><path stroke-width="7" d="M50 41V16M50 59v25M41 50H16M59 50h25M43.6 43.6 26 26M56.4 56.4 74 74M56.4 43.6 74 26M43.6 56.4 26 74"/><circle cx="50" cy="50" r="7" stroke-width="5"/></g></symbol>
+</svg>
+
+<header class="topo">
+  <div class="wrap">
+    <a class="logo" href="./" title="Ver o site"><svg aria-hidden="true"><use href="#roda"/></svg>kairavana<small>Agenda</small></a>
+    <div class="acoes" id="acoes" hidden>
+      <span class="situacao" id="situacao" aria-live="polite">Tudo publicado</span>
+      <button class="btn btn-primario" id="publicar" disabled>Publicar alterações</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- entrada -->
+  <section class="cartao login" id="tela-login">
+    <h1>Gerenciar agenda</h1>
+    <p class="apoio">Área da equipe Kairavana. Aqui você fecha dias, marca horários reservados e ajusta a semana de atendimento. As mudanças aparecem no site em cerca de 1 a 2 minutos.</p>
+    <form id="form-login" class="campo" style="gap:14px">
+      <div class="campo">
+        <label for="token">Chave de acesso</label>
+        <input type="password" id="token" autocomplete="off" spellcheck="false" placeholder="github_pat_…" required>
+      </div>
+      <label class="check"><input type="checkbox" id="lembrar" checked> Lembrar neste aparelho</label>
+      <button class="btn btn-primario" type="submit">Entrar</button>
+      <p class="erro" id="erro-login" role="alert"></p>
+    </form>
+    <details class="ajuda">
+      <summary>Como criar a chave de acesso</summary>
+      <ol>
+        <li>Entre no GitHub com a conta dona do site e abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>.</li>
+        <li>Em <b>Token name</b>, escreva algo como <code>agenda kairavana</code>. Escolha a validade que preferir (por exemplo, 1 ano).</li>
+        <li>Em <b>Repository access</b>, marque <b>Only select repositories</b> e escolha <code>kairavana</code>.</li>
+        <li>Em <b>Permissions → Repository permissions → Contents</b>, escolha <b>Read and write</b>.</li>
+        <li>Clique em <b>Generate token</b>, copie a chave e cole aqui. Guarde-a em um lugar seguro: o GitHub só mostra uma vez.</li>
+      </ol>
+      <p class="apoio" style="margin-top:10px">A chave dá acesso apenas a este site. Não compartilhe com ninguém. Se perder o aparelho, apague a chave no GitHub e crie outra.</p>
+    </details>
+  </section>
+
+  <!-- gestão -->
+  <section id="tela-gestao" hidden>
+    <div class="abas" role="tablist" aria-label="Seções">
+      <button role="tab" aria-selected="true" aria-controls="aba-dias" id="tab-dias">Dias e reservas</button>
+      <button role="tab" aria-selected="false" aria-controls="aba-semana" id="tab-semana">Semana padrão</button>
+      <button role="tab" aria-selected="false" aria-controls="aba-ajustes" id="tab-ajustes">Ajustes</button>
+    </div>
+
+    <div class="painel-aba" id="aba-dias" role="tabpanel" aria-labelledby="tab-dias">
+      <div class="intro">
+        <h2>Dias e reservas</h2>
+        <p class="apoio">Escolha um dia. Toque num horário para marcá-lo como <b>reservado</b> quando alguém agendar, ou feche o dia inteiro.</p>
+      </div>
+      <div class="faixa" id="faixa" role="group" aria-label="Dias"></div>
+      <div class="cartao dia-painel" id="dia-painel"></div>
+    </div>
+
+    <div class="painel-aba" id="aba-semana" role="tabpanel" aria-labelledby="tab-semana" hidden>
+      <div class="intro">
+        <h2>Semana padrão</h2>
+        <p class="apoio">Horários que se repetem toda semana. Deixe um dia sem horários para não atender nele.</p>
+      </div>
+      <div class="semana" id="semana"></div>
+    </div>
+
+    <div class="painel-aba" id="aba-ajustes" role="tabpanel" aria-labelledby="tab-ajustes" hidden>
+      <div class="intro">
+        <h2>Ajustes</h2>
+        <p class="apoio">Contato e regras gerais da agenda.</p>
+      </div>
+      <div class="cartao ajustes">
+        <div class="campo"><label for="aj-whats">WhatsApp (só números, com 55 e DDD)</label><input type="tel" id="aj-whats" inputmode="numeric" placeholder="5511999999999"></div>
+        <div class="campo"><label for="aj-exibido">Número como aparece no site</label><input type="text" id="aj-exibido" placeholder="(11) 99999-9999"></div>
+        <div class="campo"><label for="aj-antec">Antecedência mínima para agendar (horas)</label><input type="number" id="aj-antec" min="0" max="168"></div>
+        <div class="campo"><label for="aj-janela">Quantos dias à frente a agenda mostra</label><input type="number" id="aj-janela" min="7" max="180"></div>
+      </div>
+      <button class="btn-link" id="sair" style="justify-self:start">Sair deste aparelho</button>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const REPO = "LuanaCarmo/kairavana", ARQUIVO = "agenda.json", RAMO = "main";
+const API = `https://api.github.com/repos/${REPO}/contents/${ARQUIVO}`;
+const $ = s => document.querySelector(s);
+const pad = n => String(n).padStart(2, "0");
+const chave = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const DIAS = ["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
+const DIAS_CURTO = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+const DSEM = ["dom","seg","ter","qua","qui","sex","sáb"];
+const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const MES3 = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const hoje = new Date(); hoje.setHours(0,0,0,0);
+
+let token = "", sha = "", dados = null, original = "", diaSel = null;
+
+/* ---------- armazenamento local da chave ---------- */
+const guarda = {
+  ler(){ try { return localStorage.getItem("kv-token") || sessionStorage.getItem("kv-token") || ""; } catch { return ""; } },
+  salvar(t, lembrar){ try { (lembrar ? localStorage : sessionStorage).setItem("kv-token", t); } catch {} },
+  limpar(){ try { localStorage.removeItem("kv-token"); sessionStorage.removeItem("kv-token"); } catch {} }
+};
+
+/* ---------- GitHub ---------- */
+const cabecalhos = () => ({ Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" });
+const paraBase64 = txt => { const b = new TextEncoder().encode(txt); let s = ""; b.forEach(c => s += String.fromCharCode(c)); return btoa(s); };
+const deBase64 = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g, "")), c => c.charCodeAt(0)));
+
+async function carregar(){
+  const r = await fetch(`${API}?ref=${RAMO}&t=${Date.now()}`, { headers: cabecalhos(), cache: "no-store" });
+  if (r.status === 401 || r.status === 403) throw new Error("chave");
+  if (!r.ok) throw new Error("rede");
+  const j = await r.json();
+  sha = j.sha;
+  dados = normaliza(JSON.parse(deBase64(j.content)));
+  original = JSON.stringify(dados);
+}
+function normaliza(d){
+  d.horarios ||= {}; d.ocupados ||= {}; d.bloqueados ||= []; d.extras ||= {};
+  d.antecedenciaHoras ??= 12; d.janelaDias ??= 60;
+  return d;
+}
+function limpaPassado(d){ // tira do arquivo o que já ficou para trás
+  const k = chave(hoje);
+  for (const o of ["ocupados", "extras"]) for (const dia of Object.keys(d[o])) if (dia < k || !d[o][dia].length) delete d[o][dia];
+  d.bloqueados = d.bloqueados.filter(dia => dia >= k).sort();
+  return d;
+}
+async function publicar(){
+  const btn = $("#publicar"); btn.disabled = true; btn.textContent = "Publicando…";
+  try {
+    limpaPassado(dados);
+    const corpo = { message: "Agenda atualizada pela área de gestão", content: paraBase64(JSON.stringify(dados, null, 2) + "\n"), sha, branch: RAMO };
+    const r = await fetch(API, { method: "PUT", headers: { ...cabecalhos(), "Content-Type": "application/json" }, body: JSON.stringify(corpo) });
+    if (r.status === 409 || r.status === 422) throw new Error("conflito");
+    if (!r.ok) throw new Error(r.status === 401 || r.status === 403 ? "chave" : "rede");
+    const j = await r.json(); sha = j.content.sha; original = JSON.stringify(dados);
+    aviso("Publicado! O site atualiza em cerca de 1 a 2 minutos.");
+  } catch (e) {
+    aviso(e.message === "conflito" ? "A agenda foi alterada em outro lugar. Recarregue a página e refaça a mudança."
+        : e.message === "chave" ? "A chave não tem permissão para salvar. Confira se ela tem Contents: Read and write."
+        : "Não foi possível publicar. Confira a internet e tente de novo.");
+  }
+  btn.textContent = "Publicar alterações"; situacao();
+}
+
+/* ---------- interface ---------- */
+function aviso(txt){ const t = $("#toast"); t.textContent = txt; t.classList.add("visivel"); clearTimeout(aviso.t); aviso.t = setTimeout(() => t.classList.remove("visivel"), 4200); }
+function situacao(){
+  const pend = JSON.stringify(dados) !== original;
+  $("#situacao").textContent = pend ? "Alterações não publicadas" : "Tudo publicado";
+  $("#situacao").classList.toggle("pendente", pend);
+  $("#publicar").disabled = !pend;
+}
+function mudou(){ situacao(); renderFaixa(); renderDia(); }
+const ordena = arr => [...new Set(arr)].sort();
+const base = d => ordena([...(dados.horarios[d.getDay()] || []), ...(dados.extras[chave(d)] || [])]);
+const dataLonga = d => `${DIAS[d.getDay()]}, ${d.getDate()} de ${MESES[d.getMonth()]}`;
+
+function renderFaixa(){
+  const f = $("#faixa"); const rolagem = f.scrollLeft; f.innerHTML = "";
+  for (let i = 0; i <= dados.janelaDias; i++){
+    const d = new Date(hoje); d.setDate(d.getDate() + i); const k = chave(d);
+    const fechado = dados.bloqueados.includes(k) || !base(d).length;
+    const nRes = (dados.ocupados[k] || []).length;
+    const b = document.createElement("button"); b.type = "button"; b.className = "dia" + (fechado ? " fechado" : "");
+    b.innerHTML = `<span class="sem">${DSEM[d.getDay()]}</span><span class="num">${d.getDate()}</span><span class="mes">${MES3[d.getMonth()]}</span><span class="marca">${fechado ? "fechado" : nRes ? `${nRes} reserv.` : ""}</span>`;
+    b.setAttribute("aria-pressed", diaSel && chave(diaSel) === k ? "true" : "false");
+    b.setAttribute("aria-label", `${dataLonga(d)}${fechado ? ", fechado" : nRes ? `, ${nRes} reservado${nRes > 1 ? "s" : ""}` : ""}`);
+    b.addEventListener("click", () => { diaSel = d; renderFaixa(); renderDia(); });
+    f.append(b);
+  }
+  f.scrollLeft = rolagem;
+}
+
+function renderDia(){
+  const p = $("#dia-painel");
+  if (!diaSel){ p.innerHTML = `<p class="apoio">Escolha um dia acima.</p>`; return; }
+  const k = chave(diaSel), bloqueado = dados.bloqueados.includes(k), horas = base(diaSel);
+  const ocup = dados.ocupados[k] || [], extras = dados.extras[k] || [];
+  p.innerHTML = `
+    <div class="dia-topo">
+      <h3>${dataLonga(diaSel)}</h3>
+      <label class="interruptor"><input type="checkbox" id="atende"${bloqueado ? "" : " checked"}><span class="trilho" aria-hidden="true"></span><span>${bloqueado ? "Dia fechado" : "Atendendo neste dia"}</span></label>
+    </div>
+    ${bloqueado ? `<p class="aviso-fechado">Este dia está fechado e não aparece na agenda do site. Ligue a chave acima para reabrir.</p>` : `
+      ${horas.length ? `<div class="legenda"><span><i style="border:2px solid var(--verde)"></i>livre</span><span><i style="background:var(--vinho)"></i>reservado</span></div>
+      <div class="slots" id="slots"></div>` : `<p class="apoio">Nenhum horário neste dia. Adicione um horário extra abaixo.</p>`}
+      <div class="adicionar">
+        <div class="campo"><label for="novo-extra">Horário extra só neste dia</label><input type="time" id="novo-extra" step="900"></div>
+        <button class="btn btn-secundario" id="add-extra" type="button">Adicionar</button>
+      </div>`}`;
+  p.querySelector("#atende").addEventListener("change", e => {
+    if (e.target.checked) dados.bloqueados = dados.bloqueados.filter(x => x !== k);
+    else dados.bloqueados = ordena([...dados.bloqueados, k]);
+    mudou();
+  });
+  if (bloqueado) return;
+  const s = p.querySelector("#slots");
+  horas.forEach(h => {
+    const res = ocup.includes(h), ehExtra = extras.includes(h) && !(dados.horarios[diaSel.getDay()] || []).includes(h);
+    const caixa = document.createElement("div"); caixa.className = "slot-caixa";
+    caixa.innerHTML = `<button type="button" class="slot${res ? " reservado" : ""}" aria-pressed="${res}"><span><span class="hora">${h}</span>${ehExtra ? `<br><span class="extra-tag">extra</span>` : ""}</span><span class="estado">${res ? "Reservado" : "Livre"}</span></button>${ehExtra ? `<button type="button" class="slot-remover" aria-label="Remover horário extra ${h}">×</button>` : ""}`;
+    caixa.querySelector(".slot").addEventListener("click", () => {
+      const lista = dados.ocupados[k] || [];
+      dados.ocupados[k] = lista.includes(h) ? lista.filter(x => x !== h) : ordena([...lista, h]);
+      if (!dados.ocupados[k].length) delete dados.ocupados[k];
+      mudou();
+    });
+    caixa.querySelector(".slot-remover")?.addEventListener("click", () => {
+      dados.extras[k] = (dados.extras[k] || []).filter(x => x !== h); if (!dados.extras[k].length) delete dados.extras[k];
+      if (dados.ocupados[k]) { dados.ocupados[k] = dados.ocupados[k].filter(x => x !== h); if (!dados.ocupados[k].length) delete dados.ocupados[k]; }
+      mudou();
+    });
+    s?.append(caixa);
+  });
+  p.querySelector("#add-extra").addEventListener("click", () => {
+    const v = p.querySelector("#novo-extra").value;
+    if (!v){ aviso("Escolha um horário para adicionar."); p.querySelector("#novo-extra").focus(); return; }
+    if (horas.includes(v)){ aviso("Esse horário já existe neste dia."); return; }
+    dados.extras[k] = ordena([...(dados.extras[k] || []), v]); mudou();
+  });
+}
+
+function renderSemana(){
+  const box = $("#semana"); box.innerHTML = "";
+  [1,2,3,4,5,6,0].forEach(dow => {
+    const lista = dados.horarios[dow] || [];
+    const linha = document.createElement("div"); linha.className = "dia-semana";
+    linha.innerHTML = `<h3>${DIAS_CURTO[dow]}</h3><div class="chips">${lista.length ? lista.map(h => `<span class="chip">${h}<button type="button" data-h="${h}" aria-label="Remover ${h} de ${DIAS_CURTO[dow]}">×</button></span>`).join("") : `<span class="vazio">Sem atendimento</span>`}
+      <label class="sr" for="n-${dow}">Novo horário para ${DIAS_CURTO[dow]}</label><input type="time" id="n-${dow}" step="900"><button type="button" class="mais">+ Adicionar</button></div>`;
+    linha.querySelectorAll(".chip button").forEach(b => b.addEventListener("click", () => {
+      dados.horarios[dow] = lista.filter(x => x !== b.dataset.h); if (!dados.horarios[dow].length) delete dados.horarios[dow];
+      situacao(); renderSemana(); renderFaixa(); renderDia();
+    }));
+    linha.querySelector(".mais").addEventListener("click", () => {
+      const v = linha.querySelector("input[type=time]").value;
+      if (!v){ aviso("Escolha um horário para adicionar."); linha.querySelector("input[type=time]").focus(); return; }
+      dados.horarios[dow] = ordena([...lista, v]); situacao(); renderSemana(); renderFaixa(); renderDia();
+    });
+    box.append(linha);
+  });
+}
+
+function renderAjustes(){
+  const liga = (id, campo, conv = v => v) => { const el = $(id); el.value = dados[campo]; el.oninput = () => { dados[campo] = conv(el.value); situacao(); if (campo === "janelaDias") renderFaixa(); }; };
+  liga("#aj-whats", "whatsapp", v => v.replace(/\D/g, ""));
+  liga("#aj-exibido", "numeroExibido");
+  liga("#aj-antec", "antecedenciaHoras", v => Math.max(0, Number(v) || 0));
+  liga("#aj-janela", "janelaDias", v => Math.min(180, Math.max(7, Number(v) || 60)));
+}
+
+/* abas */
+document.querySelectorAll('[role="tab"]').forEach(t => t.addEventListener("click", () => {
+  document.querySelectorAll('[role="tab"]').forEach(x => { const sel = x === t; x.setAttribute("aria-selected", sel); $("#" + x.getAttribute("aria-controls")).hidden = !sel; });
+}));
+
+/* entrada */
+async function entrar(t, lembrar){
+  token = t; $("#erro-login").textContent = "";
+  try {
+    await carregar();
+    if (lembrar !== undefined) guarda.salvar(t, lembrar);
+    $("#tela-login").hidden = true; $("#tela-gestao").hidden = false; $("#acoes").hidden = false;
+    diaSel = new Date(hoje);
+    renderFaixa(); renderDia(); renderSemana(); renderAjustes(); situacao();
+  } catch (e) {
+    token = "";
+    $("#erro-login").textContent = e.message === "chave" ? "Chave inválida ou sem acesso ao repositório kairavana." : "Não foi possível conectar. Confira a internet e tente de novo.";
+    if (lembrar === undefined) guarda.limpar();
+    $("#tela-login").hidden = false;
+  }
+}
+$("#form-login").addEventListener("submit", e => { e.preventDefault(); const t = $("#token").value.trim(); if (t) entrar(t, $("#lembrar").checked); });
+$("#publicar").addEventListener("click", publicar);
+$("#sair").addEventListener("click", () => { guarda.limpar(); location.reload(); });
+addEventListener("beforeunload", e => { if (dados && JSON.stringify(dados) !== original) { e.preventDefault(); e.returnValue = ""; } });
+
+const salvo = guarda.ler();
+if (salvo) entrar(salvo);
+</script>
+</body>
+</html>

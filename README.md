@@ -4,16 +4,22 @@ Site institucional da Kairavana: terapias holísticas com delicadeza e com os p�
 
 Reiki para adultos, Reiki infantil a distância, Florais de Bach e Mapa numerológico, com agenda de horários que envia o pedido pelo WhatsApp.
 
-## Como editar
+- Site: https://luanacarmo.github.io/kairavana/
+- Gestão da agenda: https://luanacarmo.github.io/kairavana/admin.html
 
-Tudo fica em `index.html`. No bloco `CONFIG`, perto do fim do arquivo:
+## Gerenciar a agenda
 
-- `whatsapp` e `numeroExibido`: número de contato (DDI + DDD, só dígitos em `whatsapp`)
-- `horarios`: horários de atendimento por dia da semana
-- `ocupados`: horários já reservados, no formato `"AAAA-MM-DD": ["HH:MM"]`
-- `bloqueados`: feriados e folgas
+Na página `admin.html`, a equipe:
 
-Depois de salvar, faça commit e push: o GitHub Pages atualiza o site em cerca de um minuto.
+- fecha e reabre dias (feriados, folgas);
+- marca horários como **reservados** quando alguém agenda;
+- adiciona horários extras em um dia específico;
+- edita a **semana padrão** de atendimento;
+- ajusta o número de WhatsApp, a antecedência mínima e quantos dias a agenda mostra.
+
+Ao clicar em **Publicar alterações**, a página salva o arquivo `agenda.json` neste repositório e o site atualiza em cerca de 1 a 2 minutos.
+
+Para entrar, é preciso uma chave de acesso do GitHub (fine-grained token) com acesso apenas a este repositório e permissão **Contents: Read and write**. O passo a passo está na própria página de entrada.
 
 ## Fotos
 

@@ -742,7 +742,10 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 
 <script>
 /* =========================================================
-   CONFIGURAÇÃO — edite aqui
+   CONFIGURAÇÃO
+   Horários, dias fechados, reservas e WhatsApp são gerenciados
+   em admin.html e ficam salvos em agenda.json. Os valores abaixo
+   só são usados se agenda.json não puder ser lido.
    ========================================================= */
 const CONFIG = {
   // Número do WhatsApp com DDI + DDD, só dígitos. SUBSTITUA pelo número real.
@@ -777,6 +780,9 @@ const CONFIG = {
   // Dias sem atendimento (feriados, folgas)
   bloqueados: ["2026-10-12", "2026-11-02", "2026-11-15", "2026-11-20", "2026-12-24", "2026-12-25", "2026-12-31", "2027-01-01"],
 
+  // Horários extras em dias específicos: "AAAA-MM-DD": ["HH:MM", ...]
+  extras: {},
+
   antecedenciaHoras: 12, // pedidos com pelo menos X horas de antecedência
   janelaDias: 60         // quantos dias à frente a agenda mostra
 };
@@ -790,9 +796,12 @@ const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","ag
 const DIAS = ["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
 
 $("#ano").textContent = new Date().getFullYear();
-$("#numero-exibido").textContent = CONFIG.numeroExibido;
-$("#wa-direto").href = waLink("Olá, Kairavana! Gostaria de saber mais sobre os atendimentos.");
-$("#wa-flutuante").href = $("#wa-direto").href;
+function aplicaContato(){
+  $("#numero-exibido").textContent = CONFIG.numeroExibido;
+  $("#wa-direto").href = waLink("Olá, Kairavana! Gostaria de saber mais sobre os atendimentos.");
+  $("#wa-flutuante").href = $("#wa-direto").href;
+}
+aplicaContato();
 
 /* menu */
 const menu = $("#menu"), menuBtn = $("#menu-botao");
@@ -814,24 +823,29 @@ const estado = { terapia: null, modalidade: null, data: null, hora: null };
 const hoje = new Date(); hoje.setHours(0,0,0,0);
 const suave = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 
+// horários do dia = semana padrão + extras daquele dia
+const horariosDoDia = d => [...new Set([...(CONFIG.horarios[d.getDay()] || []), ...((CONFIG.extras || {})[chave(d)] || [])])].sort();
 function horariosLivres(d){
   const k = chave(d);
-  if (CONFIG.bloqueados.includes(k)) return [];
+  if ((CONFIG.bloqueados || []).includes(k)) return [];
   const minimo = Date.now() + CONFIG.antecedenciaHoras * 3600e3;
-  const ocup = CONFIG.ocupados[k] || [];
-  return (CONFIG.horarios[d.getDay()] || []).filter(h => {
+  const ocup = (CONFIG.ocupados || {})[k] || [];
+  return horariosDoDia(d).filter(h => {
     const [hh, mm] = h.split(":").map(Number);
     const quando = new Date(d); quando.setHours(hh, mm);
     return !ocup.includes(h) && quando.getTime() >= minimo;
   });
 }
 // dias de atendimento na janela (os sem vaga aparecem marcados como "sem horários")
-const diasAgenda = [];
-for (let i = 0; i <= CONFIG.janelaDias; i++){
-  const d = new Date(hoje); d.setDate(d.getDate() + i);
-  if (CONFIG.horarios[d.getDay()]) diasAgenda.push({ d, livres: horariosLivres(d) });
+let diasAgenda = [];
+function montaDias(){
+  diasAgenda = [];
+  for (let i = 0; i <= CONFIG.janelaDias; i++){
+    const d = new Date(hoje); d.setDate(d.getDate() + i);
+    if (horariosDoDia(d).length) diasAgenda.push({ d, livres: horariosLivres(d) });
+  }
+  while (diasAgenda.length && !diasAgenda[0].livres.length) diasAgenda.shift(); // começa no primeiro dia com vaga
 }
-while (diasAgenda.length && !diasAgenda[0].livres.length) diasAgenda.shift(); // começa no primeiro dia com vaga
 const terapiaAtual = () => CONFIG.terapias.find(t => t.id === estado.terapia);
 const dataLonga = d => `${DIAS[d.getDay()]}, ${d.getDate()} de ${MESES[d.getMonth()]}`;
 const dataCurta = d => `${DSEM[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
@@ -966,7 +980,20 @@ $("#dias-prox").addEventListener("click", () => $("#dias").scrollBy({ left: 320,
 ["#ag-nome", "#ag-crianca", "#ag-obs"].forEach(s => $(s).addEventListener("input", atualiza));
 $("#form-agenda").addEventListener("submit", e => e.preventDefault());
 
-renderTerapias(); renderDias(); renderHoras(); atualiza();
+function iniciarAgenda(){
+  montaDias();
+  // mantém a escolha da pessoa se ela continuar disponível
+  if (estado.data && !horariosLivres(estado.data).length) estado.data = null;
+  if (estado.data && estado.hora && !horariosLivres(estado.data).includes(estado.hora)) estado.hora = null;
+  renderDias(); renderHoras(); atualiza();
+}
+renderTerapias(); iniciarAgenda();
+
+// agenda atualizada pela área de gestão (admin.html)
+fetch("agenda.json?v=" + Date.now(), { cache: "no-store" })
+  .then(r => r.ok ? r.json() : null)
+  .then(dados => { if (!dados) return; Object.assign(CONFIG, dados); aplicaContato(); iniciarAgenda(); })
+  .catch(() => {});
 
 // barra fixa no celular: aparece enquanto a agenda está na tela
 function barra(){
