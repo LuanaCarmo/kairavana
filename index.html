@@ -72,7 +72,7 @@ section{position:relative; padding-block:var(--secao); overflow:hidden}
 .tijolo-bg .etq-aberto{border-color:var(--cal); color:var(--cal)}
 
 /* decoração */
-.circulo{position:absolute; border-radius:50%; background:var(--rosa); pointer-events:none; z-index:0}
+.circulo{position:absolute; pointer-events:none; z-index:0; color:var(--tijolo); opacity:.12} /* roda da carroça decorativa */
 .marca-dagua{position:absolute; pointer-events:none; z-index:0; color:var(--tijolo); opacity:.12}
 .tijolo-bg .marca-dagua,.escuro .marca-dagua{color:var(--cal); opacity:.1}
 section > .wrap{position:relative; z-index:1}
@@ -130,9 +130,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .foto-arco, .foto-circulo, .cartao-foto, .foto-pilula{position:relative; margin:0; overflow:hidden; max-width:100%; background:var(--rosa)}
 .foto::after, .foto-arco::after, .cartao-foto::after, .foto-pilula::after{content:""; position:absolute; inset:0; pointer-events:none; opacity:.18; mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .23 0 0 0 0 .1 0 0 0 0 .08 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.sobre-fotos{position:relative; margin-top:44px; max-width:400px; padding-bottom:8%}
+.sobre-fotos{position:relative; margin-top:44px; max-width:400px}
 .foto-arco{aspect-ratio:4/5; border-radius:999px 999px 36px 36px}
-.foto-circulo{position:absolute; width:44%; aspect-ratio:1; right:-6%; bottom:0; border-radius:50%; border:8px solid var(--cal-clara)}
 @media (max-width:899px){ .sobre-fotos{max-width:320px} }
 .cartao-foto{aspect-ratio:16/9; border-radius:24px; margin-bottom:4px}
 .foto-pilula{aspect-ratio:16/7; border-radius:999px; margin-block:8px}
@@ -165,11 +164,10 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .afirmacoes{list-style:none; margin:10px 0 0; padding:0; display:grid; gap:14px}
 .afirmacoes li{display:grid; gap:6px; font-size:15.5px}
 .afirmacoes li p{color:var(--vinho)}
-.cartao-destaque{border:2px solid var(--tijolo)}
 .aviso-linha{margin-top:32px; font-size:15.5px; color:var(--marrom); max-width:70ch}
 .embreve{display:flex; flex-wrap:wrap; gap:12px 20px; align-items:center; margin-top:24px; padding:22px 28px; border-radius:999px; border:1.5px dashed color-mix(in srgb,var(--vinho) 45%,transparent)}
 @media (max-width:600px){ .embreve{border-radius:28px} }
-.terapias .circulo{width:420px; aspect-ratio:1; left:-260px; top:120px}
+.terapias .circulo{width:480px; aspect-ratio:1; left:-280px; top:100px}
 
 /* cuidado */
 .cuidado-grid{display:grid; gap:18px}
@@ -194,7 +192,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .passos p{font-size:16.5px; color:var(--marrom)}
 
 /* agenda */
-.agenda .circulo{width:520px; aspect-ratio:1; right:-300px; top:-160px}
+.agenda .circulo{width:560px; aspect-ratio:1; right:-300px; top:-180px}
 .agenda-grid{display:grid; gap:28px}
 @media (min-width:1000px){ .agenda-grid{grid-template-columns:minmax(0,7fr) minmax(0,4fr); gap:32px; align-items:start} }
 .agendador{display:grid; grid-template-columns:minmax(0,1fr); gap:14px; min-width:0}
@@ -340,7 +338,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .link-insta{display:inline-flex; align-items:center; gap:8px; min-height:44px; font-weight:500; font-size:16px; text-underline-offset:4px}
 .link-insta:hover{color:var(--tijolo)}
 .crise{margin-top:8px; padding:18px 22px; border-radius:24px; border:1.5px dashed var(--vinho); font-size:15px}
-.contato .circulo{width:360px; aspect-ratio:1; left:-200px; bottom:-160px}
+.contato .circulo{width:420px; aspect-ratio:1; left:-220px; bottom:-180px}
 
 /* rodapé */
 .rodape{background:var(--vinho); color:var(--cal); padding-block:72px 40px}
@@ -426,7 +424,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
     </div>
     <div class="foto-caixa">
       <figure class="foto">
-        <img src="https://images.unsplash.com/photo-1599671230521-82bcd563b7b9?w=900&q=70&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1599671230521-82bcd563b7b9?w=600&q=70&auto=format&fit=crop 600w, https://images.unsplash.com/photo-1599671230521-82bcd563b7b9?w=1000&q=70&auto=format&fit=crop 1000w" sizes="(min-width:900px) 440px, 360px" alt="Mãos abertas sob a luz quente de fim de tarde" fetchpriority="high">
+        <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=900&q=70&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=70&auto=format&fit=crop 600w, https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=1000&q=70&auto=format&fit=crop 1000w" sizes="(min-width:900px) 440px, 360px" alt="Pessoa meditando sentada, em silêncio, diante da luz suave do fim de tarde" fetchpriority="high">
       </figure>
     </div>
   </div>
@@ -440,7 +438,6 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       <h2>Um nome que vem da estrada.</h2>
       <div class="sobre-fotos">
         <figure class="foto-arco"><img src="https://images.unsplash.com/photo-1548741465-8b453e363e48?w=800&q=70&auto=format&fit=crop" alt="Duas rodas de carroça de madeira encostadas numa parede, sob a luz do sol" loading="lazy"></figure>
-        <figure class="foto-circulo"><img src="https://images.unsplash.com/photo-1532708468114-d174e07dd24b?w=500&q=70&auto=format&fit=crop" alt="Flores secas num vaso de cerâmica junto à janela" loading="lazy"></figure>
       </div>
     </div>
     <div class="sobre-texto revelar">
@@ -456,7 +453,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 </section>
 
 <section class="terapias" id="terapias">
-  <div class="circulo" aria-hidden="true"></div>
+  <svg class="circulo" aria-hidden="true" viewBox="0 0 100 100"><use href="#roda"/></svg>
   <div class="wrap">
     <div class="cabeca revelar">
       <p class="sobretitulo">Terapias</p>
@@ -466,7 +463,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 
     <div class="terapias-grid">
       <article class="cartao revelar" id="reiki">
-        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1591630060069-7cb1f16261b4?w=800&q=70&auto=format&fit=crop" alt="Mãos iluminadas por uma luz suave e quente" loading="lazy"></figure>
+        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1757066033647-366cc10e0de2?w=800&q=70&auto=format&fit=crop" style="object-position:center 80%" alt="Terapeuta com as mãos sobre a cabeça de uma pessoa deitada, durante uma sessão de Reiki" loading="lazy"></figure>
         <div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Presencial ou a distância</span></div>
         <h3>Reiki para adultos</h3>
         <p>Prática de origem japonesa feita em silêncio, com as mãos posicionadas a poucos centímetros do corpo. Uma hora para desacelerar, respirar e simplesmente estar.</p>
@@ -482,8 +479,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
         </details>
       </article>
 
-      <article class="cartao cartao-destaque revelar" id="reiki-criancas">
-        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1530455623052-e8441ae826f7?w=800&q=70&auto=format&fit=crop" alt="Criança descansando tranquila na cama, com lençóis listrados" loading="lazy"></figure>
+      <article class="cartao revelar" id="reiki-criancas">
+        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1533285962792-0c3c5e9cb0d7?w=800&q=70&auto=format&fit=crop" alt="Menina sentada de pernas cruzadas na grama, tranquila" loading="lazy"></figure>
         <div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Somente a distância</span></div>
         <h3>Reiki infantil a distância</h3>
         <p>A criança fica em casa, no ritmo dela, sem precisar lidar com um ambiente novo nem ficar parada. Um formato pensado com carinho também para crianças autistas. Antes, conversamos com a família para conhecer a criança e o que a acolhe.</p>
@@ -572,7 +569,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 </section>
 
 <section class="agenda alt" id="agenda">
-  <div class="circulo" aria-hidden="true"></div>
+  <svg class="circulo" aria-hidden="true" viewBox="0 0 100 100"><use href="#roda"/></svg>
   <div class="wrap">
     <div class="cabeca revelar">
       <p class="sobretitulo">Agenda</p>
@@ -695,7 +692,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 </section>
 
 <section class="contato" id="contato">
-  <div class="circulo" aria-hidden="true"></div>
+  <svg class="circulo" aria-hidden="true" viewBox="0 0 100 100"><use href="#roda"/></svg>
   <div class="wrap contato-grid">
     <div class="contato-info revelar">
       <p class="sobretitulo">Contato</p>
