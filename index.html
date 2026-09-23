@@ -118,19 +118,24 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .hero .subtitulo{font-size:clamp(19px,2vw,22px); color:var(--marrom); margin-bottom:36px}
 .acoes{display:flex; flex-wrap:wrap; gap:14px}
 
-.foto{position:relative; margin:0; border-radius:999px 999px 40px 40px; overflow:hidden; aspect-ratio:4/5; max-width:100%;
-  background:
-    radial-gradient(120% 70% at 70% 12%, #F3DCC7 0%, transparent 60%),
-    radial-gradient(80% 60% at 20% 90%, #B9786A 0%, transparent 70%),
-    linear-gradient(170deg, #E6C4B2, #C9937F 70%, #A9695A);
-  filter:saturate(.7) contrast(.9) sepia(.12)}
-.foto::after{content:""; position:absolute; inset:0; opacity:.22; mix-blend-mode:multiply;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .23 0 0 0 0 .1 0 0 0 0 .08 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.foto svg.cena{position:absolute; inset:0; width:100%; height:100%}
-.foto figcaption{position:absolute; left:50%; bottom:20px; transform:translateX(-50%); z-index:2; background:color-mix(in srgb, var(--cal-clara) 88%, transparent); color:var(--marrom); font-size:13px; padding:6px 14px; border-radius:999px; white-space:nowrap}
+.foto{position:relative; margin:0; border-radius:999px 999px 40px 40px; overflow:hidden; aspect-ratio:4/5; max-width:100%; background:var(--rosa)}
 .hero .foto-caixa{position:relative; max-width:440px; width:100%; justify-self:end}
 .hero .circulo{width:min(560px,110vw); aspect-ratio:1; right:-14%; top:6%}
-@media (max-width:899px){ .hero .foto-caixa{justify-self:center; max-width:360px} .hero .circulo{right:-40%; top:auto; bottom:-10%} }
+@media (max-width:899px){ .hero .foto-caixa{justify-self:center; max-width:360px} }
+.hero .roda-hero{width:min(600px,120vw); aspect-ratio:1; right:-10%; top:4%}
+@media (max-width:899px){ .hero .roda-hero{right:-35%; top:auto; bottom:-8%} }
+
+/* fotografias: recorte arredondado e tratamento da marca (menos saturação, contraste suave, leve sépia) */
+.foto img, .foto-arco img, .foto-circulo img, .cartao-foto img, .foto-pilula img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:saturate(.7) contrast(.9) sepia(.15)}
+.foto-arco, .foto-circulo, .cartao-foto, .foto-pilula{position:relative; margin:0; overflow:hidden; max-width:100%; background:var(--rosa)}
+.foto::after, .foto-arco::after, .cartao-foto::after, .foto-pilula::after{content:""; position:absolute; inset:0; pointer-events:none; opacity:.18; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .23 0 0 0 0 .1 0 0 0 0 .08 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.sobre-fotos{position:relative; margin-top:44px; max-width:400px; padding-bottom:8%}
+.foto-arco{aspect-ratio:4/5; border-radius:999px 999px 36px 36px}
+.foto-circulo{position:absolute; width:44%; aspect-ratio:1; right:-6%; bottom:0; border-radius:50%; border:8px solid var(--cal-clara)}
+@media (max-width:899px){ .sobre-fotos{max-width:320px} }
+.cartao-foto{aspect-ratio:16/9; border-radius:24px; margin-bottom:4px}
+.foto-pilula{aspect-ratio:16/7; border-radius:999px; margin-block:8px}
 
 /* sobre */
 .sobre-grid{display:grid; gap:48px}
@@ -408,7 +413,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 <main id="principal">
 
 <section class="hero" id="inicio">
-  <div class="circulo" aria-hidden="true"></div>
+  <svg class="marca-dagua roda-hero" aria-hidden="true" viewBox="0 0 100 100"><use href="#roda"/></svg>
   <div class="wrap hero-grid">
     <div>
       <p class="sobretitulo">Terapias holísticas · Reiki · Florais · Numerologia</p>
@@ -420,15 +425,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       </div>
     </div>
     <div class="foto-caixa">
-      <figure class="foto" role="img" aria-label="Espaço para fotografia: mãos repousando sobre um tecido de linho, iluminadas pela luz de fim de tarde">
-        <svg class="cena" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <rect x="70" y="60" width="120" height="210" rx="60" fill="#F7EFE7" opacity=".35"/>
-          <rect x="210" y="60" width="120" height="210" rx="60" fill="#F7EFE7" opacity=".28"/>
-          <path d="M0 380 C120 340 260 350 400 330 L400 500 L0 500Z" fill="#EFE3D8" opacity=".45"/>
-          <path d="M0 410 C140 380 250 395 400 370" stroke="#D9A597" stroke-width="2" fill="none" opacity=".7"/>
-          <path d="M0 435 C140 405 250 420 400 395" stroke="#D9A597" stroke-width="2" fill="none" opacity=".5"/>
-        </svg>
-        <figcaption>foto: mãos sobre linho</figcaption>
+      <figure class="foto">
+        <img src="https://images.unsplash.com/photo-1599671230521-82bcd563b7b9?w=900&q=70&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1599671230521-82bcd563b7b9?w=600&q=70&auto=format&fit=crop 600w, https://images.unsplash.com/photo-1599671230521-82bcd563b7b9?w=1000&q=70&auto=format&fit=crop 1000w" sizes="(min-width:900px) 440px, 360px" alt="Mãos abertas sob a luz quente de fim de tarde" fetchpriority="high">
       </figure>
     </div>
   </div>
@@ -440,6 +438,10 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
     <div class="revelar">
       <p class="sobretitulo">Sobre a Kairavana</p>
       <h2>Um nome que vem da estrada.</h2>
+      <div class="sobre-fotos">
+        <figure class="foto-arco"><img src="https://images.unsplash.com/photo-1548741465-8b453e363e48?w=800&q=70&auto=format&fit=crop" alt="Duas rodas de carroça de madeira encostadas numa parede, sob a luz do sol" loading="lazy"></figure>
+        <figure class="foto-circulo"><img src="https://images.unsplash.com/photo-1532708468114-d174e07dd24b?w=500&q=70&auto=format&fit=crop" alt="Flores secas num vaso de cerâmica junto à janela" loading="lazy"></figure>
+      </div>
     </div>
     <div class="sobre-texto revelar">
       <p>Kairavana se inspira nas caravanas ciganas: gente que segue em movimento, mas que sempre para, arma abrigo e se encontra ao redor do fogo. A roda da carroça é o nosso símbolo, porque cuidar de si também é um caminho que se faz aos poucos.</p>
@@ -464,6 +466,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 
     <div class="terapias-grid">
       <article class="cartao revelar" id="reiki">
+        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1591630060069-7cb1f16261b4?w=800&q=70&auto=format&fit=crop" alt="Mãos iluminadas por uma luz suave e quente" loading="lazy"></figure>
         <div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Presencial ou a distância</span></div>
         <h3>Reiki para adultos</h3>
         <p>Prática de origem japonesa feita em silêncio, com as mãos posicionadas a poucos centímetros do corpo. Uma hora para desacelerar, respirar e simplesmente estar.</p>
@@ -480,6 +483,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       </article>
 
       <article class="cartao cartao-destaque revelar" id="reiki-criancas">
+        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1530455623052-e8441ae826f7?w=800&q=70&auto=format&fit=crop" alt="Criança descansando tranquila na cama, com lençóis listrados" loading="lazy"></figure>
         <div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Somente a distância</span></div>
         <h3>Reiki infantil a distância</h3>
         <p>A criança fica em casa, no ritmo dela, sem precisar lidar com um ambiente novo nem ficar parada. Um formato pensado com carinho também para crianças autistas. Antes, conversamos com a família para conhecer a criança e o que a acolhe.</p>
@@ -496,6 +500,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       </article>
 
       <article class="cartao revelar" id="florais">
+        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=800&q=70&auto=format&fit=crop" alt="Frasco âmbar com conta-gotas, sem rótulo, sobre fundo claro" loading="lazy"></figure>
         <div class="topo-cartao"><span class="etq etq-florais">Florais</span><span class="apoio">Presencial ou a distância</span></div>
         <h3>Florais de Bach</h3>
         <p>Começa com uma conversa sobre o seu momento. A partir dela, escolhemos juntos as essências, entre as 38 criadas por Edward Bach, e preparamos o seu frasco para uso em gotas.</p>
@@ -512,6 +517,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       </article>
 
       <article class="cartao revelar" id="numerologia">
+        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=800&q=70&auto=format&fit=crop" alt="Caderno e caneta sobre mesa de madeira, com sombras de luz natural" loading="lazy"></figure>
         <div class="topo-cartao"><span class="etq etq-tradicao">Numerologia</span><span class="apoio">Presencial ou a distância</span></div>
         <h3>Mapa numerológico</h3>
         <p>Com o seu nome completo e a data de nascimento, preparamos um mapa escrito e conversamos sobre ele com calma. Um convite para olhar seus momentos, escolhas e caminhos por outro ângulo.</p>
@@ -695,6 +701,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       <p class="sobretitulo">Contato</p>
       <h2>Conte como você está chegando.</h2>
       <p>Tire dúvidas, peça valores ou combine um horário. Respondemos com calma, geralmente no mesmo dia útil.</p>
+      <figure class="foto-pilula"><img src="https://images.unsplash.com/photo-1577955107081-92c3197fb6cb?w=900&q=70&auto=format&fit=crop" alt="Cortina leve iluminada pela luz do fim de tarde" loading="lazy"></figure>
       <p class="crise"><strong>Em momentos de crise, procure ajuda profissional.</strong> O CVV atende pelo 188, 24 horas, gratuitamente.</p>
     </div>
 
@@ -731,7 +738,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
         <p>Fontes de referência: <a href="https://www.nccih.nih.gov/" target="_blank" rel="noopener">NCCIH</a>, <a href="https://www.bachcentre.com/" target="_blank" rel="noopener">Bach Centre</a> e <a href="https://www.gov.br/saude/pt-br/composicao/saps/pnpic" target="_blank" rel="noopener">Ministério da Saúde (PNPIC)</a>.</p>
       </div>
     </div>
-    <div class="rodape-base"><span>© <span id="ano"></span> Kairavana</span><span>Em crise? CVV 188, 24 horas.</span></div>
+    <div class="rodape-base"><span>© <span id="ano"></span> Kairavana · Fotos: <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></span><span>Em crise? CVV 188, 24 horas.</span></div>
   </div>
 </footer>
 

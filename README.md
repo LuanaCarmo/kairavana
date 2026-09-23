@@ -14,3 +14,7 @@ Tudo fica em `index.html`. No bloco `CONFIG`, perto do fim do arquivo:
 - `bloqueados`: feriados e folgas
 
 Depois de salvar, faça commit e push: o GitHub Pages atualiza o site em cerca de um minuto.
+
+## Fotos
+
+Fotos do [Unsplash](https://unsplash.com/license), de uso livre: Hassan Ouajbir, Jon Cartagena, Martin Templeman, Ira Vishnevskaya, Annie Spratt, Kadarius Seegars, Andres Molina e Mitchell Luo.
