@@ -239,6 +239,13 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .dia .vagas{margin-top:4px; font-size:11.5px; font-weight:700; color:var(--tijolo)}
 .dia[aria-pressed="true"]{background:var(--tijolo); border-color:var(--tijolo); color:var(--cal)}
 .dia[aria-pressed="true"] .vagas{color:var(--cal)}
+.dia:disabled{cursor:not-allowed; background:transparent; border-style:dashed; color:color-mix(in srgb,var(--vinho) 45%,transparent)}
+.dia:disabled .vagas{color:var(--marrom); font-weight:500}
+.dia{min-height:96px}
+@media (prefers-reduced-motion:no-preference){
+  #passo-hora:not([hidden]), #passo-nome:not([hidden]){animation:abrir .35s ease}
+  @keyframes abrir{from{opacity:0; transform:translateY(-8px)}}
+}
 .dias-nav{display:none}
 @media (min-width:760px){
   .dias-nav{display:flex; gap:8px; margin-left:auto}
@@ -815,12 +822,13 @@ function horariosLivres(d){
     return !ocup.includes(h) && quando.getTime() >= minimo;
   });
 }
-const diasLivres = [];
+// dias de atendimento na janela (os sem vaga aparecem marcados como "sem horários")
+const diasAgenda = [];
 for (let i = 0; i <= CONFIG.janelaDias; i++){
   const d = new Date(hoje); d.setDate(d.getDate() + i);
-  const livres = horariosLivres(d);
-  if (livres.length) diasLivres.push({ d, livres });
+  if (CONFIG.horarios[d.getDay()]) diasAgenda.push({ d, livres: horariosLivres(d) });
 }
+while (diasAgenda.length && !diasAgenda[0].livres.length) diasAgenda.shift(); // começa no primeiro dia com vaga
 const terapiaAtual = () => CONFIG.terapias.find(t => t.id === estado.terapia);
 const dataLonga = d => `${DIAS[d.getDay()]}, ${d.getDate()} de ${MESES[d.getMonth()]}`;
 const dataCurta = d => `${DSEM[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
@@ -850,18 +858,20 @@ function renderModalidade(){
 
 function renderDias(){
   const box = $("#dias");
-  if (!diasLivres.length){ box.innerHTML = `<p class="vazio">No momento não há horários livres. Chame a gente no WhatsApp.</p>`; return; }
+  if (!diasAgenda.length){ box.innerHTML = `<p class="vazio">No momento não há horários livres. Chame a gente no WhatsApp.</p>`; return; }
   box.innerHTML = "";
-  diasLivres.forEach(({ d, livres }) => {
+  diasAgenda.forEach(({ d, livres }) => {
     const b = document.createElement("button"); b.type = "button"; b.className = "dia";
-    const n = livres.length;
-    b.innerHTML = `<span class="sem">${DSEM[d.getDay()]}</span><span class="num">${d.getDate()}</span><span class="mes">${MES3[d.getMonth()]}</span><span class="vagas">${n} ${n > 1 ? "horários" : "horário"}</span>`;
-    b.setAttribute("aria-label", `${dataLonga(d)}, ${n} ${n > 1 ? "horários livres" : "horário livre"}`);
+    b.innerHTML = `<span class="sem">${DSEM[d.getDay()]}</span><span class="num">${d.getDate()}</span><span class="mes">${MES3[d.getMonth()]}</span>${livres.length ? "" : `<span class="vagas">sem horários</span>`}`;
+    if (!livres.length){ b.disabled = true; b.setAttribute("aria-label", `${dataLonga(d)}, sem horários livres`); }
+    else b.setAttribute("aria-label", dataLonga(d));
     b.setAttribute("aria-pressed", estado.data && chave(estado.data) === chave(d) ? "true" : "false");
     b.addEventListener("click", () => {
-      estado.data = d; estado.hora = null;
-      box.querySelectorAll(".dia").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
-      renderHoras(); atualiza(); mostrar($("#passo-hora"));
+      const desmarcar = estado.data && chave(estado.data) === chave(d); // clicar de novo no mesmo dia fecha
+      estado.data = desmarcar ? null : d; estado.hora = null;
+      box.querySelectorAll(".dia").forEach(x => x.setAttribute("aria-pressed", x === b && !desmarcar ? "true" : "false"));
+      renderHoras(); atualiza();
+      if (!desmarcar) mostrar($("#passo-hora"));
     });
     box.append(b);
   });
@@ -869,6 +879,8 @@ function renderDias(){
 
 function renderHoras(){
   const box = $("#horas");
+  // horário e nome só aparecem depois de escolher um dia
+  $("#passo-hora").hidden = $("#passo-nome").hidden = !estado.data;
   if (!estado.data){ box.innerHTML = `<p class="vazio">Escolha um dia para ver os horários livres.</p>`; $("#dica-hora").textContent = ""; return; }
   $("#dica-hora").textContent = dataLonga(estado.data);
   const livres = horariosLivres(estado.data);
