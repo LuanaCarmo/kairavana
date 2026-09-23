@@ -131,6 +131,39 @@ main{padding-block:32px 80px}
 
 .ajustes{display:grid; gap:16px; max-width:520px}
 
+/* grade de horários de toque */
+.grade{display:grid; gap:14px}
+.grade-periodo{display:grid; gap:8px}
+.grade-periodo > span{font-size:12.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--marrom)}
+.grade-horas{display:grid; grid-template-columns:repeat(auto-fill,minmax(70px,1fr)); gap:6px}
+.tg{min-height:44px; border-radius:14px; border:2px solid color-mix(in srgb,var(--vinho) 18%,transparent); background:var(--cal-clara); font-weight:700; font-size:15px; cursor:pointer; font-variant-numeric:tabular-nums; color:color-mix(in srgb,var(--vinho) 60%,transparent)}
+.tg:hover{border-color:var(--vinho)}
+.tg[aria-pressed="true"]{background:var(--verde); border-color:var(--verde); color:#fff}
+.tg.fixo{cursor:default; background:transparent; border-style:dashed; opacity:.55}
+
+/* semana: sanfona */
+.sem-dia{background:var(--cal-clara); border-radius:24px; overflow:hidden}
+.sem-dia > summary{list-style:none; cursor:pointer; display:flex; align-items:center; gap:14px; padding:16px 20px; min-height:64px}
+.sem-dia > summary::-webkit-details-marker{display:none}
+.sem-dia > summary h3{font-size:22px; min-width:96px}
+.sem-dia > summary .resumo-h{flex:1; min-width:0; font-size:14.5px; color:var(--marrom); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.sem-dia > summary::after{content:""; flex:none; width:32px; height:32px; border-radius:50%; background:var(--cal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233B1A16' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/16px no-repeat; transition:transform .25s}
+.sem-dia[open] > summary::after{transform:rotate(180deg)}
+.sem-corpo{display:grid; gap:20px; padding:4px 20px 22px}
+.bloco{display:grid; gap:10px; padding:16px; border-radius:18px; background:var(--cal)}
+.bloco > b{font-size:15px}
+.linha{display:flex; flex-wrap:wrap; align-items:center; gap:8px}
+.linha input[type=time], .linha input[type=date], .linha select{min-height:44px; padding:6px 12px; border-radius:999px; border:2px solid color-mix(in srgb,var(--vinho) 25%,transparent); background:var(--cal-clara); font:inherit}
+.btn-pq{min-height:44px; padding:6px 16px; font-size:14.5px}
+.dias-sel{display:flex; flex-wrap:wrap; gap:6px}
+.dias-sel label{position:relative; cursor:pointer}
+.dias-sel input{position:absolute; opacity:0; inset:0; margin:0; cursor:pointer}
+.dias-sel span{display:inline-flex; align-items:center; min-height:40px; padding:4px 14px; border-radius:999px; border:2px solid color-mix(in srgb,var(--vinho) 20%,transparent); background:var(--cal-clara); font-size:14.5px; font-weight:500}
+.dias-sel input:checked + span{background:var(--vinho); border-color:var(--vinho); color:var(--cal)}
+.dias-sel input:focus-visible + span{outline:2px solid var(--tijolo); outline-offset:2px}
+.extras-det summary{cursor:pointer; font-weight:700; color:var(--tijolo); min-height:44px; display:flex; align-items:center}
+.periodo-card{display:grid; gap:10px}
+
 .toast{position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translate(-50%,140%); background:var(--vinho); color:var(--cal); padding:12px 22px; border-radius:999px; font-weight:500; box-shadow:0 10px 30px color-mix(in srgb,var(--vinho) 30%,transparent); transition:transform .3s; z-index:50; max-width:calc(100% - 32px); text-align:center}
 .toast.visivel{transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){ *{transition:none!important} }
@@ -195,12 +228,25 @@ main{padding-block:32px 80px}
       </div>
       <div class="faixa" id="faixa" role="group" aria-label="Dias"></div>
       <div class="cartao dia-painel" id="dia-painel"></div>
+      <details class="cartao extras-det">
+        <summary>Fechar ou reabrir um período (férias, viagem)</summary>
+        <div class="periodo-card" style="margin-top:10px">
+          <div class="linha">
+            <label for="per-ini">De</label><input type="date" id="per-ini">
+            <label for="per-fim">até</label><input type="date" id="per-fim">
+          </div>
+          <div class="linha">
+            <button type="button" class="btn btn-primario btn-pq" id="per-fechar">Fechar período</button>
+            <button type="button" class="btn btn-secundario btn-pq" id="per-abrir">Reabrir período</button>
+          </div>
+        </div>
+      </details>
     </div>
 
     <div class="painel-aba" id="aba-semana" role="tabpanel" aria-labelledby="tab-semana" hidden>
       <div class="intro">
         <h2>Semana padrão</h2>
-        <p class="apoio">Horários que se repetem toda semana. Deixe um dia sem horários para não atender nele.</p>
+        <p class="apoio">Horários que se repetem toda semana. Toque nos horários para ligar ou desligar, ou preencha um período de uma vez. Dia sem horários fica fechado.</p>
       </div>
       <div class="semana" id="semana"></div>
     </div>
@@ -317,74 +363,155 @@ function renderFaixa(){
   f.scrollLeft = rolagem;
 }
 
+/* grade de horários possíveis: 07:00 às 21:30, de 30 em 30 minutos */
+const GRADE = []; for (let m = 7 * 60; m <= 21 * 60 + 30; m += 30) GRADE.push(`${pad(Math.floor(m / 60))}:${pad(m % 60)}`);
+const PERIODOS = [["Manhã", h => h < "12:00"], ["Tarde", h => h >= "12:00" && h < "18:00"], ["Noite", h => h >= "18:00"]];
+const paraMin = h => { const [a, b] = h.split(":").map(Number); return a * 60 + b; };
+const deMin = m => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+
+// desenha uma grade de toque; estado(h) → "on" | "off" | "fixo"
+function grade(horasExtras, estado, aoTocar, rotulo){
+  const todas = ordena([...GRADE, ...horasExtras]);
+  const g = document.createElement("div"); g.className = "grade";
+  PERIODOS.forEach(([nome, f]) => {
+    const lista = todas.filter(f); if (!lista.length) return;
+    const bloco = document.createElement("div"); bloco.className = "grade-periodo";
+    bloco.innerHTML = `<span>${nome}</span><div class="grade-horas"></div>`;
+    lista.forEach(h => {
+      const st = estado(h), b = document.createElement("button");
+      b.type = "button"; b.className = "tg" + (st === "fixo" ? " fixo" : ""); b.textContent = h;
+      if (st === "fixo"){ b.disabled = true; b.title = "Já faz parte da semana padrão"; }
+      else { b.setAttribute("aria-pressed", st === "on"); b.setAttribute("aria-label", `${h} ${rotulo}`); b.addEventListener("click", () => aoTocar(h)); }
+      bloco.lastElementChild.append(b);
+    });
+    g.append(bloco);
+  });
+  return g;
+}
+
 function renderDia(){
   const p = $("#dia-painel");
   if (!diaSel){ p.innerHTML = `<p class="apoio">Escolha um dia acima.</p>`; return; }
-  const k = chave(diaSel), bloqueado = dados.bloqueados.includes(k), horas = base(diaSel);
-  const ocup = dados.ocupados[k] || [], extras = dados.extras[k] || [];
+  const k = chave(diaSel), dow = diaSel.getDay(), bloqueado = dados.bloqueados.includes(k), horas = base(diaSel);
+  const semana = dados.horarios[dow] || [], ocup = dados.ocupados[k] || [], extras = dados.extras[k] || [];
   p.innerHTML = `
     <div class="dia-topo">
       <h3>${dataLonga(diaSel)}</h3>
       <label class="interruptor"><input type="checkbox" id="atende"${bloqueado ? "" : " checked"}><span class="trilho" aria-hidden="true"></span><span>${bloqueado ? "Dia fechado" : "Atendendo neste dia"}</span></label>
     </div>
     ${bloqueado ? `<p class="aviso-fechado">Este dia está fechado e não aparece na agenda do site. Ligue a chave acima para reabrir.</p>` : `
-      ${horas.length ? `<div class="legenda"><span><i style="border:2px solid var(--verde)"></i>livre</span><span><i style="background:var(--vinho)"></i>reservado</span></div>
-      <div class="slots" id="slots"></div>` : `<p class="apoio">Nenhum horário neste dia. Adicione um horário extra abaixo.</p>`}
-      <div class="adicionar">
-        <div class="campo"><label for="novo-extra">Horário extra só neste dia</label><input type="time" id="novo-extra" step="900"></div>
-        <button class="btn btn-secundario" id="add-extra" type="button">Adicionar</button>
-      </div>`}`;
+      ${horas.length ? `
+        <div class="dia-topo">
+          <div class="legenda"><span><i style="border:2px solid var(--verde)"></i>livre</span><span><i style="background:var(--vinho)"></i>reservado</span></div>
+          <div class="linha"><button type="button" class="btn btn-secundario btn-pq" id="res-todos">Reservar todos</button><button type="button" class="btn btn-secundario btn-pq" id="lib-todos">Liberar todos</button></div>
+        </div>
+        <div class="slots" id="slots"></div>` : `<p class="apoio">Nenhum horário neste dia pela semana padrão. Abra horários abaixo.</p>`}
+      <details class="extras-det"${horas.length ? "" : " open"}>
+        <summary>+ Abrir outros horários só neste dia</summary>
+        <p class="apoio" style="margin:4px 0 12px">Toque para abrir ou fechar. Os tracejados já fazem parte da semana padrão.</p>
+        <div id="grade-extra"></div>
+      </details>`}`;
+
   p.querySelector("#atende").addEventListener("change", e => {
-    if (e.target.checked) dados.bloqueados = dados.bloqueados.filter(x => x !== k);
-    else dados.bloqueados = ordena([...dados.bloqueados, k]);
+    dados.bloqueados = e.target.checked ? dados.bloqueados.filter(x => x !== k) : ordena([...dados.bloqueados, k]);
     mudou();
   });
   if (bloqueado) return;
+
   const s = p.querySelector("#slots");
   horas.forEach(h => {
-    const res = ocup.includes(h), ehExtra = extras.includes(h) && !(dados.horarios[diaSel.getDay()] || []).includes(h);
-    const caixa = document.createElement("div"); caixa.className = "slot-caixa";
-    caixa.innerHTML = `<button type="button" class="slot${res ? " reservado" : ""}" aria-pressed="${res}"><span><span class="hora">${h}</span>${ehExtra ? `<br><span class="extra-tag">extra</span>` : ""}</span><span class="estado">${res ? "Reservado" : "Livre"}</span></button>${ehExtra ? `<button type="button" class="slot-remover" aria-label="Remover horário extra ${h}">×</button>` : ""}`;
-    caixa.querySelector(".slot").addEventListener("click", () => {
+    const res = ocup.includes(h), ehExtra = extras.includes(h) && !semana.includes(h);
+    const b = document.createElement("button"); b.type = "button"; b.className = "slot" + (res ? " reservado" : "");
+    b.setAttribute("aria-pressed", res);
+    b.innerHTML = `<span><span class="hora">${h}</span>${ehExtra ? `<br><span class="extra-tag">extra</span>` : ""}</span><span class="estado">${res ? "Reservado" : "Livre"}</span>`;
+    b.addEventListener("click", () => {
       const lista = dados.ocupados[k] || [];
       dados.ocupados[k] = lista.includes(h) ? lista.filter(x => x !== h) : ordena([...lista, h]);
       if (!dados.ocupados[k].length) delete dados.ocupados[k];
       mudou();
     });
-    caixa.querySelector(".slot-remover")?.addEventListener("click", () => {
-      dados.extras[k] = (dados.extras[k] || []).filter(x => x !== h); if (!dados.extras[k].length) delete dados.extras[k];
-      if (dados.ocupados[k]) { dados.ocupados[k] = dados.ocupados[k].filter(x => x !== h); if (!dados.ocupados[k].length) delete dados.ocupados[k]; }
-      mudou();
-    });
-    s?.append(caixa);
+    s?.append(b);
   });
-  p.querySelector("#add-extra").addEventListener("click", () => {
-    const v = p.querySelector("#novo-extra").value;
-    if (!v){ aviso("Escolha um horário para adicionar."); p.querySelector("#novo-extra").focus(); return; }
-    if (horas.includes(v)){ aviso("Esse horário já existe neste dia."); return; }
-    dados.extras[k] = ordena([...(dados.extras[k] || []), v]); mudou();
-  });
+  p.querySelector("#res-todos")?.addEventListener("click", () => { dados.ocupados[k] = [...horas]; mudou(); });
+  p.querySelector("#lib-todos")?.addEventListener("click", () => { delete dados.ocupados[k]; mudou(); });
+
+  const det = p.querySelector(".extras-det");
+  p.querySelector("#grade-extra").append(grade(extras, h => semana.includes(h) ? "fixo" : extras.includes(h) ? "on" : "off", h => {
+    const lista = dados.extras[k] || [];
+    dados.extras[k] = lista.includes(h) ? lista.filter(x => x !== h) : ordena([...lista, h]);
+    if (!dados.extras[k].length) delete dados.extras[k];
+    if (!dados.extras[k]?.includes(h) && dados.ocupados[k]) { dados.ocupados[k] = dados.ocupados[k].filter(x => x !== h); if (!dados.ocupados[k].length) delete dados.ocupados[k]; }
+    mudou(); p.querySelector(".extras-det").open = true;
+  }, "neste dia"));
+  det.open = det.open || renderDia.extrasAberto === k;
+  det.addEventListener("toggle", () => { renderDia.extrasAberto = det.open ? k : null; });
 }
 
+let semanaAberta = 1;
+function setSemana(dow, lista){
+  if (lista.length) dados.horarios[dow] = ordena(lista); else delete dados.horarios[dow];
+  situacao(); renderSemana(); renderFaixa(); renderDia();
+}
 function renderSemana(){
   const box = $("#semana"); box.innerHTML = "";
   [1,2,3,4,5,6,0].forEach(dow => {
     const lista = dados.horarios[dow] || [];
-    const linha = document.createElement("div"); linha.className = "dia-semana";
-    linha.innerHTML = `<h3>${DIAS_CURTO[dow]}</h3><div class="chips">${lista.length ? lista.map(h => `<span class="chip">${h}<button type="button" data-h="${h}" aria-label="Remover ${h} de ${DIAS_CURTO[dow]}">×</button></span>`).join("") : `<span class="vazio">Sem atendimento</span>`}
-      <label class="sr" for="n-${dow}">Novo horário para ${DIAS_CURTO[dow]}</label><input type="time" id="n-${dow}" step="900"><button type="button" class="mais">+ Adicionar</button></div>`;
-    linha.querySelectorAll(".chip button").forEach(b => b.addEventListener("click", () => {
-      dados.horarios[dow] = lista.filter(x => x !== b.dataset.h); if (!dados.horarios[dow].length) delete dados.horarios[dow];
-      situacao(); renderSemana(); renderFaixa(); renderDia();
-    }));
-    linha.querySelector(".mais").addEventListener("click", () => {
-      const v = linha.querySelector("input[type=time]").value;
-      if (!v){ aviso("Escolha um horário para adicionar."); linha.querySelector("input[type=time]").focus(); return; }
-      dados.horarios[dow] = ordena([...lista, v]); situacao(); renderSemana(); renderFaixa(); renderDia();
+    const det = document.createElement("details"); det.className = "sem-dia"; det.open = semanaAberta === dow;
+    det.innerHTML = `
+      <summary><h3>${DIAS_CURTO[dow]}</h3><span class="resumo-h">${lista.length ? `${lista.length} horário${lista.length > 1 ? "s" : ""} · ${lista.join(", ")}` : "Fechado"}</span></summary>
+      <div class="sem-corpo">
+        <div class="bloco">
+          <b>Preencher de uma vez</b>
+          <div class="linha">
+            <label for="pi-${dow}">das</label><input type="time" id="pi-${dow}" value="09:00" step="1800">
+            <label for="pf-${dow}">até</label><input type="time" id="pf-${dow}" value="18:00" step="1800">
+            <label for="pv-${dow}">a cada</label>
+            <select id="pv-${dow}"><option value="30">30 min</option><option value="60" selected>1 hora</option><option value="90">1h30</option><option value="120">2 horas</option></select>
+            <button type="button" class="btn btn-primario btn-pq" data-acao="preencher">Aplicar</button>
+          </div>
+          <p class="apoio" style="font-size:13.5px">O último horário começa até o horário final. Substitui os horários atuais deste dia.</p>
+        </div>
+        <div>
+          <p class="apoio" style="margin-bottom:10px">Ou toque para ligar e desligar cada horário:</p>
+          <div data-grade></div>
+        </div>
+        <div class="bloco">
+          <b>Copiar estes horários para</b>
+          <div class="dias-sel">${[1,2,3,4,5,6,0].filter(d => d !== dow).map(d => `<label><input type="checkbox" value="${d}"><span>${DIAS_CURTO[d]}</span></label>`).join("")}</div>
+          <div class="linha"><button type="button" class="btn btn-secundario btn-pq" data-acao="copiar">Copiar</button><button type="button" class="btn-link" data-acao="limpar">Fechar este dia (limpar horários)</button></div>
+        </div>
+      </div>`;
+    det.addEventListener("toggle", () => { if (det.open){ semanaAberta = dow; box.querySelectorAll(".sem-dia").forEach(x => { if (x !== det) x.open = false; }); } });
+    det.querySelector("[data-grade]").append(grade(lista, h => lista.includes(h) ? "on" : "off",
+      h => setSemana(dow, lista.includes(h) ? lista.filter(x => x !== h) : [...lista, h]), `em ${DIAS_CURTO[dow]}`));
+    det.querySelector('[data-acao="preencher"]').addEventListener("click", () => {
+      const ini = det.querySelector(`#pi-${dow}`).value, fim = det.querySelector(`#pf-${dow}`).value, passo = Number(det.querySelector(`#pv-${dow}`).value);
+      if (!ini || !fim || paraMin(fim) < paraMin(ini)){ aviso("Confira o horário inicial e o final."); return; }
+      const novos = []; for (let m = paraMin(ini); m <= paraMin(fim); m += passo) novos.push(deMin(m));
+      setSemana(dow, novos); aviso(`${DIAS_CURTO[dow]}: ${novos.length} horários preenchidos.`);
     });
-    box.append(linha);
+    det.querySelector('[data-acao="copiar"]').addEventListener("click", () => {
+      const alvos = [...det.querySelectorAll(".dias-sel input:checked")].map(i => Number(i.value));
+      if (!alvos.length){ aviso("Marque para quais dias copiar."); return; }
+      alvos.forEach(d => { if (lista.length) dados.horarios[d] = [...lista]; else delete dados.horarios[d]; });
+      situacao(); renderSemana(); renderFaixa(); renderDia();
+      aviso(`Horários copiados para ${alvos.map(d => DIAS_CURTO[d]).join(", ")}.`);
+    });
+    det.querySelector('[data-acao="limpar"]').addEventListener("click", () => setSemana(dow, []));
+    box.append(det);
   });
 }
+
+/* fechar ou reabrir um período */
+function periodo(fechar){
+  const ini = $("#per-ini").value, fim = $("#per-fim").value;
+  if (!ini || !fim || fim < ini){ aviso("Escolha a data inicial e a final."); return; }
+  const dias = []; for (let d = new Date(ini + "T00:00"); chave(d) <= fim; d.setDate(d.getDate() + 1)) dias.push(chave(d));
+  dados.bloqueados = fechar ? ordena([...dados.bloqueados, ...dias]) : dados.bloqueados.filter(x => !dias.includes(x));
+  mudou(); aviso(`${dias.length} dia${dias.length > 1 ? "s" : ""} ${fechar ? "fechado" : "reaberto"}${dias.length > 1 ? "s" : ""}.`);
+}
+$("#per-fechar").addEventListener("click", () => periodo(true));
+$("#per-abrir").addEventListener("click", () => periodo(false));
 
 function renderAjustes(){
   const liga = (id, campo, conv = v => v) => { const el = $(id); el.value = dados[campo]; el.oninput = () => { dados[campo] = conv(el.value); situacao(); if (campo === "janelaDias") renderFaixa(); }; };
