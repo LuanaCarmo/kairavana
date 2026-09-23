@@ -176,12 +176,16 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .pnpic{margin-top:56px; font-size:16px; max-width:70ch; opacity:.95}
 
 /* passos */
-.passos{list-style:none; margin:0; padding:0; display:grid; gap:36px; counter-reset:p}
+.passos{list-style:none; margin:0; padding:0; display:grid; gap:36px 40px}
 @media (min-width:760px){ .passos{grid-template-columns:repeat(2,1fr)} }
 @media (min-width:1100px){ .passos{grid-template-columns:repeat(4,1fr)} }
 .passos li{display:grid; gap:14px; align-content:start}
+/* número, título e texto na mesma linha em todas as colunas */
+@supports (grid-template-rows:subgrid){
+  @media (min-width:760px){ .passos li{grid-row:span 3; grid-template-rows:subgrid; row-gap:14px} }
+}
 .passos .num{width:64px; height:64px; border-radius:50%; background:var(--tijolo); color:var(--cal); display:grid; place-items:center; font-family:var(--display); font-size:28px}
-.passos li:nth-child(3) .num{background:var(--vinho)}
+.passos h3{align-self:start}
 .passos p{font-size:16.5px; color:var(--marrom)}
 
 /* agenda */
@@ -507,7 +511,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
     <ol class="passos">
       <li class="revelar"><span class="num" aria-hidden="true">1</span><h3>Você escolhe</h3><p>Na agenda abaixo, você vê os horários livres e envia seu pedido pelo WhatsApp.</p></li>
       <li class="revelar"><span class="num" aria-hidden="true">2</span><h3>A gente conversa</h3><p>Confirmamos o horário e fazemos uma conversa breve sobre o que te traz e o que você espera.</p></li>
-      <li class="revelar"><span class="num" aria-hidden="true">3</span><h3>A sessão, no seu tempo</h3><p>Um ambiente tranquilo, silencioso e respeitoso. Você pode fazer perguntas, pedir uma pausa ou encerrar quando quiser.</p></li>
+      <li class="revelar"><span class="num" aria-hidden="true">3</span><h3>No seu tempo</h3><p>Um ambiente tranquilo, silencioso e respeitoso. Você pode fazer perguntas, pedir uma pausa ou encerrar quando quiser.</p></li>
       <li class="revelar"><span class="num" aria-hidden="true">4</span><h3>Um espaço depois</h3><p>Ao final, há tempo para falar como foi. Sem pressa e sem interpretação forçada.</p></li>
     </ol>
   </div>
