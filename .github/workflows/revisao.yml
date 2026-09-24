@@ -1,0 +1,79 @@
+name: Revisão automática
+
+# Roda a cada commit na main e na dev, e em pull requests para elas.
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+concurrency:
+  group: revisao-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  seguranca:
+    name: Segurança e dados expostos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Procurar chaves e senhas em todo o histórico (gitleaks)
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
+            detect --source /repo --redact --verbose --no-banner
+      - name: Regras do site (links, agenda.json, área de gestão)
+        run: node .github/revisao/seguranca.mjs
+
+  jornada:
+    name: Navegação e jornada do cliente
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .github/revisao
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Testar a jornada no computador e no celular
+        run: npx playwright test
+      - name: Guardar relatório
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-jornada
+          path: .github/revisao/playwright-report
+          retention-days: 14
+
+  revisao-ia:
+    name: Revisão de textos e experiência (Claude)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # comentar no commit
+      pull-requests: write   # comentar no pull request
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Revisar alterações
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PR_NUMERO: ${{ github.event.pull_request.number }}
+        run: node .github/revisao/revisao-ia.mjs
