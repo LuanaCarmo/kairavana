@@ -17,7 +17,9 @@ test.beforeEach(async ({ page }) => {
 });
 test.afterEach(() => expect(errosJs, "erros de JavaScript na página").toEqual([]));
 
-const ehCelular = page => page.viewportSize().width < 900;
+const ehCelular = page => page.viewportSize().width < 1000;
+// no computador o envio fica no resumo ao lado; no celular, na barra fixa de baixo
+const botaoEnviar = page => page.locator(ehCelular(page) ? "#barra-btn" : "#ag-enviar");
 
 test("a página abre sem rolagem lateral", async ({ page }) => {
   await page.goto("/index.html");
@@ -57,7 +59,8 @@ test("jornada completa: agendar em 4 toques e abrir o WhatsApp com a mensagem ce
   await expect(page.locator("#passo-nome")).toBeVisible();
   await page.fill("#ag-nome", "Maria Teste");
 
-  const enviar = page.locator("#ag-enviar");
+  const enviar = botaoEnviar(page);
+  await expect(enviar).toBeInViewport();
   await expect(enviar).not.toHaveClass(/incompleto/);
   const href = await enviar.getAttribute("href");
   expect(href).toMatch(/^https:\/\/wa\.me\/\d+\?text=/);
@@ -83,7 +86,8 @@ test("clicar de novo no dia escolhido fecha horários e nome", async ({ page }) 
 test("enviar sem preencher não abre o WhatsApp e mostra o que falta", async ({ page, context }) => {
   await page.goto("/index.html#agenda");
   let abriu = false; context.on("page", () => { abriu = true; });
-  await page.locator("#ag-enviar").click();
+  await expect(botaoEnviar(page)).toBeInViewport();
+  await botaoEnviar(page).click();
   await page.waitForTimeout(800);
   expect(abriu, "não pode abrir o WhatsApp com o pedido incompleto").toBe(false);
   await expect(page.locator("#passo-terapia")).toBeInViewport();
