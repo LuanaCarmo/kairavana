@@ -5,7 +5,7 @@ export default defineConfig({
   testMatch: "*.spec.js",
   timeout: 30_000,
   retries: 1,
-  reporter: [["list"], ["html", { open: "never" }]],
+  reporter: [["list"], ["github"], ["html", { open: "never" }]],
   use: { baseURL: "http://localhost:4173", locale: "pt-BR", timezoneId: "America/Sao_Paulo", trace: "retain-on-failure" },
   webServer: { command: "node servidor.mjs", url: "http://localhost:4173/index.html", reuseExistingServer: true },
   projects: [
