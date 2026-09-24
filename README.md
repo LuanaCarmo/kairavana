@@ -39,11 +39,18 @@ Os arquivos ficam em `.github/` (fora do site publicado).
 
 | Ambiente | Branch | Link |
 |---|---|---|
-| Site oficial | `main` | https://luanacarmo.github.io/kairavana/ |
-| Testes (dev) | `dev` | https://luanacarmo.github.io/kairavana/dev/ |
+| Produção (site oficial) | `main` | https://luanacarmo.github.io/kairavana/ |
+| Desenvolvimento (testes) | `dev` | https://luanacarmo.github.io/kairavana/dev/ |
 
-O workflow **Publicar site** roda sozinho quando a *Revisão automática* passa num commit da `main` ou da `dev`. Ele publica os dois ambientes juntos, cada um na última versão aprovada da sua branch. Se a revisão falhar, nada é publicado e o site continua na versão anterior.
+O ambiente de desenvolvimento mostra a faixa "Ambiente de testes (dev)", fica fora do Google, e a área de gestão dele (`/dev/admin.html`) edita só a agenda da branch `dev`.
 
-O ambiente de testes mostra a faixa "Ambiente de testes (dev)", fica fora do Google, e a área de gestão dele (`/dev/admin.html`) edita a agenda da branch `dev`, sem mexer no site oficial.
+## Como trabalhar
 
-Para levar uma mudança da `dev` para o site oficial, abra um pull request de `dev` para `main`.
+1. **Localmente**, crie uma branch a partir da `dev`: `git checkout dev && git pull && git checkout -b melhoria/nome-curto`.
+2. Faça as alterações, `git commit` e `git push -u origin melhoria/nome-curto`.
+3. Abra um **pull request para a `dev`**. A *Revisão automática* roda no PR (segurança, jornada do cliente e textos).
+4. Com a revisão verde, faça o merge na `dev`. O workflow **Publicar site** atualiza o ambiente de desenvolvimento em 1 a 2 minutos.
+5. Confira em https://luanacarmo.github.io/kairavana/dev/.
+6. Aprovado, abra um **pull request da `dev` para a `main`**. A revisão roda de novo e, com a sua aprovação, é feito o merge: o site oficial é atualizado.
+
+Nada é publicado se a revisão falhar. A agenda editada pela área de gestão é a única alteração que vai direto para a `main`, e mesmo ela passa pela revisão antes de aparecer no site.
