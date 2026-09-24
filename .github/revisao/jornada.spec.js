@@ -86,6 +86,7 @@ test("clicar de novo no dia escolhido fecha horários e nome", async ({ page }) 
 test("enviar sem preencher não abre o WhatsApp e mostra o que falta", async ({ page, context }) => {
   await page.goto("/index.html#agenda");
   let abriu = false; context.on("page", () => { abriu = true; });
+  if (!ehCelular(page)) await botaoEnviar(page).scrollIntoViewIfNeeded(); // no computador o resumo fica logo abaixo
   await expect(botaoEnviar(page)).toBeInViewport();
   await botaoEnviar(page).click();
   await page.waitForTimeout(800);
