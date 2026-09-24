@@ -95,6 +95,15 @@ test("enviar sem preencher não abre o WhatsApp e mostra o que falta", async ({ 
   await expect(page.locator("#ag-status")).not.toBeEmpty();
 });
 
+test("no computador o resumo acompanha a rolagem e o Enviar fica sempre à vista", async ({ page }) => {
+  test.skip(ehCelular(page), "no celular o envio fica na barra fixa");
+  await page.goto("/index.html#agenda");
+  await page.locator("#opcoes-terapia label").first().click();
+  await page.locator("#dias button.dia:not([disabled])").first().click();
+  await page.evaluate(() => { const f = document.querySelector("#form-agenda").getBoundingClientRect(); scrollBy(0, f.bottom - innerHeight + 20); });
+  await expect(page.locator("#ag-enviar")).toBeInViewport();
+});
+
 test("reiki infantil pede nome e idade da criança e é só a distância", async ({ page }) => {
   await page.goto("/index.html#agenda");
   await page.locator("#opcoes-terapia label", { hasText: "infantil" }).click();
