@@ -51,7 +51,9 @@ test("jornada completa: agendar em 4 toques e abrir o WhatsApp com a mensagem ce
   await page.locator("#opcoes-terapia label", { hasText: "Reiki para adultos" }).click();         // toque 1
   await page.locator("#dias button.dia:not([disabled])").first().click();                         // toque 2
   await expect(page.locator("#passo-hora")).toBeVisible();
-  await page.locator("#horas button").first().click();                                            // toque 3
+  const hora = page.locator("#horas button").first();
+  const horaEscolhida = (await hora.textContent()).trim();
+  await hora.click();                                                                             // toque 3
   await expect(page.locator("#passo-nome")).toBeVisible();
   await page.fill("#ag-nome", "Maria Teste");
 
@@ -60,7 +62,7 @@ test("jornada completa: agendar em 4 toques e abrir o WhatsApp com a mensagem ce
   const href = await enviar.getAttribute("href");
   expect(href).toMatch(/^https:\/\/wa\.me\/\d+\?text=/);
   const msg = decodeURIComponent(href.split("text=")[1]);
-  for (const trecho of ["Reiki para adultos", "Maria Teste", "Horário: 09:00", "Modalidade:"]) expect(msg).toContain(trecho);
+  for (const trecho of ["Reiki para adultos", "Maria Teste", `Horário: ${horaEscolhida}`, "Modalidade:"]) expect(msg).toContain(trecho);
 
   const [aba] = await Promise.all([page.waitForEvent("popup"), enviar.click()]);                  // toque 4
   expect(aba.url()).toMatch(/wa\.me|whatsapp\.com/);
@@ -91,6 +93,7 @@ test("enviar sem preencher não abre o WhatsApp e mostra o que falta", async ({ 
 test("reiki infantil pede nome e idade da criança e é só a distância", async ({ page }) => {
   await page.goto("/index.html#agenda");
   await page.locator("#opcoes-terapia label", { hasText: "infantil" }).click();
+  await page.locator("#dias button.dia:not([disabled])").first().click();
   await expect(page.locator("#campo-crianca")).toBeVisible();
   await expect(page.locator("#linha-modalidade")).toContainText(/a distância/i);
 });
@@ -119,6 +122,9 @@ test("botões e opções têm tamanho confortável para o dedo (44px)", async ({
 
 test("acessibilidade do site (sem problemas graves)", async ({ page }) => {
   await page.goto("/index.html");
+  // mostra tudo que estaria aparecendo com a animação de entrada, para medir o contraste real
+  await page.addStyleTag({ content: "*{transition:none!important;animation:none!important}" });
+  await page.evaluate(() => document.querySelectorAll(".aguardando").forEach(el => el.classList.remove("aguardando")));
   const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   const graves = r.violations.filter(v => ["critical", "serious"].includes(v.impact))
     .map(v => `${v.id}: ${v.help} → ${v.nodes.slice(0, 3).map(n => n.target.join(" ")).join(" | ")}`);
