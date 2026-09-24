@@ -190,7 +190,7 @@ main{padding-block:32px 80px}
   <!-- entrada -->
   <section class="cartao login" id="tela-login">
     <h1>Gerenciar agenda</h1>
-    <p class="apoio">Área da equipe Kairavana. Aqui você fecha dias, marca horários reservados e ajusta a semana de atendimento. As mudanças aparecem no site em cerca de 1 a 2 minutos.</p>
+    <p class="apoio">Área da equipe Kairavana. Aqui você fecha dias, marca horários reservados e ajusta a semana de atendimento. As mudanças passam pela revisão automática e aparecem no site em cerca de 3 a 4 minutos.</p>
     <form id="form-login" class="campo" style="gap:14px">
       <div class="campo">
         <label for="token">Chave de acesso</label>
@@ -270,7 +270,8 @@ main{padding-block:32px 80px}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-const REPO = "LuanaCarmo/kairavana", ARQUIVO = "agenda.json", RAMO = "main";
+// no ambiente de testes (/dev/) a agenda editada é a da branch dev, sem mexer no site oficial
+const REPO = "LuanaCarmo/kairavana", ARQUIVO = "agenda.json", RAMO = location.pathname.includes("/dev/") ? "dev" : "main";
 const API = `https://api.github.com/repos/${REPO}/contents/${ARQUIVO}`;
 const $ = s => document.querySelector(s);
 const pad = n => String(n).padStart(2, "0");
@@ -325,7 +326,7 @@ async function publicar(){
     if (r.status === 409 || r.status === 422) throw new Error("conflito");
     if (!r.ok) throw new Error(r.status === 401 || r.status === 403 ? "chave" : "rede");
     const j = await r.json(); sha = j.content.sha; original = JSON.stringify(dados);
-    aviso("Publicado! O site atualiza em cerca de 1 a 2 minutos.");
+    aviso("Publicado! O site atualiza em cerca de 3 a 4 minutos.");
   } catch (e) {
     aviso(e.message === "conflito" ? "A agenda foi alterada em outro lugar. Recarregue a página e refaça a mudança."
         : e.message === "chave" ? "A chave não tem permissão para salvar. Confira se ela tem Contents: Read and write."

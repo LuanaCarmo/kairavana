@@ -1,0 +1,71 @@
+name: Publicar site
+
+# Só publica depois que a "Revisão automática" passar.
+#   main → https://luanacarmo.github.io/kairavana/       (site oficial)
+#   dev  → https://luanacarmo.github.io/kairavana/dev/   (ambiente de testes)
+# Cada publicação monta os dois ambientes juntos, cada um na última versão aprovada da sua branch.
+on:
+  workflow_run:
+    workflows: ["Revisão automática"]
+    types: [completed]
+    branches: [main, dev]
+  workflow_dispatch:
+
+concurrency:
+  group: publicar-site
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+jobs:
+  publicar:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Achar a última versão aprovada de cada branch
+        id: versoes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          aprovada() {
+            sha=$(gh run list -R "$GITHUB_REPOSITORY" --workflow revisao.yml --branch "$1" --event push --status success --limit 1 --json headSha -q '.[0].headSha')
+            echo "${sha:-$1}"
+          }
+          echo "main=$(aprovada main)" >> "$GITHUB_OUTPUT"
+          echo "dev=$(aprovada dev)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.versoes.outputs.main }}
+          path: main
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.versoes.outputs.dev }}
+          path: dev
+
+      - name: Montar o site
+        run: |
+          mkdir -p _site/dev
+          rsync -a --exclude .git --exclude .github main/ _site/
+          rsync -a --exclude .git --exclude .github dev/ _site/dev/
+          # ambiente de testes: fora do Google e com uma faixa avisando
+          for f in _site/dev/*.html; do
+            sed -i '0,/<head>/s||<head>\n<meta name="robots" content="noindex, nofollow">|' "$f"
+            sed -i '0,/<body>/s||<body>\n<div style="position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:9999;background:#C58A4A;color:#3B1A16;font:600 12px/1 system-ui,sans-serif;padding:6px 14px;border-radius:0 0 999px 999px;pointer-events:none">Ambiente de testes (dev)</div>|' "$f"
+          done
+          echo "Site oficial: ${{ steps.versoes.outputs.main }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Ambiente de testes: ${{ steps.versoes.outputs.dev }}" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4
