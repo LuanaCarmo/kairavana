@@ -99,6 +99,10 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .menu a:not(.btn){display:inline-flex; align-items:center; min-height:44px; padding:0 14px; text-decoration:none; font-weight:500; font-size:16px; border-radius:999px}
 .menu a:not(.btn):hover{background:var(--cal-clara)}
 .menu .btn{margin-left:10px}
+/* seção em que a pessoa está: preenchida na cor da marca */
+.menu a:not(.btn)[aria-current]{background:var(--tijolo); color:var(--cal)}
+.menu a:not(.btn)[aria-current]:hover{background:var(--vinho)}
+.menu .btn[aria-current]{background:var(--vinho); box-shadow:0 0 0 3px color-mix(in srgb,var(--tijolo) 45%,transparent)}
 .menu-botao{display:none}
 .topo-icones{display:flex; align-items:center; gap:2px}
 .topo-icone{position:relative; width:46px; height:46px; display:grid; place-items:center; border-radius:50%; color:var(--vinho)}
@@ -657,7 +661,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
     <div class="agenda-grid">
       <form class="agendador" id="form-agenda" novalidate>
         <div class="passo" id="passo-terapia">
-          <div class="passo-topo"><span class="passo-num" aria-hidden="true">1</span><h3 id="t-terapia">Qual terapia?</h3></div>
+          <div class="passo-topo"><span class="passo-num" aria-hidden="true">1</span><h3 id="t-terapia">Qual atendimento?</h3></div>
           <div id="opcoes-terapia" role="radiogroup" aria-labelledby="t-terapia"></div>
           <div class="ajustes" id="ajustes" hidden></div>
           <div class="modalidade" id="linha-modalidade" hidden></div>
@@ -988,15 +992,15 @@ function pedido(){
   if (t.cartas){
     const n = estado.perguntas, num = estado.numerologia;
     return { nome: `Cartomancia (${n} perguntas)${num ? " + Numerologia" : ""}`, duracao: num ? "50 a 70 min" : "30 a 50 min",
-      valor: pacote ? "combinado na conversa" : reais(t.precoPergunta * n + (num ? CONFIG.numerologia.preco : 0)) };
+      valor: pacote ? "a combinar pelo WhatsApp" : reais(t.precoPergunta * n + (num ? CONFIG.numerologia.preco : 0)) };
   }
   const todos = [t, ...estado.complementos.map(terapiaPorId).filter(Boolean)];
   const total = todos.every(x => x.preco) ? todos.reduce((s, x) => s + x.preco, 0) : 0;
   return { nome: todos.map(x => x.nome).join(" + "), duracao: `cerca de ${tempo(todos.reduce((s, x) => s + x.min, 0))}`,
-    valor: pacote || !total ? "combinado na conversa" : todos.length > 1 ? `${reais(total)} (referência)` : reais(total) };
+    valor: pacote || !total ? "a combinar pelo WhatsApp" : reais(total) };
 }
 
-const GRUPOS = [["A", "Podem receber um complemento"], ["B", "Complementos ou sozinhos"], ["I", "Atendimentos individuais"]];
+const GRUPOS = [["A", "Principais · dá para somar uma prática"], ["B", "Práticas curtas · sozinhas ou somadas"], ["I", "Atendimentos individuais"]];
 function renderTerapias(){
   $("#opcoes-terapia").innerHTML = GRUPOS.map(([g, titulo]) => `
     <div class="grupo-opcoes"><span class="periodo">${titulo}</span><div class="terapia-opcoes">${CONFIG.terapias.filter(t => t.grupo === g).map(t => `
@@ -1004,21 +1008,21 @@ function renderTerapias(){
         <span class="opcao-corpo"><strong>${t.nome}</strong><small>${detalhe(t)} · ${t.modalidades.join(" ou ").toLowerCase()}</small></span>
       </label>`).join("")}</div></div>`).join("");
 }
-const notaFormato = () => estado.formato === CONFIG.formatos[0] ? "" : "Pacotes renovam todo mês. O valor é combinado na conversa.";
+const notaFormato = () => estado.formato === CONFIG.formatos[0] ? "" : "Os pacotes são renovados a cada mês. Combinamos o valor pelo WhatsApp.";
 // complementos, perguntas e formato: só aparecem as combinações permitidas
 function renderAjustes(){
   const t = terapiaAtual(), box = $("#ajustes");
   box.hidden = !t; if (!t) return;
   let html = "";
   const comps = complementosPara(t);
-  if (comps.length) html += `<fieldset><legend>Quer somar um complemento? (opcional)</legend><div class="checks">${comps.map(c =>
+  if (comps.length) html += `<fieldset><legend>Quer somar mais uma prática? (opcional)</legend><div class="checks">${comps.map(c =>
     `<label class="check"><input type="checkbox" name="complemento" value="${c.id}"${estado.complementos.includes(c.id) ? " checked" : ""}>${c.nome}<small>+ ${reais(c.preco)} · ${tempo(c.min)}</small></label>`).join("")}</div></fieldset>`;
   else if (t.cartas) html += `<fieldset><legend id="t-perg">Quantas perguntas?</legend><div class="linha-contador">
       <div class="contador" role="group" aria-labelledby="t-perg"><button type="button" data-passo="-1" aria-label="Menos uma pergunta">−</button><output id="n-perguntas" aria-live="polite">${estado.perguntas}</output><button type="button" data-passo="1" aria-label="Mais uma pergunta">+</button></div>
-      <span class="nota-modalidade">${reais(t.precoPergunta)} cada, mínimo de ${t.minPerguntas}</span></div></fieldset>
-    <label class="check"><input type="checkbox" name="numerologia"${estado.numerologia ? " checked" : ""}>Somar Numerologia<small>+ ${reais(CONFIG.numerologia.preco)} · ${CONFIG.numerologia.min} min</small></label>`;
-  else if (t.grupo === "I") html += `<p class="nota-modalidade">Este atendimento é feito sozinho, sem combinações.</p>`;
-  html += `<fieldset><legend>Formato</legend><div class="segmentado">${CONFIG.formatos.map(f =>
+      <span class="nota-modalidade">${reais(t.precoPergunta)} por pergunta · mínimo de ${t.minPerguntas}</span></div></fieldset>
+    <label class="check"><input type="checkbox" name="numerologia"${estado.numerologia ? " checked" : ""}>Incluir Numerologia<small>+ ${reais(CONFIG.numerologia.preco)} · ${CONFIG.numerologia.min} min</small></label>`;
+  else if (t.grupo === "I") html += `<p class="nota-modalidade">Este atendimento é feito sozinho, sem somar outras práticas.</p>`;
+  html += `<fieldset><legend>Quantas sessões?</legend><div class="segmentado">${CONFIG.formatos.map(f =>
     `<label><input type="radio" name="formato" value="${f}"${f === estado.formato ? " checked" : ""}><span>${f === CONFIG.formatos[0] ? "1 sessão" : f.replace("Pacote de ", "")}</span></label>`).join("")}</div></fieldset>
     <p class="nota-modalidade" id="nota-formato">${notaFormato()}</p>`;
   box.innerHTML = html;
@@ -1037,7 +1041,7 @@ function renderModalidade(){
   box.hidden = false;
   box.innerHTML = t.modalidades.length === 1
     ? `<span class="nota-modalidade">Atendimento ${t.modalidades[0].toLowerCase()}.</span>`
-    : `<span id="t-mod">Como prefere?</span><div class="segmentado" role="radiogroup" aria-labelledby="t-mod">${t.modalidades.map(m =>
+    : `<span id="t-mod">Presencial ou a distância?</span><div class="segmentado" role="radiogroup" aria-labelledby="t-mod">${t.modalidades.map(m =>
         `<label><input type="radio" name="modalidade" value="${m}"${m === estado.modalidade ? " checked" : ""}><span>${m}</span></label>`).join("")}</div>`;
   $("#campo-crianca").hidden = !t.crianca;
 }
@@ -1091,7 +1095,7 @@ function renderHoras(){
 
 function faltando(){
   const f = [];
-  if (!estado.terapia) f.push(["terapia", "#passo-terapia"]);
+  if (!estado.terapia) f.push(["atendimento", "#passo-terapia"]);
   if (!estado.data) f.push(["dia", "#passo-dia"]);
   if (!estado.hora) f.push(["horário", "#passo-hora"]);
   if (!$("#ag-nome").value.trim()) f.push(["seu nome", "#passo-nome"]);
@@ -1107,20 +1111,20 @@ function atualiza(){
   $("#passo-nome").classList.toggle("feito", !!nome);
 
   const linhas = [
-    ["Terapia", p ? p.nome : ""],
-    ["Formato", t ? estado.formato : ""],
+    ["Atendimento", p ? p.nome : ""],
+    ["Sessões", t ? estado.formato : ""],
     ["Modalidade", t ? estado.modalidade : ""],
     ["Dia", estado.data ? dataLonga(estado.data) : ""],
     ["Horário", estado.hora || ""],
     ["Nome", nome],
-    ["Valor", p ? p.valor : ""]
+    ["Valor estimado", p ? p.valor : ""]
   ];
   $("#resumo-lista").innerHTML = linhas.map(([k, v]) => `<div><dt>${k}</dt><dd class="${v ? "" : "pendente"}">${v ? v.replace(/</g, "&lt;") : "—"}</dd></div>`).join("");
 
   const f = faltando(), pronto = !f.length;
   let href = "#agenda";
   if (pronto){
-    let msg = `Olá, Kairavana! Gostaria de agendar:\n\n• Terapia: ${p.nome} (${p.duracao})\n• Formato: ${estado.formato}\n• Modalidade: ${estado.modalidade}\n• Dia: ${dataLonga(estado.data)}\n• Horário: ${estado.hora}\n• Nome: ${nome}\n• Valor: ${p.valor}`;
+    let msg = `Olá, Kairavana! Gostaria de agendar:\n\n• Atendimento: ${p.nome} (${p.duracao})\n• Sessões: ${estado.formato}\n• Modalidade: ${estado.modalidade}\n• Dia: ${dataLonga(estado.data)}\n• Horário: ${estado.hora}\n• Nome: ${nome}\n• Valor estimado: ${p.valor}`;
     if (t.crianca && crianca) msg += `\n• Criança: ${crianca}`;
     if (obs) msg += `\n\n${obs}`;
     msg += `\n\nFico no aguardo da confirmação.`;
@@ -1131,7 +1135,7 @@ function atualiza(){
   const partes = [p && p.nome, estado.data && dataCurta(estado.data), estado.hora].filter(Boolean);
   $("#barra-texto").innerHTML = partes.length
     ? `<strong>${partes.join(" · ")}</strong>${pronto ? "Pronto para enviar" : "Falta: " + f.map(x => x[0]).join(", ")}`
-    : `<strong>Monte seu pedido</strong>Escolha terapia, dia e horário`;
+    : `<strong>Monte seu pedido</strong>Escolha o atendimento, o dia e o horário`;
 }
 
 // botão incompleto: leva até o que falta, em vez de não fazer nada
@@ -1187,6 +1191,18 @@ function barra(){
   $("#wa-flutuante").classList.toggle("recolhido", naTela && innerWidth < 1000);
 }
 addEventListener("scroll", barra, { passive: true }); addEventListener("resize", barra); barra();
+
+/* menu: destaca a seção que está na tela */
+const linksMenu = [...menu.querySelectorAll("a")];
+const alvoDoLink = a => { const h = a.getAttribute("href"); return h.startsWith("#") ? h.slice(1) : h === "loja.html" ? "loja" : null; };
+function marcaSecao(){
+  const linha = 140; // logo abaixo do topo fixo
+  const sec = [...document.querySelectorAll("main > section")].find(s => { const r = s.getBoundingClientRect(); return r.top <= linha && r.bottom > linha; });
+  linksMenu.forEach(a => { if (sec && alvoDoLink(a) === sec.id) a.setAttribute("aria-current", "location"); else a.removeAttribute("aria-current"); });
+}
+let quadroMenu = 0;
+addEventListener("scroll", () => { cancelAnimationFrame(quadroMenu); quadroMenu = requestAnimationFrame(marcaSecao); }, { passive: true });
+marcaSecao();
 
 /* =========== integração com a loja =========== */
 // contador do carrinho no topo (o carrinho é o mesmo da loja)

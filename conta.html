@@ -28,7 +28,7 @@ document.body.insertAdjacentHTML("afterbegin", Loja.ICONES);
 const main = document.getElementById("conteudo");
 const params = new URLSearchParams(location.search);
 const { categorias } = await Loja.catalogo().catch(() => ({ categorias: [] }));
-document.getElementById("topo").innerHTML = Loja.cabecalho(categorias, "");
+document.getElementById("topo").innerHTML = Loja.cabecalho(categorias, "", "conta");
 document.getElementById("rodape").innerHTML = Loja.rodape();
 Loja.busca();
 await Loja.montarCarrinho();

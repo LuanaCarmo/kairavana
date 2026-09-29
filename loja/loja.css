@@ -13,7 +13,7 @@
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
-body{margin:0; background:var(--cal-clara); color:var(--vinho); font:400 16px/1.55 var(--texto); -webkit-font-smoothing:antialiased}
+body{margin:0; background:var(--cal); color:var(--vinho); font:400 16px/1.55 var(--texto); -webkit-font-smoothing:antialiased}
 img,svg{max-width:100%; display:block}
 a{color:inherit}
 h1,h2,h3{font-family:var(--display); font-weight:400; line-height:1.1; margin:0; text-wrap:balance}
@@ -56,33 +56,54 @@ button,input,select,textarea{font:inherit; color:inherit}
 .selo-novo{background:var(--ocre); color:var(--vinho)}
 .selo-esgotado{background:var(--cal); color:var(--marrom); border:1px solid var(--linha)}
 
-/* barra de avisos e cabeçalho */
+/* barra de avisos e cabeçalho: igual ao topo do site */
 .faixa{background:var(--vinho); color:var(--cal); font-size:13.5px; text-align:center; padding:8px var(--gutter)}
 .faixa strong{color:var(--rosa)}
-.cab{position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--branco) 94%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--linha)}
-.cab-linha{display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:16px 28px; min-height:76px}
-.logo{display:inline-flex; align-items:center; gap:.3em; text-decoration:none; font-family:var(--display); font-size:28px; line-height:1; color:var(--vinho)}
-.logo svg{width:.8em; height:.8em; color:var(--tijolo)}
+.cab{position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--cal) 92%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid color-mix(in srgb,var(--vinho) 10%,transparent)}
+.cab-linha{position:relative; display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:76px}
+.logo{display:inline-flex; align-items:center; gap:.3em; text-decoration:none; font-family:var(--display); font-size:30px; line-height:1; color:var(--vinho)}
+.logo svg{width:.8em; height:.8em; color:var(--tijolo); flex:none}
 .logo small{font-family:var(--texto); font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--tijolo); margin-left:6px}
-.busca{position:relative; max-width:560px; width:100%; justify-self:center}
-.busca input{width:100%; min-height:46px; padding:10px 48px 10px 20px; border-radius:999px; border:1.5px solid var(--linha); background:var(--cal-clara)}
-.busca input:focus{outline:2px solid var(--tijolo); outline-offset:1px}
-.busca button{position:absolute; right:4px; top:50%; transform:translateY(-50%); width:40px; height:40px; border:0; border-radius:50%; background:transparent; cursor:pointer; display:grid; place-items:center}
-.icones{display:flex; align-items:center; gap:4px}
+.cab-menu{display:flex; align-items:center; gap:4px; margin-left:auto}
+.cab-menu a:not(.btn){display:inline-flex; align-items:center; min-height:44px; padding:0 14px; text-decoration:none; font-weight:500; font-size:16px; border-radius:999px}
+.cab-menu a:not(.btn):hover{background:var(--cal-clara)}
+.cab-menu .btn{margin-left:10px}
+/* item da página atual: preenchido na cor da marca */
+.cab-menu a[aria-current="page"],.cats a[aria-current="page"],.icone[aria-current="page"]{background:var(--tijolo); color:var(--cal)}
+.cab-menu a[aria-current="page"]:hover,.cats a[aria-current="page"]:hover{background:var(--vinho)}
+.icones{display:flex; align-items:center; gap:2px}
 .icone{position:relative; width:46px; height:46px; display:grid; place-items:center; border-radius:50%; border:0; background:transparent; color:var(--vinho); cursor:pointer; text-decoration:none}
-.icone:hover{background:var(--cal)}
+.icone:hover{background:var(--cal-clara)}
 .icone svg{width:24px; height:24px}
 .contagem{position:absolute; top:2px; right:0; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:var(--tijolo); color:var(--cal); font:700 11.5px/20px var(--texto); text-align:center}
-.cats{border-top:1px solid var(--linha)}
+.cab-menu-botao{display:none}
+@media (min-width:1150px){ .cab-menu a.so-celular{display:none} }
+@media (max-width:1149px){
+  .cab-menu-botao{display:grid; border:2px solid var(--vinho)}
+  .cab-menu{position:absolute; left:calc(-1 * var(--gutter)); right:calc(-1 * var(--gutter)); top:100%; display:none; flex-direction:column; align-items:stretch; gap:4px; padding:12px var(--gutter) 24px; background:var(--cal); border-bottom:1px solid var(--linha); box-shadow:0 12px 24px rgba(59,26,22,.08)}
+  .cab-menu.aberto{display:flex}
+  .cab-menu a:not(.btn){min-height:52px; font-size:18px}
+  .cab-menu .btn{margin:8px 0 0}
+  .icones{margin-left:auto}
+}
+@media (max-width:379px){ .icone-conta{display:none} .logo{font-size:26px} }
+
+/* segunda linha da loja: categorias e busca */
+.cab-loja{border-top:1px solid var(--linha)}
+.cab-loja-linha{display:flex; align-items:center; gap:16px; padding-block:8px}
+.cats{flex:1; min-width:0}
 .cats ul{list-style:none; margin:0; padding:0; display:flex; gap:4px; overflow-x:auto; scrollbar-width:none}
-.cats a{display:inline-flex; align-items:center; min-height:46px; padding:0 14px; white-space:nowrap; text-decoration:none; font-weight:500; font-size:15px; border-bottom:2px solid transparent}
-.cats a:hover,.cats a[aria-current="page"]{border-bottom-color:var(--tijolo); color:var(--tijolo)}
-.cats-site{margin-left:auto; border-left:1px solid var(--linha); padding-left:8px}
+.cats a{display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 14px; border-radius:999px; white-space:nowrap; text-decoration:none; font-weight:500; font-size:15px}
+.cats a:hover{background:var(--cal-clara)}
+.busca{position:relative; flex:0 0 300px}
+.busca input{width:100%; min-height:44px; padding:8px 48px 8px 20px; border-radius:999px; border:1.5px solid color-mix(in srgb,var(--vinho) 20%,transparent); background:var(--cal-clara)}
+.busca input:focus{outline:2px solid var(--tijolo); outline-offset:1px}
+.busca button{position:absolute; right:2px; top:50%; transform:translateY(-50%); width:40px; height:40px; border:0; border-radius:50%; background:transparent; cursor:pointer; display:grid; place-items:center}
 @media (max-width:759px){
-  .cab-linha{grid-template-columns:1fr auto; min-height:64px}
-  .busca{grid-column:1/-1; grid-row:2; max-width:none; margin-bottom:12px}
-  .logo{font-size:24px}
-  .logo small{display:none}
+  .cab-loja-linha{flex-direction:column; align-items:stretch; gap:6px}
+  .busca{flex:none; order:-1}
+  .cab-linha{min-height:68px}
+  .logo{font-size:26px}
 }
 
 /* vitrine */
@@ -124,21 +145,25 @@ button,input,select,textarea{font:inherit; color:inherit}
 @media (min-width:760px){ .grade{grid-template-columns:repeat(3,minmax(0,1fr)); gap:32px 22px} }
 @media (min-width:1200px){ .grade{grid-template-columns:repeat(4,minmax(0,1fr))} }
 .card{position:relative; display:flex; flex-direction:column; gap:8px}
-.card-foto{position:relative; display:block; aspect-ratio:1; border-radius:22px; overflow:hidden; background:var(--cal)}
+.card-foto{position:relative; display:block; aspect-ratio:1; border-radius:22px; overflow:hidden; background:var(--cal-clara)}
 .card-foto img{width:100%; height:100%; object-fit:cover; transition:transform .5s}
 .card:hover .card-foto img{transform:scale(1.04)}
-.card-selos{position:absolute; left:10px; top:10px; display:flex; flex-wrap:wrap; gap:6px}
+.card-selos{position:absolute; left:10px; right:60px; top:14px; display:flex; flex-wrap:wrap; gap:6px; pointer-events:none}
 .fav{position:absolute; right:8px; top:8px; width:44px; height:44px; border-radius:50%; border:0; background:color-mix(in srgb,var(--branco) 85%,transparent); color:var(--vinho); display:grid; place-items:center; cursor:pointer}
 .fav svg{width:20px; height:20px}
 .fav[aria-pressed="true"] svg{fill:var(--tijolo); color:var(--tijolo)}
-.card h3{font-family:var(--texto); font-weight:500; font-size:15.5px; line-height:1.35}
+/* nome sempre com 2 linhas reservadas: preços e botões ficam alinhados entre os cards */
+.card h3{font-family:var(--texto); font-weight:500; font-size:15.5px; line-height:1.35; min-height:calc(2 * 1.35em); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-top:4px}
 .card h3 a{text-decoration:none}
 .card h3 a:hover{text-decoration:underline}
 .preco-antigo{color:var(--marrom); text-decoration:line-through; font-size:13.5px}
 .preco{font:700 20px/1.2 var(--texto)}
 .preco-pix{font-size:13.5px; color:var(--verde); font-weight:500}
 .parcelas{font-size:13px; color:var(--marrom)}
-.card .btn{margin-top:auto}
+.card-preco{display:grid; grid-template-rows:18px auto 18px; gap:2px}
+.card-preco .parcelas{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.card .btn-card{margin-top:auto; width:100%; min-height:44px; padding-inline:12px}
+.btn-card svg{width:18px; height:18px}
 .vazio{padding:40px 20px; text-align:center; color:var(--marrom); border:1.5px dashed var(--linha); border-radius:22px}
 .paginas{display:flex; justify-content:center; gap:6px; margin-top:36px}
 .paginas button{min-width:44px; height:44px; border-radius:999px; border:1.5px solid var(--linha); background:var(--branco); cursor:pointer}
@@ -198,9 +223,10 @@ button,input,select,textarea{font:inherit; color:inherit}
 .opcao-endereco{display:flex; gap:12px; padding:14px 16px; border-radius:16px; border:1.5px solid var(--linha); cursor:pointer}
 .opcao-endereco:has(input:checked){border-color:var(--tijolo); background:var(--cal-clara)}
 .opcao-endereco input{accent-color:var(--tijolo); width:20px; height:20px; margin:2px 0 0; flex:none}
-.abas{display:flex; gap:4px; overflow-x:auto; border-bottom:1px solid var(--linha); margin-top:20px; scrollbar-width:none}
-.abas button{min-height:48px; padding:0 18px; border:0; background:none; border-bottom:2px solid transparent; font-weight:500; cursor:pointer; white-space:nowrap}
-.abas button[aria-selected="true"]{border-bottom-color:var(--tijolo); color:var(--tijolo); font-weight:700}
+.abas{display:flex; gap:8px; overflow-x:auto; margin-top:20px; padding:4px 2px; scrollbar-width:none}
+.abas button{min-height:44px; padding:0 18px; border:1.5px solid color-mix(in srgb,var(--vinho) 22%,transparent); border-radius:999px; background:var(--cal-clara); font-weight:500; cursor:pointer; white-space:nowrap}
+.abas button:hover{border-color:var(--vinho)}
+.abas button[aria-selected="true"]{background:var(--tijolo); border-color:var(--tijolo); color:var(--cal); font-weight:700}
 .lista{display:grid; gap:12px}
 .pedido-linha{display:grid; gap:6px 16px; grid-template-columns:1fr auto; padding:16px 18px; border:1px solid var(--linha); border-radius:18px; background:var(--branco)}
 .pedido-linha .apoio{grid-column:1/-1}
