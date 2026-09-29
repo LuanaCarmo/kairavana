@@ -186,6 +186,29 @@ test("gestão da loja: fora do Google e com painel de demonstração", async ({ 
   await expect(page.locator("[data-pedido]").first()).toBeVisible();
 });
 
+test("site, loja, conta e área da equipe estão ligados entre si", async ({ page }) => {
+  const linksDe = async url => { await page.goto(url); await page.waitForLoadState("networkidle"); return page.evaluate(() => [...document.querySelectorAll("a[href]")].map(a => a.getAttribute("href"))); };
+  const tem = (links, alvo) => links.some(h => h === alvo || h.startsWith(alvo + "#") || h.startsWith(alvo + "?"));
+  const site = await linksDe("/index.html");
+  for (const alvo of ["loja.html", "conta.html", "equipe.html"]) expect(tem(site, alvo), `site → ${alvo}`).toBe(true);
+  const loja = await linksDe("/loja.html");
+  for (const alvo of ["index.html", "conta.html", "equipe.html"]) expect(tem(loja, alvo), `loja → ${alvo}`).toBe(true);
+  const conta = await linksDe("/conta.html");
+  for (const alvo of ["index.html", "loja.html"]) expect(tem(conta, alvo), `conta → ${alvo}`).toBe(true);
+  const equipe = await linksDe("/equipe.html");
+  for (const alvo of ["admin.html", "gestao-loja.html", "index.html", "loja.html"]) expect(tem(equipe, alvo), `equipe → ${alvo}`).toBe(true);
+  const agenda = await linksDe("/admin.html");
+  for (const alvo of ["equipe.html", "gestao-loja.html"]) expect(tem(agenda, alvo), `gestão da agenda → ${alvo}`).toBe(true);
+});
+
+test("o carrinho da loja aparece no topo do site", async ({ page }) => {
+  await page.goto("/loja.html");
+  await page.locator(".grade [data-comprar]:not([disabled])").first().click();
+  await page.goto("/index.html");
+  await expect(page.locator("#topo-contagem")).toHaveText("1");
+  await expect(page.locator("#topo-carrinho")).toHaveAttribute("href", "loja.html");
+});
+
 test("acessibilidade da loja (sem problemas graves)", async ({ page }) => {
   await page.goto("/loja.html");
   await expect(page.locator(".grade .card").first()).toBeVisible();

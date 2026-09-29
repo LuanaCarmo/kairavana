@@ -44,6 +44,9 @@ button,input{font:inherit; color:inherit}
 .logo{display:inline-flex; align-items:center; gap:.3em; font-family:var(--display); font-size:24px; text-decoration:none; color:var(--vinho)}
 .logo svg{width:.8em; height:.8em; color:var(--tijolo)}
 .logo small{font-family:var(--texto); font-size:13px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--marrom); margin-left:6px}
+.menu-equipe{display:flex; flex-wrap:wrap; gap:2px}
+.menu-equipe a{display:inline-flex; align-items:center; min-height:44px; padding:0 12px; border-radius:999px; text-decoration:none; font-weight:500; font-size:15px; color:var(--vinho)}
+.menu-equipe a:hover{background:var(--cal-clara)}
 .topo .acoes{margin-left:auto; display:flex; align-items:center; gap:10px}
 .situacao{font-size:14px; display:inline-flex; align-items:center; gap:8px; color:var(--marrom)}
 .situacao::before{content:""; width:9px; height:9px; border-radius:50%; background:var(--verde)}
@@ -178,6 +181,11 @@ main{padding-block:32px 80px}
 <header class="topo">
   <div class="wrap">
     <a class="logo" href="./" title="Ver o site"><svg aria-hidden="true"><use href="#roda"/></svg>kairavana<small>Agenda</small></a>
+    <nav class="menu-equipe" aria-label="Área da equipe">
+      <a href="equipe.html">Área da equipe</a>
+      <a href="gestao-loja.html">Gestão da loja</a>
+      <a href="./" target="_blank" rel="noopener">Ver o site ↗</a>
+    </nav>
     <div class="acoes" id="acoes" hidden>
       <span class="situacao" id="situacao" aria-live="polite">Tudo publicado</span>
       <button class="btn btn-primario" id="publicar" disabled>Publicar alterações</button>

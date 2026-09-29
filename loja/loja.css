@@ -77,6 +77,7 @@ button,input,select,textarea{font:inherit; color:inherit}
 .cats ul{list-style:none; margin:0; padding:0; display:flex; gap:4px; overflow-x:auto; scrollbar-width:none}
 .cats a{display:inline-flex; align-items:center; min-height:46px; padding:0 14px; white-space:nowrap; text-decoration:none; font-weight:500; font-size:15px; border-bottom:2px solid transparent}
 .cats a:hover,.cats a[aria-current="page"]{border-bottom-color:var(--tijolo); color:var(--tijolo)}
+.cats-site{margin-left:auto; border-left:1px solid var(--linha); padding-left:8px}
 @media (max-width:759px){
   .cab-linha{grid-template-columns:1fr auto; min-height:64px}
   .busca{grid-column:1/-1; grid-row:2; max-width:none; margin-bottom:12px}

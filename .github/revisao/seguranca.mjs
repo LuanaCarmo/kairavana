@@ -53,7 +53,7 @@ if (existsSync("admin.html")){
 }
 
 // 3b. Loja: área do cliente e gestão fora do Google; o navegador nunca cria pedidos nem define preços
-for (const f of ["conta.html", "gestao-loja.html"].filter(existsSync)){
+for (const f of ["conta.html", "gestao-loja.html", "equipe.html"].filter(existsSync)){
   if (!/<meta name="robots" content="[^"]*noindex/.test(readFileSync(f, "utf8"))) erro(f, "falta <meta name=\"robots\" content=\"noindex\">");
 }
 for (const f of arquivos.filter(f => /^(loja\/.*\.js|loja\.html|conta\.html|gestao-loja\.html)$/.test(f))){
