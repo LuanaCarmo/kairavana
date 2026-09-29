@@ -54,13 +54,15 @@ function cartao(p){
   const favs = Loja.favoritos.ler(), esgotado = p.estoque <= 0, o = off(p);
   return `<article class="card">
     <a class="card-foto" href="#/produto/${esc(p.slug)}" tabindex="-1" aria-hidden="true"><img src="${esc(imagemDe(p))}" alt="" loading="lazy"></a>
-    <div class="card-selos">${o ? `<span class="selo selo-off">${o}% off</span>` : ""}${esgotado ? `<span class="selo selo-esgotado">Esgotado</span>` : p.destaque ? `<span class="selo selo-destaque">Mais amado</span>` : novo(p) ? `<span class="selo selo-novo">Novo</span>` : ""}</div>
+    <div class="card-selos">${esgotado ? `<span class="selo selo-esgotado">Esgotado</span>` : o ? `<span class="selo selo-off">${o}% off</span>` : p.destaque ? `<span class="selo selo-destaque">Mais amado</span>` : novo(p) ? `<span class="selo selo-novo">Novo</span>` : ""}</div>
     <button class="fav" type="button" data-fav="${esc(p.id)}" aria-pressed="${favs.includes(p.id)}" aria-label="Favoritar ${esc(p.nome)}"><svg aria-hidden="true"><use href="#i-coracao"/></svg></button>
     <h3><a href="#/produto/${esc(p.slug)}">${esc(p.nome)}</a></h3>
-    <div>${p.preco_antigo > p.preco ? `<span class="preco-antigo">${brl(p.preco_antigo)}</span>` : ""}
+    <div class="card-preco">
+      <span class="preco-antigo">${p.preco_antigo > p.preco ? brl(p.preco_antigo) : ""}</span>
       <p class="preco">${brl(p.preco)}</p>
-      <p class="parcelas">${Loja.parcelas(p.preco, cfg)}</p></div>
-    <button class="btn ${esgotado ? "btn-secundario" : "btn-primario"} btn-pequeno" type="button" data-comprar="${esc(p.id)}"${esgotado ? ' aria-disabled="true" disabled' : ""}>${esgotado ? "Indisponível" : "Adicionar ao carrinho"}</button>
+      <p class="parcelas">${Loja.parcelas(p.preco, cfg)}</p>
+    </div>
+    <button class="btn ${esgotado ? "btn-secundario" : "btn-primario"} btn-pequeno btn-card" type="button" data-comprar="${esc(p.id)}" aria-label="${esgotado ? "Esgotado" : `Adicionar ${esc(p.nome)} ao carrinho`}"${esgotado ? " disabled" : ""}>${esgotado ? "Esgotado" : `<svg aria-hidden="true"><use href="#i-sacola"/></svg>Adicionar`}</button>
   </article>`;
 }
 
@@ -83,19 +85,19 @@ function vitrine({ titulo, texto, base, trilha }){
     <nav class="trilha" aria-label="Você está em"><a href="index.html">Início</a> › <a href="#/">Loja</a>${trilha ? ` › ${esc(trilha)}` : ""}</nav>
     <section class="banner">
       <div><h1>${esc(titulo)}</h1><p>${esc(texto)}</p></div>
-      <div class="banner-arte" aria-hidden="true"><img src="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=1200&q=70&auto=format&fit=crop" alt=""></div>
+      <div class="banner-arte" aria-hidden="true"><img class="img-kairavana" src="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=1000&q=60&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=600&q=60&auto=format&fit=crop 600w, https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=1000&q=60&auto=format&fit=crop 1000w, https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=1400&q=60&auto=format&fit=crop 1400w" sizes="(min-width:900px) 55vw, 92vw" width="1400" height="700" alt=""></div>
     </section>
     <div class="vitrine">
       <aside class="filtros" id="filtros" aria-label="Filtros">
         <div class="filtros-topo"><strong>Filtrar</strong><button class="icone" type="button" id="fechar-filtros" aria-label="Fechar filtros"><svg aria-hidden="true"><use href="#i-fechar"/></svg></button></div>
         ${catsComItens.length > 1 ? `<details open><summary>Categoria</summary><ul>${catsComItens.map(c => `<li><label><input type="checkbox" name="cat" value="${esc(c.id)}"${filtros.cats.includes(c.id) ? " checked" : ""}>${esc(c.nome)}<span class="qtd">${contaCat(c.id)}</span></label></li>`).join("")}</ul></details>` : ""}
         <details open><summary>Faixa de preço</summary><ul>${FAIXAS.map(([v, t, f]) => `<li><label><input type="checkbox" name="faixa" value="${v}"${filtros.faixas.includes(v) ? " checked" : ""}>${t}<span class="qtd">${base.filter(p => f(p.preco)).length}</span></label></li>`).join("")}</ul></details>
-        <details open><summary>Disponibilidade</summary><ul><li><label><input type="checkbox" name="estoque"${filtros.estoque ? " checked" : ""}>Só com estoque</label></li></ul></details>
+        <details open><summary>Disponibilidade</summary><ul><li><label><input type="checkbox" name="estoque"${filtros.estoque ? " checked" : ""}>Mostrar só o que tem em estoque</label></li></ul></details>
         ${filtros.cats.length || filtros.faixas.length || filtros.estoque ? `<button class="btn btn-secundario btn-pequeno" type="button" id="limpar-filtros" style="margin-top:12px">Limpar filtros</button>` : ""}
       </aside>
       <section aria-labelledby="t-resultados">
         <div class="barra-lista">
-          <p id="t-resultados" class="apoio" aria-live="polite">${lista.length ? `Exibindo ${ini + 1}–${ini + fatia.length} de ${lista.length} produto${lista.length > 1 ? "s" : ""}` : "Nenhum produto encontrado"}</p>
+          <p id="t-resultados" class="apoio" aria-live="polite">${lista.length ? `${lista.length} produto${lista.length > 1 ? "s" : ""}${paginas > 1 ? ` · mostrando ${ini + 1} a ${ini + fatia.length}` : ""}` : "Nenhum produto encontrado"}</p>
           <div style="display:flex; gap:10px; flex-wrap:wrap">
             <button class="btn btn-secundario btn-pequeno filtros-botao" type="button" id="abrir-filtros"><svg aria-hidden="true"><use href="#i-filtro"/></svg>Filtrar</button>
             <label class="sr" for="ordem">Ordenar por</label>
@@ -137,7 +139,7 @@ function paginaProduto(p){
     <div class="produto">
       <div class="galeria">
         <div class="galeria-principal"><img id="foto-principal" src="${esc(imgs[0])}" alt="${esc(p.nome)}"></div>
-        ${imgs.length > 1 ? `<div class="miniaturas">${imgs.map((src, i) => `<button type="button" data-foto="${esc(src)}" aria-label="Ver foto ${i + 1}" aria-current="${i === 0}"><img src="${esc(src)}" alt=""></button>`).join("")}</div>` : ""}
+        ${imgs.length > 1 ? `<div class="miniaturas">${imgs.map((src, i) => `<button type="button" data-foto="${esc(src)}" aria-label="Ver foto ${i + 1}" aria-current="${i === 0}"><img src="${esc(src)}" alt="" loading="lazy"></button>`).join("")}</div>` : ""}
       </div>
       <div class="produto-info">
         <div style="display:flex; gap:8px; flex-wrap:wrap">${o ? `<span class="selo selo-off">${o}% off</span>` : ""}${p.destaque ? `<span class="selo selo-destaque">Mais amado</span>` : ""}${esgotado ? `<span class="selo selo-esgotado">Esgotado</span>` : ""}</div>
@@ -188,7 +190,7 @@ async function finalizar(){
     <p class="apoio">${Loja.parcelas(subtotal + frete, cfg)}${Loja.parcelas(subtotal + frete, cfg) ? ". " : ""}Pagamento seguro pelo Mercado Pago: cartão, Pix ou boleto.</p></aside>`;
   if (!usuario){
     main.innerHTML = `<div class="wrap pagina"><h1>Finalizar compra</h1><div class="duas-colunas">
-      <section class="painel"><h2>Entre para continuar</h2><p>Para acompanhar o pedido e guardar seus endereços, a compra é feita na sua conta Kairavana. Leva menos de um minuto.</p>
+      <section class="painel"><h2>Entre para continuar</h2><p>Entre na sua conta para concluir. Assim você acompanha a entrega e não precisa digitar o endereço de novo. Criar uma conta leva menos de um minuto.</p>
         <div style="display:flex; gap:10px; flex-wrap:wrap"><a class="btn btn-primario" href="conta.html?voltar=finalizar">Entrar</a><a class="btn btn-secundario" href="conta.html?voltar=finalizar#cadastro">Criar conta</a></div></section>
       ${resumo}</div></div>`;
     return;
@@ -196,7 +198,7 @@ async function finalizar(){
   const enderecos = await Loja.enderecos();
   main.innerHTML = `<div class="wrap pagina"><h1>Finalizar compra</h1><div class="duas-colunas">
     <div style="display:grid; gap:20px">
-      <section class="painel" aria-labelledby="t-end"><h2 id="t-end">Entrega</h2>
+      <section class="painel" aria-labelledby="t-end"><h2 id="t-end">Onde vamos entregar?</h2>
         <div class="opcoes-endereco" id="lista-end">${enderecos.map((e, i) => `<label class="opcao-endereco"><input type="radio" name="endereco" value="${esc(e.id)}"${e.principal || i === 0 ? " checked" : ""}><span><strong>${esc(e.apelido || "Endereço")}</strong><br><span class="apoio">${esc(e.rua)}, ${esc(e.numero)}${e.complemento ? " – " + esc(e.complemento) : ""} · ${esc(e.bairro)} · ${esc(e.cidade)}/${esc(e.uf)} · ${esc(e.cep)}</span></span></label>`).join("")}</div>
         <details id="novo-end"${enderecos.length ? "" : " open"}><summary class="btn btn-secundario btn-pequeno" style="list-style:none; display:inline-flex">Adicionar endereço</summary>
           <form id="form-end" class="campos" style="margin-top:16px">
@@ -206,10 +208,10 @@ async function finalizar(){
             <button class="btn btn-primario" type="submit">Salvar endereço</button><p class="erro" id="erro-end" aria-live="polite"></p>
           </form></details>
       </section>
-      <section class="painel" aria-labelledby="t-msg"><h2 id="t-msg">Mensagem para o cartão</h2>
+      <section class="painel" aria-labelledby="t-msg"><h2 id="t-msg">Quer escrever um cartão?</h2>
         <div class="campo"><label for="mensagem">Vai de presente ou quer um recado? (opcional)</label><textarea id="mensagem" maxlength="300" placeholder="Escreva a mensagem que vai no cartão"></textarea><small>Até 300 caracteres.</small></div>
       </section>
-      <button class="btn btn-primario" type="button" id="pagar" style="min-height:56px">${Loja.demo ? "Confirmar pedido (demonstração)" : "Ir para o pagamento"}</button>
+      <button class="btn btn-primario" type="button" id="pagar" style="min-height:56px">${Loja.demo ? "Confirmar pedido (demonstração)" : "Ir para o pagamento seguro"}</button>
       <p class="erro" id="erro-pagar" aria-live="polite"></p>
     </div>${resumo}</div></div>`;
   const form = document.getElementById("form-end");
@@ -271,7 +273,7 @@ function rota(){
     document.getElementById("busca").value = valor || "";
     vitrine({ titulo: `Busca: “${valor || ""}”`, texto: "Resultados para a sua busca.", base: cat.produtos.filter(p => { const t = norm(p.nome + " " + p.descricao + " " + (catDe(p)?.nome || "")); return radicais.every(r => t.includes(r)); }), trilha: "Busca" });
   } else if (tipo === "favoritos"){
-    montarTopo("");
+    montarTopo("favoritos");
     const f = Loja.favoritos.ler();
     vitrine({ titulo: "Seus favoritos", texto: "Os produtos que você marcou com o coração ficam guardados neste navegador.", base: cat.produtos.filter(p => f.includes(p.id)), trilha: "Favoritos" });
   } else if (tipo === "finalizar"){ montarTopo(""); finalizar(); }

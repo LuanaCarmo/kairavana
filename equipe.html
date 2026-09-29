@@ -19,6 +19,10 @@ body{background:var(--cal)}
 .porta h2{font-size:30px}
 .porta ul{margin:0; padding-left:18px; color:var(--marrom); font-size:15px}
 .porta .btn{justify-self:start; margin-top:6px}
+/* a barra da equipe fica sempre visível, também no celular */
+.equipe-menu{position:static!important; display:flex!important; flex-direction:row!important; flex-wrap:wrap; padding:0!important; background:none!important; border:0!important; box-shadow:none!important}
+.equipe-menu a:not(.btn){min-height:44px!important; font-size:15px!important}
+@media (max-width:700px){ .cab-linha{flex-wrap:wrap; padding-block:8px} }
 .atalhos-site{display:flex; flex-wrap:wrap; gap:10px; margin-top:28px}
 </style>
 </head>
@@ -26,8 +30,14 @@ body{background:var(--cal)}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="roda" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="50" cy="50" r="42" stroke-width="12"/><path stroke-width="7" d="M50 41V16M50 59v25M41 50H16M59 50h25M43.6 43.6 26 26M56.4 56.4 74 74M56.4 43.6 74 26M43.6 56.4 26 74"/><circle cx="50" cy="50" r="7" stroke-width="5"/></g></symbol>
 </svg>
-<header class="cab"><div class="wrap cab-linha" style="grid-template-columns:auto 1fr">
+<header class="cab"><div class="wrap cab-linha">
   <a class="logo" href="index.html"><svg aria-hidden="true"><use href="#roda"/></svg>kairavana<small>equipe</small></a>
+  <nav class="cab-menu equipe-menu" aria-label="Área da equipe">
+    <a href="equipe.html" aria-current="page">Início da equipe</a>
+    <a href="admin.html">Agenda</a>
+    <a href="gestao-loja.html">Loja</a>
+    <a href="index.html" target="_blank" rel="noopener">Ver o site ↗</a>
+  </nav>
 </div></header>
 <main class="wrap pagina">
   <h1>Área da equipe</h1>

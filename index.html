@@ -4,12 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#EFE3D8">
-<title>Kairavana</title>
-<meta name="description" content="Kairavana — terapias holísticas com delicadeza e com os pés no chão. Reiki, Florais de Bach e Mapa numerológico.">
+<title>Kairavana · Terapias integrativas</title>
+<meta name="description" content="Kairavana: terapias integrativas e complementares com delicadeza e com os pés no chão. Reiki, Florais de Bach, Aromaterapia, Cartomancia, Mapa numerológico e mais.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%238E3A30'/%3E%3Cg fill='none' stroke='%23EFE3D8' stroke-linecap='round'%3E%3Ccircle cx='50' cy='50' r='27' stroke-width='9'/%3E%3Cpath stroke-width='7' d='M50 43V26M50 57v17M43 50H26M57 50h17M45 45 33 33M55 55l12 12M55 45l12-12M45 55 33 67'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Gloock&display=swap">
+<script>
+// Hero: tenta a foto nova (imagens/hero-reiki*.webp). Se as versões menores não existirem, usa o arquivo principal;
+// se nem ele existir, volta para a foto atual, com o texto alternativo dela, sem mexer no layout.
+function kvFotoReserva(img){
+  if (img.srcset && !img.dataset.tentouPrincipal){ img.dataset.tentouPrincipal = "1"; img.removeAttribute("srcset"); img.src = "imagens/hero-reiki.webp"; return; }
+  img.onerror = null;
+  img.srcset = img.dataset.reservaSrcset; img.src = img.dataset.reserva; img.alt = img.dataset.reservaAlt;
+}
+</script>
 <style>
 :root{
   --tijolo:#8E3A30; --vinho:#3B1A16; --rosa:#D9A597; --ocre:#C58A4A;
@@ -17,6 +26,7 @@
   --display:"Gloock", "Georgia", "Times New Roman", serif;
   --texto:"DM Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
   --gutter:24px; --secao:88px;
+  --foto-filtro:saturate(.7) contrast(.9) sepia(.15);
   color-scheme:light;
 }
 @media (max-width:379px){ :root{ --gutter:16px; --secao:64px; } }
@@ -99,6 +109,10 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .menu a:not(.btn){display:inline-flex; align-items:center; min-height:44px; padding:0 14px; text-decoration:none; font-weight:500; font-size:16px; border-radius:999px}
 .menu a:not(.btn):hover{background:var(--cal-clara)}
 .menu .btn{margin-left:10px}
+/* seção em que a pessoa está: preenchida na cor da marca */
+.menu a:not(.btn)[aria-current]{background:var(--tijolo); color:var(--cal)}
+.menu a:not(.btn)[aria-current]:hover{background:var(--vinho)}
+.menu .btn[aria-current]{background:var(--vinho); box-shadow:0 0 0 3px color-mix(in srgb,var(--tijolo) 45%,transparent)}
 .menu-botao{display:none}
 .topo-icones{display:flex; align-items:center; gap:2px}
 .topo-icone{position:relative; width:46px; height:46px; display:grid; place-items:center; border-radius:50%; color:var(--vinho)}
@@ -135,8 +149,13 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .hero .roda-hero{width:min(600px,120vw); aspect-ratio:1; right:-10%; top:4%}
 @media (max-width:899px){ .hero .roda-hero{right:-35%; top:auto; bottom:-8%} }
 
-/* fotografias: recorte arredondado e tratamento da marca (menos saturação, contraste suave, leve sépia) */
-.foto img, .foto-arco img, .foto-circulo img, .cartao-foto img, .foto-pilula img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:saturate(.7) contrast(.9) sepia(.15)}
+/* fotografias: recorte arredondado; enquadramento ajustável por --foco (ex.: style="--foco:center 80%") */
+.foto img, .foto-arco img, .foto-circulo img, .cartao-foto img, .foto-pilula img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:var(--foco, 50% 50%)}
+/* hero: para corrigir o enquadramento da foto nova, mude só --hero-foco (horizontal vertical) */
+.foto-hero{--hero-foco:50% 50%}
+.foto-hero img{object-position:var(--hero-foco)}
+/* harmonização opcional: aproxima a foto da paleta (mais quente, menos saturada). Não usar em fotos de produto. Guia em docs/guia-de-imagens.md */
+.img-kairavana{filter:var(--foto-filtro)}
 .foto-arco, .foto-circulo, .cartao-foto, .foto-pilula{position:relative; margin:0; overflow:hidden; max-width:100%; background:var(--rosa)}
 .foto::after, .foto-arco::after, .cartao-foto::after, .foto-pilula::after{content:""; position:absolute; inset:0; pointer-events:none; opacity:.18; mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .23 0 0 0 0 .1 0 0 0 0 .08 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -475,17 +494,24 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   <svg class="marca-dagua roda-hero" aria-hidden="true" viewBox="0 0 100 100"><use href="#roda"/></svg>
   <div class="wrap hero-grid">
     <div>
-      <p class="sobretitulo">Terapias holísticas · Reiki · Florais · Numerologia</p>
+      <p class="sobretitulo">Terapias integrativas · Reiki · Florais · Numerologia</p>
       <h1>Um lugar para pausar e se conhecer com calma.</h1>
-      <p class="subtitulo">Terapias holísticas, autocuidado e informação com responsabilidade. Atendimentos presenciais e a distância.</p>
+      <p class="subtitulo">Terapias integrativas, autocuidado e informação com responsabilidade. Atendimentos presenciais e a distância.</p>
       <div class="acoes">
         <a class="btn btn-primario" href="#agenda">Ver horários disponíveis</a>
         <a class="btn btn-secundario" href="#terapias">Conhecer as terapias</a>
       </div>
     </div>
     <div class="foto-caixa">
-      <figure class="foto">
-        <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=900&q=70&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=70&auto=format&fit=crop 600w, https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=1000&q=70&auto=format&fit=crop 1000w" sizes="(min-width:900px) 440px, 360px" alt="Pessoa meditando sentada, em silêncio, diante da luz suave do fim de tarde" fetchpriority="high">
+      <figure class="foto foto-hero">
+        <img class="img-kairavana" src="imagens/hero-reiki.webp"
+          srcset="imagens/hero-reiki-480.webp 480w, imagens/hero-reiki-800.webp 800w, imagens/hero-reiki.webp 1200w"
+          sizes="(min-width:900px) 440px, 360px" width="1200" height="1500" fetchpriority="high"
+          alt="Mãos de terapeuta aplicando Reiki em uma pessoa deitada de olhos fechados, em ambiente de luz natural."
+          data-reserva="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=65&auto=format&fit=crop"
+          data-reserva-srcset="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=480&q=65&auto=format&fit=crop 480w, https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=65&auto=format&fit=crop 800w"
+          data-reserva-alt="Pessoa meditando sentada, em silêncio, diante da luz suave do fim de tarde"
+          onerror="kvFotoReserva(this)">
       </figure>
     </div>
   </div>
@@ -498,14 +524,14 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       <p class="sobretitulo">Sobre a Kairavana</p>
       <h2>Um nome que vem da estrada.</h2>
       <div class="sobre-fotos">
-        <figure class="foto-arco"><img src="https://images.unsplash.com/photo-1548741465-8b453e363e48?w=800&q=70&auto=format&fit=crop" alt="Duas rodas de carroça de madeira encostadas numa parede, sob a luz do sol" loading="lazy"></figure>
+        <figure class="foto-arco"><img class="img-kairavana" src="https://images.unsplash.com/photo-1759357557586-cf958d3ef3d9?w=640&q=55&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1759357557586-cf958d3ef3d9?w=400&q=55&auto=format&fit=crop 400w, https://images.unsplash.com/photo-1759357557586-cf958d3ef3d9?w=640&q=55&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1759357557586-cf958d3ef3d9?w=800&q=55&auto=format&fit=crop 800w" sizes="(min-width:900px) 400px, 320px" width="800" height="1000" alt="Trilha de terra entre árvores, com o sol se pondo no fim do caminho" loading="lazy"></figure>
       </div>
     </div>
     <div class="sobre-texto revelar">
-      <p>Kairavana se inspira nas caravanas ciganas: gente que segue em movimento, mas que sempre para, arma abrigo e se encontra ao redor do fogo. A roda da carroça é o nosso símbolo, porque cuidar de si também é um caminho que se faz aos poucos.</p>
-      <p>Aqui você encontra práticas complementares de autocuidado, apresentadas com delicadeza e com os pés no chão: explicamos de onde cada uma vem, o que as pessoas costumam relatar e o que a ciência já sabe (ou ainda não sabe).</p>
+      <p>Kairavana nasce da ideia de caravana: pessoas que seguem caminho juntas, param quando precisam, acendem um fogo e se reencontram antes de continuar. Autocuidado é assim também. Não é um destino, é um percurso que se faz aos poucos, no seu ritmo.</p>
+      <p>Aqui você encontra terapias integrativas e complementares, apresentadas com delicadeza e com os pés no chão. Explicamos de onde cada uma vem, o que as pessoas costumam relatar e o que a ciência já sabe (ou ainda não sabe).</p>
       <dl class="caminho">
-        <div><dt>Caminho</dt><dd>Cada pessoa chega de um jeito. O atendimento respeita o seu tempo.</dd></div>
+        <div><dt>Caminho</dt><dd>Cada pessoa chega de um jeito, e o atendimento respeita o seu tempo.</dd></div>
         <div><dt>Abrigo</dt><dd>Um espaço de escuta, sem julgamento e sem promessas.</dd></div>
         <div><dt>Encontro</dt><dd>Conversa clara sobre o que a prática é e o que ela não é.</dd></div>
       </dl>
@@ -524,7 +550,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 
     <div class="terapias-grid">
       <article class="cartao revelar" id="reiki">
-        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1757066033647-366cc10e0de2?w=800&q=70&auto=format&fit=crop" style="object-position:center 80%" alt="Terapeuta com as mãos sobre a cabeça de uma pessoa deitada, durante uma sessão de Reiki" loading="lazy"></figure>
+        <figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1757066033647-366cc10e0de2?w=640&q=60&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1757066033647-366cc10e0de2?w=400&q=60&auto=format&fit=crop 400w, https://images.unsplash.com/photo-1757066033647-366cc10e0de2?w=640&q=60&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1757066033647-366cc10e0de2?w=1000&q=60&auto=format&fit=crop 1000w" sizes="(min-width:1240px) 560px, (min-width:760px) 46vw, 92vw" width="1000" height="563" style="--foco:center 80%" alt="Terapeuta com as mãos sobre a cabeça de uma pessoa deitada, durante uma sessão de Reiki" loading="lazy"></figure>
         <div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Presencial ou a distância</span></div>
         <h3>Reiki para adultos</h3>
         <p>Prática de origem japonesa feita em silêncio, com as mãos posicionadas a poucos centímetros do corpo. Cerca de 50 minutos para desacelerar, respirar e simplesmente estar.</p>
@@ -541,7 +567,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       </article>
 
       <article class="cartao revelar" id="reiki-criancas">
-        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1533285962792-0c3c5e9cb0d7?w=800&q=70&auto=format&fit=crop" alt="Menina sentada de pernas cruzadas na grama, tranquila" loading="lazy"></figure>
+        <figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1533285962792-0c3c5e9cb0d7?w=640&q=60&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1533285962792-0c3c5e9cb0d7?w=400&q=60&auto=format&fit=crop 400w, https://images.unsplash.com/photo-1533285962792-0c3c5e9cb0d7?w=640&q=60&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1533285962792-0c3c5e9cb0d7?w=1000&q=60&auto=format&fit=crop 1000w" sizes="(min-width:1240px) 560px, (min-width:760px) 46vw, 92vw" width="1000" height="563" alt="Menina sentada de pernas cruzadas na grama, tranquila" loading="lazy"></figure>
         <div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Somente a distância</span></div>
         <h3>Reiki infantil a distância</h3>
         <p>A criança fica em casa, no ritmo dela, sem precisar lidar com um ambiente novo nem ficar parada. Um formato pensado com carinho também para crianças autistas. Antes, conversamos com a família para conhecer a criança e o que a acolhe.</p>
@@ -551,14 +577,14 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
           <ul class="afirmacoes">
             <li><span class="etq etq-relatos">Relatos</span><p>Alguns responsáveis relatam perceber momentos mais tranquilos, principalmente quando a sessão acompanha uma rotina calma.</p></li>
             <li><span class="etq etq-evidencia">Evidência</span><p>Não há evidência científica de que o Reiki, presencial ou a distância, trate o autismo ou qualquer condição.</p></li>
-            <li><span class="etq etq-aberto">Em aberto</span><p>Os efeitos do Reiki a distância não foram demonstrados em estudos. Oferecemos como momento de cuidado e intenção, não como tratamento.</p></li>
+            <li><span class="etq etq-aberto">Em aberto</span><p>Os efeitos do Reiki a distância não foram demonstrados em estudos. Oferecemos como momento de cuidado e intenção, sem finalidade médica.</p></li>
             <li><span class="etq etq-tradicao">Importante</span><p>Não substitui o acompanhamento médico, psicológico, terapia ocupacional, fonoaudiologia ou outras terapias da criança.</p></li>
           </ul>
         </details>
       </article>
 
       <article class="cartao revelar" id="florais">
-        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=800&q=70&auto=format&fit=crop" alt="Frasco âmbar com conta-gotas, sem rótulo, sobre fundo claro" loading="lazy"></figure>
+        <figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=640&q=60&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=400&q=60&auto=format&fit=crop 400w, https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=640&q=60&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=1000&q=60&auto=format&fit=crop 1000w" sizes="(min-width:1240px) 560px, (min-width:760px) 46vw, 92vw" width="1000" height="563" alt="Frasco âmbar com conta-gotas, sem rótulo, sobre fundo claro" loading="lazy"></figure>
         <div class="topo-cartao"><span class="etq etq-florais">Florais</span><span class="apoio">Presencial ou a distância</span></div>
         <h3>Florais de Bach</h3>
         <p>Começa com uma conversa sobre o seu momento. A partir dela, escolhemos juntos as essências, entre as 38 criadas por Edward Bach, e preparamos o seu frasco para uso em gotas.</p>
@@ -575,7 +601,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       </article>
 
       <article class="cartao revelar" id="numerologia">
-        <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=800&q=70&auto=format&fit=crop" alt="Caderno e caneta sobre mesa de madeira, com sombras de luz natural" loading="lazy"></figure>
+        <figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=640&q=60&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=400&q=60&auto=format&fit=crop 400w, https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=640&q=60&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=1000&q=60&auto=format&fit=crop 1000w" sizes="(min-width:1240px) 560px, (min-width:760px) 46vw, 92vw" width="1000" height="563" alt="Caderno e caneta sobre mesa de madeira, com sombras de luz natural" loading="lazy"></figure>
         <div class="topo-cartao"><span class="etq etq-tradicao">Numerologia</span><span class="apoio">Presencial ou a distância</span></div>
         <h3>Mapa numerológico</h3>
         <p>Com o seu nome completo e a data de nascimento, preparamos um mapa escrito e conversamos sobre ele com calma. Um convite para olhar seus momentos, escolhas e caminhos por outro ângulo.</p>
@@ -608,7 +634,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
     </div>
 
     <div class="embreve revelar"><span class="etq etq-aberto">Em breve</span><span><strong>Baralho Cigano.</strong> A próxima parada da nossa caravana.</span></div>
-    <p class="aviso-linha revelar">As práticas integrativas podem complementar, e nunca substituir, o acompanhamento médico ou psicológico.</p>
+    <p class="aviso-linha revelar">As terapias integrativas podem complementar, e nunca substituir, o acompanhamento médico ou psicológico.</p>
   </div>
 </section>
 
@@ -626,7 +652,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       <div class="pilar revelar"><span class="etq etq-evidencia">Evidência</span><p>O que os estudos científicos já mostram, inclusive quando não encontram efeito.</p></div>
       <div class="pilar revelar"><span class="etq etq-aberto">Em aberto</span><p>O que ainda não se sabe. Preferimos dizer isso a prometer o que não podemos.</p></div>
     </div>
-    <p class="pnpic revelar">O Reiki e a terapia de florais fazem parte da Política Nacional de Práticas Integrativas e Complementares (PNPIC) do SUS, como práticas complementares de cuidado. Estar na política pública não significa que curam ou tratam doenças.</p>
+    <p class="pnpic revelar">O Reiki e a terapia de florais fazem parte da Política Nacional de Práticas Integrativas e Complementares (PNPIC) do SUS, como terapias integrativas e complementares de cuidado. Estar na política pública não significa que resolvam doenças ou substituam o cuidado médico.</p>
   </div>
 </section>
 
@@ -657,7 +683,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
     <div class="agenda-grid">
       <form class="agendador" id="form-agenda" novalidate>
         <div class="passo" id="passo-terapia">
-          <div class="passo-topo"><span class="passo-num" aria-hidden="true">1</span><h3 id="t-terapia">Qual terapia?</h3></div>
+          <div class="passo-topo"><span class="passo-num" aria-hidden="true">1</span><h3 id="t-terapia">Qual atendimento?</h3></div>
           <div id="opcoes-terapia" role="radiogroup" aria-labelledby="t-terapia"></div>
           <div class="ajustes" id="ajustes" hidden></div>
           <div class="modalidade" id="linha-modalidade" hidden></div>
@@ -746,8 +772,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
         <div class="resposta"><p>Não. Nenhuma das práticas pede que você siga uma religião ou mude suas crenças. Pessoas de qualquer fé, ou sem nenhuma, são bem-vindas.</p></div>
       </details>
       <details>
-        <summary>Substitui tratamento médico ou psicológico?</summary>
-        <div class="resposta"><p>Nunca. As práticas integrativas podem complementar, e nunca substituir, o acompanhamento médico ou psicológico. Não interrompa tratamentos ou medicações por causa de uma sessão.</p></div>
+        <summary>Substitui acompanhamento médico ou psicológico?</summary>
+        <div class="resposta"><p>Nunca. As terapias integrativas podem complementar, e nunca substituir, o acompanhamento médico ou psicológico. Não interrompa nenhum acompanhamento, remédio ou orientação médica por causa de uma sessão.</p></div>
       </details>
       <details>
         <summary>Os Florais de Bach têm álcool?</summary>
@@ -821,7 +847,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
     <div class="rodape-grid">
       <div style="display:grid; gap:18px; align-content:start">
         <a class="logo" href="#inicio" aria-label="Kairavana, voltar ao início"><svg aria-hidden="true"><use href="#roda"/></svg>kairavana</a>
-        <p>Terapias holísticas com delicadeza e com os pés no chão.</p>
+        <p>Terapias integrativas com delicadeza e com os pés no chão.</p>
       </div>
       <div>
         <h4>Navegar</h4>
@@ -836,7 +862,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       </div>
       <div style="display:grid; gap:14px; align-content:start">
         <h4>Responsabilidade</h4>
-        <p>As práticas integrativas podem complementar, e nunca substituir, o acompanhamento médico ou psicológico. Não fazemos diagnósticos nem prometemos cura.</p>
+        <p>As terapias integrativas podem complementar, e nunca substituir, o acompanhamento médico ou psicológico. Não fazemos avaliações médicas nem prometemos resultados.</p>
         <p>Fontes de referência: <a href="https://www.nccih.nih.gov/" target="_blank" rel="noopener">NCCIH</a>, <a href="https://www.bachcentre.com/" target="_blank" rel="noopener">Bach Centre</a> e <a href="https://www.gov.br/saude/pt-br/composicao/saps/pnpic" target="_blank" rel="noopener">Ministério da Saúde (PNPIC)</a>.</p>
       </div>
     </div>
@@ -988,15 +1014,15 @@ function pedido(){
   if (t.cartas){
     const n = estado.perguntas, num = estado.numerologia;
     return { nome: `Cartomancia (${n} perguntas)${num ? " + Numerologia" : ""}`, duracao: num ? "50 a 70 min" : "30 a 50 min",
-      valor: pacote ? "combinado na conversa" : reais(t.precoPergunta * n + (num ? CONFIG.numerologia.preco : 0)) };
+      valor: pacote ? "a combinar pelo WhatsApp" : reais(t.precoPergunta * n + (num ? CONFIG.numerologia.preco : 0)) };
   }
   const todos = [t, ...estado.complementos.map(terapiaPorId).filter(Boolean)];
   const total = todos.every(x => x.preco) ? todos.reduce((s, x) => s + x.preco, 0) : 0;
   return { nome: todos.map(x => x.nome).join(" + "), duracao: `cerca de ${tempo(todos.reduce((s, x) => s + x.min, 0))}`,
-    valor: pacote || !total ? "combinado na conversa" : todos.length > 1 ? `${reais(total)} (referência)` : reais(total) };
+    valor: pacote || !total ? "a combinar pelo WhatsApp" : reais(total) };
 }
 
-const GRUPOS = [["A", "Podem receber um complemento"], ["B", "Complementos ou sozinhos"], ["I", "Atendimentos individuais"]];
+const GRUPOS = [["A", "Principais · dá para somar uma prática"], ["B", "Práticas curtas · sozinhas ou somadas"], ["I", "Atendimentos individuais"]];
 function renderTerapias(){
   $("#opcoes-terapia").innerHTML = GRUPOS.map(([g, titulo]) => `
     <div class="grupo-opcoes"><span class="periodo">${titulo}</span><div class="terapia-opcoes">${CONFIG.terapias.filter(t => t.grupo === g).map(t => `
@@ -1004,21 +1030,21 @@ function renderTerapias(){
         <span class="opcao-corpo"><strong>${t.nome}</strong><small>${detalhe(t)} · ${t.modalidades.join(" ou ").toLowerCase()}</small></span>
       </label>`).join("")}</div></div>`).join("");
 }
-const notaFormato = () => estado.formato === CONFIG.formatos[0] ? "" : "Pacotes renovam todo mês. O valor é combinado na conversa.";
+const notaFormato = () => estado.formato === CONFIG.formatos[0] ? "" : "Os pacotes são renovados a cada mês. Combinamos o valor pelo WhatsApp.";
 // complementos, perguntas e formato: só aparecem as combinações permitidas
 function renderAjustes(){
   const t = terapiaAtual(), box = $("#ajustes");
   box.hidden = !t; if (!t) return;
   let html = "";
   const comps = complementosPara(t);
-  if (comps.length) html += `<fieldset><legend>Quer somar um complemento? (opcional)</legend><div class="checks">${comps.map(c =>
+  if (comps.length) html += `<fieldset><legend>Quer somar mais uma prática? (opcional)</legend><div class="checks">${comps.map(c =>
     `<label class="check"><input type="checkbox" name="complemento" value="${c.id}"${estado.complementos.includes(c.id) ? " checked" : ""}>${c.nome}<small>+ ${reais(c.preco)} · ${tempo(c.min)}</small></label>`).join("")}</div></fieldset>`;
   else if (t.cartas) html += `<fieldset><legend id="t-perg">Quantas perguntas?</legend><div class="linha-contador">
       <div class="contador" role="group" aria-labelledby="t-perg"><button type="button" data-passo="-1" aria-label="Menos uma pergunta">−</button><output id="n-perguntas" aria-live="polite">${estado.perguntas}</output><button type="button" data-passo="1" aria-label="Mais uma pergunta">+</button></div>
-      <span class="nota-modalidade">${reais(t.precoPergunta)} cada, mínimo de ${t.minPerguntas}</span></div></fieldset>
-    <label class="check"><input type="checkbox" name="numerologia"${estado.numerologia ? " checked" : ""}>Somar Numerologia<small>+ ${reais(CONFIG.numerologia.preco)} · ${CONFIG.numerologia.min} min</small></label>`;
-  else if (t.grupo === "I") html += `<p class="nota-modalidade">Este atendimento é feito sozinho, sem combinações.</p>`;
-  html += `<fieldset><legend>Formato</legend><div class="segmentado">${CONFIG.formatos.map(f =>
+      <span class="nota-modalidade">${reais(t.precoPergunta)} por pergunta · mínimo de ${t.minPerguntas}</span></div></fieldset>
+    <label class="check"><input type="checkbox" name="numerologia"${estado.numerologia ? " checked" : ""}>Incluir Numerologia<small>+ ${reais(CONFIG.numerologia.preco)} · ${CONFIG.numerologia.min} min</small></label>`;
+  else if (t.grupo === "I") html += `<p class="nota-modalidade">Este atendimento é feito sozinho, sem somar outras práticas.</p>`;
+  html += `<fieldset><legend>Quantas sessões?</legend><div class="segmentado">${CONFIG.formatos.map(f =>
     `<label><input type="radio" name="formato" value="${f}"${f === estado.formato ? " checked" : ""}><span>${f === CONFIG.formatos[0] ? "1 sessão" : f.replace("Pacote de ", "")}</span></label>`).join("")}</div></fieldset>
     <p class="nota-modalidade" id="nota-formato">${notaFormato()}</p>`;
   box.innerHTML = html;
@@ -1037,7 +1063,7 @@ function renderModalidade(){
   box.hidden = false;
   box.innerHTML = t.modalidades.length === 1
     ? `<span class="nota-modalidade">Atendimento ${t.modalidades[0].toLowerCase()}.</span>`
-    : `<span id="t-mod">Como prefere?</span><div class="segmentado" role="radiogroup" aria-labelledby="t-mod">${t.modalidades.map(m =>
+    : `<span id="t-mod">Presencial ou a distância?</span><div class="segmentado" role="radiogroup" aria-labelledby="t-mod">${t.modalidades.map(m =>
         `<label><input type="radio" name="modalidade" value="${m}"${m === estado.modalidade ? " checked" : ""}><span>${m}</span></label>`).join("")}</div>`;
   $("#campo-crianca").hidden = !t.crianca;
 }
@@ -1091,7 +1117,7 @@ function renderHoras(){
 
 function faltando(){
   const f = [];
-  if (!estado.terapia) f.push(["terapia", "#passo-terapia"]);
+  if (!estado.terapia) f.push(["atendimento", "#passo-terapia"]);
   if (!estado.data) f.push(["dia", "#passo-dia"]);
   if (!estado.hora) f.push(["horário", "#passo-hora"]);
   if (!$("#ag-nome").value.trim()) f.push(["seu nome", "#passo-nome"]);
@@ -1107,20 +1133,20 @@ function atualiza(){
   $("#passo-nome").classList.toggle("feito", !!nome);
 
   const linhas = [
-    ["Terapia", p ? p.nome : ""],
-    ["Formato", t ? estado.formato : ""],
+    ["Atendimento", p ? p.nome : ""],
+    ["Sessões", t ? estado.formato : ""],
     ["Modalidade", t ? estado.modalidade : ""],
     ["Dia", estado.data ? dataLonga(estado.data) : ""],
     ["Horário", estado.hora || ""],
     ["Nome", nome],
-    ["Valor", p ? p.valor : ""]
+    ["Valor estimado", p ? p.valor : ""]
   ];
   $("#resumo-lista").innerHTML = linhas.map(([k, v]) => `<div><dt>${k}</dt><dd class="${v ? "" : "pendente"}">${v ? v.replace(/</g, "&lt;") : "—"}</dd></div>`).join("");
 
   const f = faltando(), pronto = !f.length;
   let href = "#agenda";
   if (pronto){
-    let msg = `Olá, Kairavana! Gostaria de agendar:\n\n• Terapia: ${p.nome} (${p.duracao})\n• Formato: ${estado.formato}\n• Modalidade: ${estado.modalidade}\n• Dia: ${dataLonga(estado.data)}\n• Horário: ${estado.hora}\n• Nome: ${nome}\n• Valor: ${p.valor}`;
+    let msg = `Olá, Kairavana! Gostaria de agendar:\n\n• Atendimento: ${p.nome} (${p.duracao})\n• Sessões: ${estado.formato}\n• Modalidade: ${estado.modalidade}\n• Dia: ${dataLonga(estado.data)}\n• Horário: ${estado.hora}\n• Nome: ${nome}\n• Valor estimado: ${p.valor}`;
     if (t.crianca && crianca) msg += `\n• Criança: ${crianca}`;
     if (obs) msg += `\n\n${obs}`;
     msg += `\n\nFico no aguardo da confirmação.`;
@@ -1131,7 +1157,7 @@ function atualiza(){
   const partes = [p && p.nome, estado.data && dataCurta(estado.data), estado.hora].filter(Boolean);
   $("#barra-texto").innerHTML = partes.length
     ? `<strong>${partes.join(" · ")}</strong>${pronto ? "Pronto para enviar" : "Falta: " + f.map(x => x[0]).join(", ")}`
-    : `<strong>Monte seu pedido</strong>Escolha terapia, dia e horário`;
+    : `<strong>Monte seu pedido</strong>Escolha o atendimento, o dia e o horário`;
 }
 
 // botão incompleto: leva até o que falta, em vez de não fazer nada
@@ -1187,6 +1213,18 @@ function barra(){
   $("#wa-flutuante").classList.toggle("recolhido", naTela && innerWidth < 1000);
 }
 addEventListener("scroll", barra, { passive: true }); addEventListener("resize", barra); barra();
+
+/* menu: destaca a seção que está na tela */
+const linksMenu = [...menu.querySelectorAll("a")];
+const alvoDoLink = a => { const h = a.getAttribute("href"); return h.startsWith("#") ? h.slice(1) : h === "loja.html" ? "loja" : null; };
+function marcaSecao(){
+  const linha = 140; // logo abaixo do topo fixo
+  const sec = [...document.querySelectorAll("main > section")].find(s => { const r = s.getBoundingClientRect(); return r.top <= linha && r.bottom > linha; });
+  linksMenu.forEach(a => { if (sec && alvoDoLink(a) === sec.id) a.setAttribute("aria-current", "location"); else a.removeAttribute("aria-current"); });
+}
+let quadroMenu = 0;
+addEventListener("scroll", () => { cancelAnimationFrame(quadroMenu); quadroMenu = requestAnimationFrame(marcaSecao); }, { passive: true });
+marcaSecao();
 
 /* =========== integração com a loja =========== */
 // contador do carrinho no topo (o carrinho é o mesmo da loja)

@@ -72,7 +72,7 @@ const DEMO_PRODUTOS = [
   P("Oráculo Caminhos (44 cartas)", "oraculos", 119.9, { destaque: true, descricao: "Baralho de autoconhecimento com livreto. Para reflexão, não para previsão." }),
   P("Baralho Cigano tradicional (36 cartas)", "oraculos", 59.9, { estoque: 0, descricao: "Baralho cigano com livreto explicativo." })
 ].map((p, i) => ({ ...p, id: "demo-" + (i + 1), slug: slug(p.nome), imagens: [], criado_em: new Date(Date.now() - i * 864e5 * 3).toISOString() }));
-const CORES = { velas: "#D9A597", "oleos-essenciais": "#EFE3D8", incensos: "#C58A4A", sprays: "#D9A597", "banhos-de-ervas": "#EFE3D8", "sais-de-banho": "#C58A4A", cristais: "#6B4A42", florais: "#EFE3D8", oraculos: "#D9A597" };
+const CORES = { velas: "#D9A597", "oleos-essenciais": "#F7EFE7", incensos: "#C58A4A", sprays: "#D9A597", "banhos-de-ervas": "#F7EFE7", "sais-de-banho": "#C58A4A", cristais: "#6B4A42", florais: "#F7EFE7", oraculos: "#D9A597" };
 const CONFIG_PADRAO = { frete_fixo: 22, frete_gratis_acima: 250, parcelas_sem_juros: 3 };
 
 // estado da demonstração, guardado na aba do navegador
@@ -299,32 +299,45 @@ Loja.ICONES = `<svg width="0" height="0" style="position:absolute" aria-hidden="
   <symbol id="i-sacola" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 13H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></g></symbol>
   <symbol id="i-coracao" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></symbol>
   <symbol id="i-fechar" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="i-filtro" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 6h16M7 12h10M10 18h4"/></symbol>
   <symbol id="i-wa" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
 </svg>`;
 
-Loja.cabecalho = (categorias = [], ativa = "") => `
-  ${DEMO ? `<p class="aviso-demo">Loja em modo demonstração: produtos e valores são exemplos, e nenhum pagamento é feito.</p>` : ""}
-  <p class="faixa">Cada pedido vai em embalagem Kairavana, com cartão e mensagem. <strong>Frete grátis</strong> a partir de <span data-frete-gratis>${brl(CONFIG_PADRAO.frete_gratis_acima)}</span>.</p>
+// mesmo topo do site em todas as páginas; na loja, uma segunda linha com busca e categorias
+const atual = cond => cond ? ' aria-current="page"' : "";
+Loja.cabecalho = (categorias = [], ativa = "", pagina = "loja") => `
+  ${DEMO ? `<p class="aviso-demo">Loja em demonstração: os produtos e valores são exemplos e nenhuma compra é cobrada.</p>` : ""}
+  ${pagina === "loja" ? `<p class="faixa">Todo pedido vai embalado com carinho, com cartão e mensagem. <strong>Frete grátis</strong> a partir de <span data-frete-gratis>${brl(CONFIG_PADRAO.frete_gratis_acima)}</span>.</p>` : ""}
   <header class="cab">
     <div class="wrap cab-linha">
-      <a class="logo" href="loja.html#/" aria-label="Kairavana, loja"><svg aria-hidden="true"><use href="#roda"/></svg>kairavana<small>loja</small></a>
-      <form class="busca" role="search" id="form-busca"><label class="sr" for="busca">Buscar produtos</label>
-        <input id="busca" type="search" placeholder="Buscar velas, óleos, cristais…" autocomplete="off">
-        <button type="submit" aria-label="Buscar"><svg width="20" height="20" aria-hidden="true"><use href="#i-busca"/></svg></button></form>
+      <a class="logo" href="index.html" aria-label="Kairavana, página inicial"><svg aria-hidden="true"><use href="#roda"/></svg>kairavana</a>
+      <nav class="cab-menu" id="cab-menu" aria-label="Principal">
+        <a href="index.html#sobre">Sobre</a>
+        <a href="index.html#terapias">Terapias</a>
+        <a href="index.html#cuidado">Nosso cuidado</a>
+        <a href="index.html#perguntas">Perguntas</a>
+        <a href="loja.html#/"${atual(pagina === "loja")}>Loja</a>
+        <a href="conta.html" class="so-celular"${atual(pagina === "conta")}>Minha conta</a>
+        <a href="index.html#contato">Contato</a>
+        <a class="btn btn-primario" href="index.html#agenda">Agendar um horário</a>
+      </nav>
       <div class="icones">
-        <a class="icone" href="loja.html#/favoritos" aria-label="Favoritos"><svg aria-hidden="true"><use href="#i-coracao"/></svg></a>
-        <a class="icone" href="conta.html" aria-label="Minha conta"><svg aria-hidden="true"><use href="#i-conta"/></svg></a>
+        <a class="icone icone-conta" href="conta.html" aria-label="Minha conta"${atual(pagina === "conta")}><svg aria-hidden="true"><use href="#i-conta"/></svg></a>
         <button class="icone" type="button" id="abrir-carrinho" aria-label="Abrir carrinho"><svg aria-hidden="true"><use href="#i-sacola"/></svg><span class="contagem" id="contagem" hidden></span></button>
+        <button class="icone cab-menu-botao" type="button" id="cab-menu-botao" aria-expanded="false" aria-controls="cab-menu" aria-label="Abrir menu"><svg aria-hidden="true"><use href="#i-menu"/></svg></button>
       </div>
     </div>
-    <nav class="cats" aria-label="Categorias"><ul class="wrap">
-      <li><a href="loja.html#/"${ativa === "todos" ? ' aria-current="page"' : ""}>Todos</a></li>
-      ${categorias.map(c => `<li><a href="loja.html#/categoria/${esc(c.slug)}"${ativa === c.slug ? ' aria-current="page"' : ""}>${esc(c.nome)}</a></li>`).join("")}
-      <li class="cats-site"><a href="index.html#terapias">Atendimentos</a></li>
-      <li><a href="index.html#agenda">Agendar</a></li>
-      <li><a href="index.html">Site Kairavana</a></li>
-    </ul></nav>
+    ${pagina === "loja" ? `<div class="cab-loja"><div class="wrap cab-loja-linha">
+      <nav class="cats" aria-label="Categorias da loja"><ul>
+        <li><a href="loja.html#/"${atual(ativa === "todos")}>Todos</a></li>
+        ${categorias.map(c => `<li><a href="loja.html#/categoria/${esc(c.slug)}"${atual(ativa === c.slug)}>${esc(c.nome)}</a></li>`).join("")}
+        <li><a href="loja.html#/favoritos"${atual(ativa === "favoritos")}><svg width="16" height="16" aria-hidden="true"><use href="#i-coracao"/></svg>Favoritos</a></li>
+      </ul></nav>
+      <form class="busca" role="search" id="form-busca"><label class="sr" for="busca">Buscar produtos</label>
+        <input id="busca" type="search" placeholder="O que você procura?" autocomplete="off">
+        <button type="submit" aria-label="Buscar"><svg width="20" height="20" aria-hidden="true"><use href="#i-busca"/></svg></button></form>
+    </div></div>` : ""}
   </header>`;
 
 Loja.rodape = () => `
@@ -363,12 +376,12 @@ Loja.montarCarrinho = async ({ aoFinalizar } = {}) => {
     document.querySelectorAll("[data-frete-gratis]").forEach(e => e.textContent = brl(cfg.frete_gratis_acima));
     const subtotal = itens.reduce((s, i) => s + i.p.preco * i.q, 0), frete = Loja.frete(subtotal, cfg);
     document.getElementById("gaveta-itens").innerHTML = itens.length ? itens.map(i => `
-      <div class="item"><img src="${esc(imagemDe(i.p))}" alt="">
+      <div class="item"><img src="${esc(imagemDe(i.p))}" alt="" loading="lazy">
         <div><strong>${esc(i.p.nome)}</strong><span class="apoio">${brl(i.p.preco)}</span>
           <div style="display:flex; align-items:center; gap:10px; margin-top:6px"><div class="qtd"><button type="button" data-menos="${esc(i.id)}" aria-label="Diminuir">−</button><output>${i.q}</output><button type="button" data-mais="${esc(i.id)}" aria-label="Aumentar"${i.q >= i.p.estoque ? " disabled" : ""}>+</button></div>
           <button type="button" class="remover" data-remover="${esc(i.id)}">Remover</button></div></div>
         <strong>${brl(i.p.preco * i.q)}</strong></div>`).join("")
-      : `<p class="vazio" style="margin-top:20px">Seu carrinho está vazio.</p>`;
+      : `<p class="vazio" style="margin-top:20px">Seu carrinho está vazio.<br>Escolha algo especial na loja.</p>`;
     const falta = cfg.frete_gratis_acima - subtotal;
     document.getElementById("gaveta-rodape").innerHTML = itens.length ? `
       ${falta > 0 ? `<p class="apoio">Faltam <strong>${brl(falta)}</strong> para o frete grátis.</p>` : `<p class="ok">Você ganhou frete grátis.</p>`}
@@ -397,11 +410,23 @@ Loja.montarCarrinho = async ({ aoFinalizar } = {}) => {
   return { abrir, fechar, cat, cfg };
 };
 
-Loja.busca = () => document.getElementById("form-busca")?.addEventListener("submit", e => {
-  e.preventDefault();
-  const q = document.getElementById("busca").value.trim();
-  location.href = "loja.html#/busca/" + encodeURIComponent(q);
-});
+// liga a busca e o menu do celular; chamada sempre que o topo é desenhado
+Loja.busca = () => {
+  document.getElementById("form-busca")?.addEventListener("submit", e => {
+    e.preventDefault();
+    const q = document.getElementById("busca").value.trim();
+    location.href = "loja.html#/busca/" + encodeURIComponent(q);
+  });
+  const botao = document.getElementById("cab-menu-botao"), menu = document.getElementById("cab-menu");
+  if (!botao) return;
+  const alternar = abrir => {
+    menu.classList.toggle("aberto", abrir); botao.setAttribute("aria-expanded", abrir);
+    botao.setAttribute("aria-label", abrir ? "Fechar menu" : "Abrir menu");
+    botao.querySelector("use").setAttribute("href", abrir ? "#i-fechar" : "#i-menu");
+  };
+  botao.addEventListener("click", () => alternar(!menu.classList.contains("aberto")));
+  menu.addEventListener("click", e => { if (e.target.closest("a")) alternar(false); });
+};
 
 window.Loja = Loja;
 })();
