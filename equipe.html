@@ -12,16 +12,16 @@
 <link rel="stylesheet" href="loja/loja.css">
 <style>
 body{background:var(--cal)}
-.portas{display:grid; gap:18px; margin-top:32px}
+.portas{display:grid; gap:var(--gap-grade); margin-top:32px}
 @media (min-width:760px){ .portas{grid-template-columns:1fr 1fr} }
-.porta{display:grid; gap:12px; align-content:start; padding:30px 28px; border-radius:28px; background:var(--branco); border:1px solid var(--linha); text-decoration:none; transition:border-color .2s, transform .2s}
+.porta{display:grid; gap:12px; align-content:start; padding:var(--pad-cartao); border-radius:var(--raio-g); background:var(--branco); border:1px solid var(--linha); text-decoration:none; transition:border-color .2s, transform .2s}
 .porta:hover{border-color:var(--tijolo); transform:translateY(-2px)}
 .porta h2{font-size:30px}
-.porta ul{margin:0; padding-left:18px; color:var(--marrom); font-size:15px}
+.porta ul{margin:0; padding-left:18px; color:var(--marrom); font-size:var(--fs-meta)}
 .porta .btn{justify-self:start; margin-top:6px}
 /* a barra da equipe fica sempre visível, também no celular */
 .equipe-menu{position:static!important; display:flex!important; flex-direction:row!important; flex-wrap:wrap; padding:0!important; background:none!important; border:0!important; box-shadow:none!important}
-.equipe-menu a:not(.btn){min-height:44px!important; font-size:15px!important}
+.equipe-menu a:not(.btn){min-height:44px!important; font-size:var(--fs-meta)!important}
 @media (max-width:700px){ .cab-linha{flex-wrap:wrap; padding-block:8px} }
 .atalhos-site{display:flex; flex-wrap:wrap; gap:10px; margin-top:28px}
 </style>
