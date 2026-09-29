@@ -1215,7 +1215,8 @@ fetch("agenda.json?v=" + Date.now(), { cache: "no-store" })
 // barra fixa no celular: aparece enquanto a agenda está na tela
 function barra(){
   const r = $("#form-agenda").getBoundingClientRect();
-  const naTela = r.top < innerHeight * 0.9 && r.bottom > innerHeight * 0.3; // aparece assim que o formulário entra na tela
+  const s = $("#agenda").getBoundingClientRect(); // aparece assim que a seção da agenda entra na tela, até o fim do formulário
+  const naTela = s.top < innerHeight * 0.9 && r.bottom > innerHeight * 0.3;
   $("#barra-envio").classList.toggle("visivel", naTela);
   $("#wa-flutuante").classList.toggle("recolhido", naTela && innerWidth < 1000);
 }
