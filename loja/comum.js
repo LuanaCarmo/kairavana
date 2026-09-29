@@ -343,7 +343,7 @@ Loja.rodape = () => `
 Loja.montarCarrinho = async ({ aoFinalizar } = {}) => {
   document.body.insertAdjacentHTML("beforeend", `
     <div class="fundo" id="fundo" hidden></div>
-    <aside class="gaveta" id="gaveta" aria-labelledby="gaveta-titulo" aria-hidden="true">
+    <aside class="gaveta" id="gaveta" aria-labelledby="gaveta-titulo" inert>
       <div class="gaveta-topo"><h2 id="gaveta-titulo">Seu carrinho</h2><button class="icone" type="button" id="fechar-carrinho" aria-label="Fechar carrinho"><svg aria-hidden="true"><use href="#i-fechar"/></svg></button></div>
       <div class="gaveta-itens" id="gaveta-itens"></div>
       <div class="gaveta-rodape" id="gaveta-rodape"></div>
@@ -352,8 +352,8 @@ Loja.montarCarrinho = async ({ aoFinalizar } = {}) => {
   document.querySelectorAll("[data-frete-gratis]").forEach(e => e.textContent = brl(cfg.frete_gratis_acima));
   const gaveta = document.getElementById("gaveta"), fundo = document.getElementById("fundo");
   let voltarFoco = null;
-  const abrir = () => { voltarFoco = document.activeElement; gaveta.classList.add("aberta"); gaveta.setAttribute("aria-hidden", "false"); fundo.hidden = false; document.getElementById("fechar-carrinho").focus(); };
-  const fechar = () => { gaveta.classList.remove("aberta"); gaveta.setAttribute("aria-hidden", "true"); fundo.hidden = true; voltarFoco?.focus(); };
+  const abrir = () => { voltarFoco = document.activeElement; gaveta.classList.add("aberta"); gaveta.inert = false; fundo.hidden = false; document.getElementById("fechar-carrinho").focus(); };
+  const fechar = () => { gaveta.classList.remove("aberta"); gaveta.inert = true; fundo.hidden = true; voltarFoco?.focus(); };
   function render(){
     const itens = Loja.carrinho.ler().map(i => ({ ...i, p: cat.produtos.find(p => p.id === i.id) })).filter(i => i.p);
     const n = itens.reduce((s, i) => s + i.q, 0), c = document.getElementById("contagem");
