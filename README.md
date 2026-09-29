@@ -29,7 +29,7 @@ Para entrar, é preciso uma chave de acesso do GitHub (fine-grained token) com a
 
 ## Fotos
 
-Fotos do [Unsplash](https://unsplash.com/license), de uso livre: Jared Rice, Jon Cartagena, Anna Blake, Susie Ho, Kadarius Seegars e Andres Molina.
+Fotos do [Unsplash](https://unsplash.com/license), de uso livre: Jared Rice, Jon Cartagena, Anna Blake, Susie Ho, Kadarius Seegars, Andres Molina e German Krupenin (trilha ao entardecer, na seção Sobre).
 
 ## Revisão automática (GitHub Actions)
 
