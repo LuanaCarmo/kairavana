@@ -85,7 +85,7 @@ function vitrine({ titulo, texto, base, trilha }){
     <nav class="trilha" aria-label="Você está em"><a href="index.html">Início</a> › <a href="#/">Loja</a>${trilha ? ` › ${esc(trilha)}` : ""}</nav>
     <section class="banner">
       <div><h1>${esc(titulo)}</h1><p>${esc(texto)}</p></div>
-      <div class="banner-arte" aria-hidden="true"><img src="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=1200&q=70&auto=format&fit=crop" alt=""></div>
+      <div class="banner-arte" aria-hidden="true"><img class="img-kairavana" src="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=1000&q=60&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=600&q=60&auto=format&fit=crop 600w, https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=1000&q=60&auto=format&fit=crop 1000w, https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=1400&q=60&auto=format&fit=crop 1400w" sizes="(min-width:900px) 55vw, 92vw" width="1400" height="700" alt=""></div>
     </section>
     <div class="vitrine">
       <aside class="filtros" id="filtros" aria-label="Filtros">
@@ -139,7 +139,7 @@ function paginaProduto(p){
     <div class="produto">
       <div class="galeria">
         <div class="galeria-principal"><img id="foto-principal" src="${esc(imgs[0])}" alt="${esc(p.nome)}"></div>
-        ${imgs.length > 1 ? `<div class="miniaturas">${imgs.map((src, i) => `<button type="button" data-foto="${esc(src)}" aria-label="Ver foto ${i + 1}" aria-current="${i === 0}"><img src="${esc(src)}" alt=""></button>`).join("")}</div>` : ""}
+        ${imgs.length > 1 ? `<div class="miniaturas">${imgs.map((src, i) => `<button type="button" data-foto="${esc(src)}" aria-label="Ver foto ${i + 1}" aria-current="${i === 0}"><img src="${esc(src)}" alt="" loading="lazy"></button>`).join("")}</div>` : ""}
       </div>
       <div class="produto-info">
         <div style="display:flex; gap:8px; flex-wrap:wrap">${o ? `<span class="selo selo-off">${o}% off</span>` : ""}${p.destaque ? `<span class="selo selo-destaque">Mais amado</span>` : ""}${esgotado ? `<span class="selo selo-esgotado">Esgotado</span>` : ""}</div>

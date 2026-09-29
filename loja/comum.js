@@ -376,7 +376,7 @@ Loja.montarCarrinho = async ({ aoFinalizar } = {}) => {
     document.querySelectorAll("[data-frete-gratis]").forEach(e => e.textContent = brl(cfg.frete_gratis_acima));
     const subtotal = itens.reduce((s, i) => s + i.p.preco * i.q, 0), frete = Loja.frete(subtotal, cfg);
     document.getElementById("gaveta-itens").innerHTML = itens.length ? itens.map(i => `
-      <div class="item"><img src="${esc(imagemDe(i.p))}" alt="">
+      <div class="item"><img src="${esc(imagemDe(i.p))}" alt="" loading="lazy">
         <div><strong>${esc(i.p.nome)}</strong><span class="apoio">${brl(i.p.preco)}</span>
           <div style="display:flex; align-items:center; gap:10px; margin-top:6px"><div class="qtd"><button type="button" data-menos="${esc(i.id)}" aria-label="Diminuir">−</button><output>${i.q}</output><button type="button" data-mais="${esc(i.id)}" aria-label="Aumentar"${i.q >= i.p.estoque ? " disabled" : ""}>+</button></div>
           <button type="button" class="remover" data-remover="${esc(i.id)}">Remover</button></div></div>
