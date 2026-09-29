@@ -419,13 +419,18 @@ Loja.busca = () => {
   });
   const botao = document.getElementById("cab-menu-botao"), menu = document.getElementById("cab-menu");
   if (!botao) return;
+  // menu em tela cheia no celular: ocupa do topo até o fim da tela e trava a rolagem da página por trás
   const alternar = abrir => {
+    if (abrir) menu.style.height = `${innerHeight - menu.parentElement.getBoundingClientRect().bottom}px`;
     menu.classList.toggle("aberto", abrir); botao.setAttribute("aria-expanded", abrir);
     botao.setAttribute("aria-label", abrir ? "Fechar menu" : "Abrir menu");
     botao.querySelector("use").setAttribute("href", abrir ? "#i-fechar" : "#i-menu");
+    document.documentElement.classList.toggle("menu-aberto", abrir);
   };
   botao.addEventListener("click", () => alternar(!menu.classList.contains("aberto")));
   menu.addEventListener("click", e => { if (e.target.closest("a")) alternar(false); });
+  if (!Loja.escMenu){ Loja.escMenu = true; addEventListener("keydown", e => { const m = document.getElementById("cab-menu"); if (e.key === "Escape" && m?.classList.contains("aberto")) document.getElementById("cab-menu-botao").click(); }); }
+  matchMedia("(min-width:1280px)").addEventListener("change", e => { if (e.matches) alternar(false); });
 };
 
 window.Loja = Loja;
