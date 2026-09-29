@@ -219,7 +219,8 @@ test("acessibilidade da loja (sem problemas graves)", async ({ page }) => {
 });
 
 test("dia sem horários aparece desativado com o aviso", async ({ page }) => {
-  const amanha = new Date(Date.now() + 864e5);
+  // depois de amanhã: amanhã sempre tem vaga, então o dia lotado nunca é o primeiro da lista (que a agenda pula)
+  const amanha = new Date(Date.now() + 2 * 864e5);
   const k = `${amanha.getFullYear()}-${String(amanha.getMonth() + 1).padStart(2, "0")}-${String(amanha.getDate()).padStart(2, "0")}`;
   await page.route("**/agenda.json*", r => r.fulfill({ contentType: "application/json", body: JSON.stringify({ ...AGENDA, ocupados: { [k]: AGENDA.horarios[0] } }) }));
   await page.goto("/index.html#agenda");

@@ -185,6 +185,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 
 /* terapias */
 .terapias-grid{display:grid; gap:var(--gap-grade)}
+/* título dos cartões: mesmo tamanho nos atendimentos principais e em "Mais atendimentos" */
+.cartao h3{font-size:clamp(25px,2.6vw,30px)}
 @media (min-width:760px){ .terapias-grid{grid-template-columns:1fr 1fr} }
 .cartao{background:var(--cal-clara); border-radius:var(--raio-g); padding:var(--pad-cartao); display:flex; flex-direction:column; gap:18px}
 .alt .cartao{background:var(--cal)}
@@ -205,11 +207,10 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .mais h3{font-size:clamp(28px,3vw,36px)}
 .mais-grid{list-style:none; margin:0; padding:0; display:grid; gap:var(--gap-grade)}
 @media (min-width:760px){ .mais-grid{grid-template-columns:1fr 1fr} }
-@media (min-width:1100px){ .mais-grid{grid-template-columns:repeat(4,1fr)} }
-.mais-grid li{background:var(--cal-clara); border-radius:var(--raio-m); padding:var(--pad-cartao-p); display:flex; flex-direction:column; gap:10px}
-.mais-grid strong{font-family:var(--display); font-weight:400; font-size:clamp(22px,2vw,25px); line-height:1.15}
-.mais-grid span{font-size:var(--fs-apoio); color:var(--marrom)}
-.mais-grid small{margin-top:auto; padding-top:12px; border-top:1px solid var(--linha-secao); font-weight:700; font-size:var(--fs-meta); color:var(--tijolo)}
+/* mesmos cartões dos atendimentos principais: mesma largura, cantos, espaçamento, título e ficha */
+.mais-grid li{background:var(--cal-clara); border-radius:var(--raio-g); padding:var(--pad-cartao); display:flex; flex-direction:column; gap:18px}
+.mais-grid h4{margin:0; font-family:var(--display); font-weight:400; font-size:clamp(25px,2.6vw,30px); line-height:1.07}
+.mais-grid .ficha{margin-top:auto}
 .destaques-home{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--gap-grade); margin-bottom:32px}
 @media (min-width:900px){ .destaques-home{grid-template-columns:repeat(4,minmax(0,1fr))} }
 .destaque{display:flex; flex-direction:column; gap:8px; padding:12px 12px 18px; border-radius:var(--raio-m); background:var(--cal-clara); color:var(--vinho); text-decoration:none; transition:transform .3s}
@@ -560,7 +561,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
         <div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Presencial ou a distância</span></div>
         <h3>Reiki para adultos</h3>
         <p>Prática de origem japonesa feita em silêncio, com as mãos posicionadas a poucos centímetros do corpo. Cerca de 50 minutos para desacelerar, respirar e simplesmente estar.</p>
-        <dl class="ficha"><dt>Duração</dt><dd>cerca de 50 minutos</dd><dt>Modalidade</dt><dd>presencial ou a distância</dd></dl>
+        <dl class="ficha"><dt>Duração</dt><dd>cerca de 50 minutos</dd><dt>Valor</dt><dd>R$ 150</dd><dt>Modalidade</dt><dd>presencial ou a distância</dd></dl>
         <details>
           <summary>Saiba mais sobre o Reiki</summary>
           <ul class="afirmacoes">
@@ -594,7 +595,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
         <div class="topo-cartao"><span class="etq etq-florais">Florais</span><span class="apoio">Presencial ou a distância</span></div>
         <h3>Florais de Bach</h3>
         <p>Começa com uma conversa sobre o seu momento. A partir dela, escolhemos juntos as essências, entre as 38 criadas por Edward Bach, e preparamos o seu frasco para uso em gotas.</p>
-        <dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Atenção</dt><dd>a maioria das essências contém álcool</dd></dl>
+        <dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Valor</dt><dd>R$ 100</dd><dt>Atenção</dt><dd>a maioria das essências contém álcool</dd></dl>
         <details>
           <summary>Saiba mais sobre os Florais</summary>
           <ul class="afirmacoes">
@@ -627,16 +628,16 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       <h3>Mais atendimentos</h3>
       <p class="apoio">Reiki e Cristaloterapia podem receber um complemento de Florais, Aromaterapia, Alinhamento de Chakras ou Mindfulness. Os demais são feitos sozinhos. Na agenda, só aparecem as combinações possíveis.</p>
       <ul class="mais-grid">
-        <li><strong>Cristaloterapia</strong><span>Cristais e pedras dispostos ao seu redor enquanto você descansa e respira.</span><small>cerca de 50 min · R$ 150</small></li>
-        <li><strong>Aromaterapia</strong><span>Óleos essenciais escolhidos junto com você, num momento guiado pelo olfato.</span><small>cerca de 30 min · R$ 100</small></li>
-        <li><strong>Alinhamento de Chakras</strong><span>Respiração e visualização inspiradas nos centros de energia da tradição indiana.</span><small>cerca de 30 min · R$ 100</small></li>
-        <li><strong>Mindfulness</strong><span>Exercícios de atenção plena e respiração para trazer a mente ao presente.</span><small>cerca de 30 min · R$ 100</small></li>
-        <li><strong>Constelação Familiar</strong><span>Dinâmica sistêmica para olhar relações e histórias de família por outro ângulo.</span><small>cerca de 1 h · R$ 200</small></li>
-        <li><strong>Mesa Radiônica</strong><span>Uma leitura com um tabuleiro de símbolos e gráficos, a partir de uma conversa sobre o seu momento.</span><small>cerca de 1 h · R$ 200</small></li>
-        <li><strong>Arteterapia</strong><span>Expressão por desenho, pintura e colagem. Não é preciso saber desenhar.</span><small>cerca de 40 min · R$ 130</small></li>
-        <li><strong>Cartomancia</strong><span>Cartas como ferramenta de reflexão, não de previsão. Pode incluir Numerologia (+ 20 min, + R$ 60).</span><small>30 a 50 min · R$ 35 por pergunta (mín. 3)</small></li>
+        <li><h4>Cristaloterapia</h4><p>Cristais e pedras dispostos ao seu redor enquanto você descansa e respira.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 50 minutos</dd><dt>Valor</dt><dd>R$ 150</dd></dl></li>
+        <li><h4>Aromaterapia</h4><p>Óleos essenciais escolhidos junto com você, num momento guiado pelo olfato.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Valor</dt><dd>R$ 100</dd></dl></li>
+        <li><h4>Alinhamento de Chakras</h4><p>Respiração e visualização inspiradas nos centros de energia da tradição indiana.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Valor</dt><dd>R$ 100</dd></dl></li>
+        <li><h4>Mindfulness</h4><p>Exercícios de atenção plena e respiração para trazer a mente ao presente.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Valor</dt><dd>R$ 100</dd></dl></li>
+        <li><h4>Constelação Familiar</h4><p>Dinâmica sistêmica para olhar relações e histórias de família por outro ângulo.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 1 hora</dd><dt>Valor</dt><dd>R$ 200</dd></dl></li>
+        <li><h4>Mesa Radiônica</h4><p>Uma leitura com um tabuleiro de símbolos e gráficos, a partir de uma conversa sobre o seu momento.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 1 hora</dd><dt>Valor</dt><dd>R$ 200</dd></dl></li>
+        <li><h4>Arteterapia</h4><p>Expressão por desenho, pintura e colagem. Não é preciso saber desenhar.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 40 minutos</dd><dt>Valor</dt><dd>R$ 130</dd></dl></li>
+        <li><h4>Cartomancia</h4><p>Cartas como ferramenta de reflexão, não de previsão. Pode incluir Numerologia (+ 20 min, + R$ 60).</p><dl class="ficha"><dt>Duração</dt><dd>30 a 50 minutos</dd><dt>Valor</dt><dd>R$ 35 por pergunta (mín. 3)</dd></dl></li>
       </ul>
-      <p class="apoio">Reiki para adultos: R$ 150. Florais: R$ 100. Pacotes de 2, 4 ou 8 sessões, com renovação mensal: valores na conversa.</p>
+      <p class="apoio">Pacotes de 2, 4 ou 8 sessões, com renovação mensal: valores na conversa.</p>
     </div>
 
     <div class="embreve revelar"><span class="etq etq-aberto">Em breve</span><span><strong>Baralho Cigano.</strong> A próxima parada da nossa caravana.</span></div>
@@ -1214,7 +1215,7 @@ fetch("agenda.json?v=" + Date.now(), { cache: "no-store" })
 // barra fixa no celular: aparece enquanto a agenda está na tela
 function barra(){
   const r = $("#form-agenda").getBoundingClientRect();
-  const naTela = r.top < innerHeight * 0.7 && r.bottom > innerHeight * 0.3;
+  const naTela = r.top < innerHeight * 0.9 && r.bottom > innerHeight * 0.3; // aparece assim que o formulário entra na tela
   $("#barra-envio").classList.toggle("visivel", naTela);
   $("#wa-flutuante").classList.toggle("recolhido", naTela && innerWidth < 1000);
 }
