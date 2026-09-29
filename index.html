@@ -165,6 +165,22 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .afirmacoes li{display:grid; gap:6px; font-size:15.5px}
 .afirmacoes li p{color:var(--vinho)}
 .aviso-linha{margin-top:32px; font-size:15.5px; color:var(--marrom); max-width:70ch}
+.mais{margin-top:48px; display:grid; gap:18px}
+.mais h3{font-size:clamp(28px,3vw,36px)}
+.mais-grid{list-style:none; margin:0; padding:0; display:grid; gap:14px}
+@media (min-width:760px){ .mais-grid{grid-template-columns:1fr 1fr} }
+@media (min-width:1100px){ .mais-grid{grid-template-columns:repeat(4,1fr)} }
+.mais-grid li{background:var(--cal-clara); border-radius:24px; padding:22px 22px; display:flex; flex-direction:column; gap:8px}
+.mais-grid strong{font-family:var(--display); font-weight:400; font-size:22px; line-height:1.15}
+.mais-grid span{font-size:15px; color:var(--marrom)}
+.mais-grid small{margin-top:auto; font-weight:700; font-size:14px; color:var(--tijolo)}
+.vitrine-home{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:10px}
+.vitrine-home a{display:inline-flex; align-items:center; min-height:48px; padding:10px 20px; border-radius:999px; background:var(--cal-clara); border:1.5px solid color-mix(in srgb,var(--vinho) 18%,transparent); text-decoration:none; font-weight:500}
+.vitrine-home a:hover{border-color:var(--vinho)}
+.tijolo-bg .vitrine-home a{background:transparent; color:var(--cal); border-color:color-mix(in srgb,var(--cal) 60%,transparent)}
+.tijolo-bg .vitrine-home a:hover{background:var(--vinho)}
+.tijolo-bg .btn-primario{background:var(--cal); color:var(--vinho)}
+.tijolo-bg .btn-primario:hover{background:var(--rosa)}
 .embreve{display:flex; flex-wrap:wrap; gap:12px 20px; align-items:center; margin-top:24px; padding:22px 28px; border-radius:999px; border:1.5px dashed color-mix(in srgb,var(--vinho) 45%,transparent)}
 @media (max-width:600px){ .embreve{border-radius:28px} }
 .terapias .circulo{width:480px; aspect-ratio:1; left:-280px; top:100px}
@@ -220,6 +236,25 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .opcao input:checked + .opcao-corpo{background:var(--tijolo); border-color:var(--tijolo); color:var(--cal)}
 .opcao input:checked + .opcao-corpo small{color:var(--cal)}
 .opcao input:focus-visible + .opcao-corpo{outline:2px solid var(--tijolo); outline-offset:3px}
+.grupo-opcoes{margin-top:16px}
+.grupo-opcoes:first-child{margin-top:0}
+.grupo-opcoes .periodo{display:block; margin:0 0 10px}
+@media (max-width:599px){ .opcao-corpo{padding:12px 16px} }
+.ajustes{display:grid; gap:18px; margin-top:18px; padding-top:18px; border-top:1px solid color-mix(in srgb,var(--vinho) 15%,transparent)}
+.ajustes fieldset{border:0; margin:0; padding:0; min-width:0; display:grid; gap:10px}
+.ajustes legend{padding:0; margin-bottom:10px; font-weight:700; font-size:15px}
+.checks{display:grid; gap:8px}
+@media (min-width:600px){ .checks{grid-template-columns:1fr 1fr} }
+.check{display:flex; align-items:center; gap:12px; min-height:48px; padding:8px 16px; border-radius:18px; background:var(--cal-clara); border:2px solid color-mix(in srgb,var(--vinho) 18%,transparent); cursor:pointer; font-size:15.5px}
+.check:has(input:checked){border-color:var(--tijolo)}
+.check input{width:20px; height:20px; accent-color:var(--tijolo); flex:none; margin:0}
+.check small{margin-left:auto; color:var(--marrom); font-size:13.5px; white-space:nowrap}
+.contador{display:inline-flex; align-items:center; gap:6px; padding:4px; border-radius:999px; background:var(--cal-clara); border:2px solid color-mix(in srgb,var(--vinho) 18%,transparent)}
+.contador button{width:44px; height:44px; border-radius:50%; border:0; background:var(--cal); color:var(--vinho); font:700 20px var(--texto); cursor:pointer}
+.contador button:disabled{opacity:.4; cursor:not-allowed}
+.contador output{min-width:32px; text-align:center; font:700 18px var(--texto); font-variant-numeric:tabular-nums}
+.linha-contador{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px}
+.segmentado{flex-wrap:wrap}
 
 .modalidade{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin-top:18px}
 .modalidade > span{font-weight:700; font-size:15px}
@@ -402,6 +437,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       <a href="#terapias">Terapias</a>
       <a href="#cuidado">Nosso cuidado</a>
       <a href="#perguntas">Perguntas</a>
+      <a href="loja.html">Loja</a>
       <a href="#contato">Contato</a>
       <a class="btn btn-primario" href="#agenda">Agendar um horário</a>
     </nav>
@@ -457,7 +493,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   <div class="wrap">
     <div class="cabeca revelar">
       <p class="sobretitulo">Terapias</p>
-      <h2>Quatro formas de pausar.</h2>
+      <h2>Muitas formas de pausar.</h2>
       <p>Cada cartão mostra como o atendimento costuma ser. Em “Saiba mais”, separamos o que diz a tradição, o que as pessoas relatam e o que a evidência científica mostra.</p>
     </div>
 
@@ -466,8 +502,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
         <figure class="cartao-foto"><img src="https://images.unsplash.com/photo-1757066033647-366cc10e0de2?w=800&q=70&auto=format&fit=crop" style="object-position:center 80%" alt="Terapeuta com as mãos sobre a cabeça de uma pessoa deitada, durante uma sessão de Reiki" loading="lazy"></figure>
         <div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Presencial ou a distância</span></div>
         <h3>Reiki para adultos</h3>
-        <p>Prática de origem japonesa feita em silêncio, com as mãos posicionadas a poucos centímetros do corpo. Uma hora para desacelerar, respirar e simplesmente estar.</p>
-        <dl class="ficha"><dt>Duração</dt><dd>cerca de 60 minutos</dd><dt>Modalidade</dt><dd>presencial ou a distância</dd></dl>
+        <p>Prática de origem japonesa feita em silêncio, com as mãos posicionadas a poucos centímetros do corpo. Cerca de 50 minutos para desacelerar, respirar e simplesmente estar.</p>
+        <dl class="ficha"><dt>Duração</dt><dd>cerca de 50 minutos</dd><dt>Modalidade</dt><dd>presencial ou a distância</dd></dl>
         <details>
           <summary>Saiba mais sobre o Reiki</summary>
           <ul class="afirmacoes">
@@ -501,7 +537,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
         <div class="topo-cartao"><span class="etq etq-florais">Florais</span><span class="apoio">Presencial ou a distância</span></div>
         <h3>Florais de Bach</h3>
         <p>Começa com uma conversa sobre o seu momento. A partir dela, escolhemos juntos as essências, entre as 38 criadas por Edward Bach, e preparamos o seu frasco para uso em gotas.</p>
-        <dl class="ficha"><dt>Duração</dt><dd>cerca de 60 minutos</dd><dt>Atenção</dt><dd>a maioria das essências contém álcool</dd></dl>
+        <dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Atenção</dt><dd>a maioria das essências contém álcool</dd></dl>
         <details>
           <summary>Saiba mais sobre os Florais</summary>
           <ul class="afirmacoes">
@@ -528,6 +564,22 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
           </ul>
         </details>
       </article>
+    </div>
+
+    <div class="mais revelar" id="mais-atendimentos">
+      <h3>Mais atendimentos</h3>
+      <p class="apoio">Reiki e Cristaloterapia podem receber um complemento de Florais, Aromaterapia, Alinhamento de Chakras ou Mindfulness. Os demais são feitos sozinhos. Na agenda, só aparecem as combinações possíveis.</p>
+      <ul class="mais-grid">
+        <li><strong>Cristaloterapia</strong><span>Cristais e pedras dispostos ao seu redor enquanto você descansa e respira.</span><small>cerca de 50 min · R$ 150</small></li>
+        <li><strong>Aromaterapia</strong><span>Óleos essenciais escolhidos junto com você, num momento guiado pelo olfato.</span><small>cerca de 30 min · R$ 100</small></li>
+        <li><strong>Alinhamento de Chakras</strong><span>Respiração e visualização inspiradas nos centros de energia da tradição indiana.</span><small>cerca de 30 min · R$ 100</small></li>
+        <li><strong>Mindfulness</strong><span>Exercícios de atenção plena e respiração para trazer a mente ao presente.</span><small>cerca de 30 min · R$ 100</small></li>
+        <li><strong>Constelação Familiar</strong><span>Dinâmica sistêmica para olhar relações e histórias de família por outro ângulo.</span><small>cerca de 1 h · R$ 200</small></li>
+        <li><strong>Mesa Radiônica</strong><span>Uma leitura com um tabuleiro de símbolos e gráficos, a partir de uma conversa sobre o seu momento.</span><small>cerca de 1 h · R$ 200</small></li>
+        <li><strong>Arteterapia</strong><span>Expressão por desenho, pintura e colagem. Não é preciso saber desenhar.</span><small>cerca de 40 min · R$ 130</small></li>
+        <li><strong>Cartomancia</strong><span>Cartas como ferramenta de reflexão, não de previsão. Pode incluir Numerologia (+ 20 min, + R$ 60).</span><small>30 a 50 min · R$ 35 por pergunta (mín. 3)</small></li>
+      </ul>
+      <p class="apoio">Reiki para adultos: R$ 150. Florais: R$ 100. Pacotes de 2, 4 ou 8 sessões, com renovação mensal: valores na conversa.</p>
     </div>
 
     <div class="embreve revelar"><span class="etq etq-aberto">Em breve</span><span><strong>Baralho Cigano.</strong> A próxima parada da nossa caravana.</span></div>
@@ -581,7 +633,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       <form class="agendador" id="form-agenda" novalidate>
         <div class="passo" id="passo-terapia">
           <div class="passo-topo"><span class="passo-num" aria-hidden="true">1</span><h3 id="t-terapia">Qual terapia?</h3></div>
-          <div class="terapia-opcoes" id="opcoes-terapia" role="radiogroup" aria-labelledby="t-terapia"></div>
+          <div id="opcoes-terapia" role="radiogroup" aria-labelledby="t-terapia"></div>
+          <div class="ajustes" id="ajustes" hidden></div>
           <div class="modalidade" id="linha-modalidade" hidden></div>
         </div>
 
@@ -629,6 +682,31 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   <div class="barra-texto" id="barra-texto" aria-live="polite"></div>
   <a class="btn btn-enviar incompleto" id="barra-btn" href="#agenda" target="_blank" rel="noopener" style="width:auto"><svg aria-hidden="true"><use href="#i-wa"/></svg>Enviar</a>
 </div>
+
+<section class="loja-home tijolo-bg" id="loja">
+  <div class="wrap">
+    <div class="cabeca revelar">
+      <p class="sobretitulo">Loja</p>
+      <h2>Leve o cuidado para casa.</h2>
+      <p>Velas, óleos essenciais, cristais, florais e mais. Cada pedido vai em embalagem Kairavana, com cartão, mensagem e um aroma escolhido com carinho.</p>
+    </div>
+    <ul class="vitrine-home revelar">
+      <li><a href="loja.html#/categoria/velas">Velas aromáticas</a></li>
+      <li><a href="loja.html#/categoria/oleos-essenciais">Óleos essenciais</a></li>
+      <li><a href="loja.html#/categoria/incensos">Incensos</a></li>
+      <li><a href="loja.html#/categoria/sprays">Sprays áuricos e home sprays</a></li>
+      <li><a href="loja.html#/categoria/banhos-de-ervas">Banhos de ervas</a></li>
+      <li><a href="loja.html#/categoria/sais-de-banho">Sais de banho</a></li>
+      <li><a href="loja.html#/categoria/cristais">Cristais e pedras</a></li>
+      <li><a href="loja.html#/categoria/florais">Florais de Bach</a></li>
+      <li><a href="loja.html#/categoria/oraculos">Oráculos e cartas</a></li>
+    </ul>
+    <div class="acoes revelar" style="margin-top:36px">
+      <a class="btn btn-primario" href="loja.html">Conhecer a loja</a>
+      <a class="btn btn-secundario" href="conta.html">Minha conta</a>
+    </div>
+  </div>
+</section>
 
 <section class="faq" id="perguntas">
   <div class="wrap faq-grid">
@@ -724,6 +802,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
         <ul>
           <li><a href="#terapias">Terapias</a></li>
           <li><a href="#agenda">Agenda</a></li>
+          <li><a href="loja.html">Loja</a></li>
+          <li><a href="conta.html">Minha conta</a></li>
           <li><a href="#perguntas">Perguntas frequentes</a></li>
           <li><a href="https://www.instagram.com/kairavana/" target="_blank" rel="noopener">Instagram @kairavana</a></li>
         </ul>
@@ -752,12 +832,24 @@ const CONFIG = {
   whatsapp: "5511999999999",
   numeroExibido: "(11) 99999-9999",
 
+  // grupo A: pode receber complementos do grupo B · grupo B: sozinho ou como complemento · I: sempre sozinho
   terapias: [
-    { id: "reiki-adulto",   nome: "Reiki para adultos",                 duracao: "60 min", modalidades: ["Presencial", "A distância"] },
-    { id: "reiki-infantil", nome: "Reiki infantil a distância", duracao: "30 min", modalidades: ["A distância"], crianca: true },
-    { id: "florais",        nome: "Florais de Bach",                    duracao: "60 min", modalidades: ["Presencial", "A distância"] },
-    { id: "mapa",           nome: "Mapa numerológico",                  duracao: "90 min", modalidades: ["Presencial", "A distância"] }
+    { id: "reiki-adulto",   nome: "Reiki para adultos",         grupo: "A", min: 50, preco: 150, modalidades: ["Presencial", "A distância"] },
+    { id: "cristais",       nome: "Cristaloterapia",            grupo: "A", min: 50, preco: 150, modalidades: ["Presencial"] },
+    { id: "florais",        nome: "Florais de Bach",            grupo: "B", min: 30, preco: 100, modalidades: ["Presencial", "A distância"] },
+    { id: "aroma",          nome: "Aromaterapia",               grupo: "B", min: 30, preco: 100, modalidades: ["Presencial", "A distância"] },
+    { id: "chakras",        nome: "Alinhamento de Chakras",     grupo: "B", min: 30, preco: 100, modalidades: ["Presencial", "A distância"] },
+    { id: "mindfulness",    nome: "Mindfulness",                grupo: "B", min: 30, preco: 100, modalidades: ["Presencial", "A distância"] },
+    { id: "reiki-infantil", nome: "Reiki infantil a distância", grupo: "I", min: 30, modalidades: ["A distância"], crianca: true },
+    { id: "mapa",           nome: "Mapa numerológico",          grupo: "I", min: 90, modalidades: ["Presencial", "A distância"] },
+    { id: "constelacao",    nome: "Constelação Familiar",       grupo: "I", min: 60, preco: 200, modalidades: ["Presencial", "A distância"] },
+    { id: "radionica",      nome: "Mesa Radiônica",             grupo: "I", min: 60, preco: 200, modalidades: ["Presencial", "A distância"] },
+    { id: "arteterapia",    nome: "Arteterapia",                grupo: "I", min: 40, preco: 130, modalidades: ["Presencial", "A distância"] },
+    { id: "cartomancia",    nome: "Cartomancia",                grupo: "I", cartas: true, precoPergunta: 35, minPerguntas: 3, maxPerguntas: 10, modalidades: ["Presencial", "A distância"] }
   ],
+  numerologia: { preco: 60, min: 20 },  // só junto com a Cartomancia
+  grupoBEntreSi: false,                 // ligar quando as combinações dentro do Grupo B forem definidas
+  formatos: ["Sessão individual", "Pacote de 2 sessões", "Pacote de 4 sessões", "Pacote de 8 sessões"],
 
   // Horários de atendimento por dia da semana (0 = domingo … 6 = sábado)
   horarios: {
@@ -819,7 +911,7 @@ menu.addEventListener("click", e => { if (e.target.closest("a") && mq.matches) {
 /* =========== agenda =========== */
 const DSEM = ["dom","seg","ter","qua","qui","sex","sáb"];
 const MES3 = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
-const estado = { terapia: null, modalidade: null, data: null, hora: null };
+const estado = { terapia: null, complementos: [], perguntas: 3, numerologia: false, formato: "Sessão individual", modalidade: null, data: null, hora: null };
 const hoje = new Date(); hoje.setHours(0,0,0,0);
 const suave = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 
@@ -854,12 +946,63 @@ function mostrar(el){ // rola só se o elemento estiver fora da tela
   if (r.top < 90 || r.bottom > innerHeight - 90) el.scrollIntoView({ behavior: suave, block: "center" });
 }
 
+const reais = v => `R$ ${v}`;
+const tempo = m => m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ` ${m % 60} min` : ""}`;
+const terapiaPorId = id => CONFIG.terapias.find(t => t.id === id);
+const detalhe = t => t.cartas ? `${reais(t.precoPergunta)} por pergunta · mín. ${t.minPerguntas}`
+  : `${tempo(t.min)} · ${t.preco ? reais(t.preco) : "valor na conversa"}`;
+// complementos permitidos para o atendimento escolhido
+const complementosPara = t => !t ? [] : t.grupo === "A" || (t.grupo === "B" && CONFIG.grupoBEntreSi)
+  ? CONFIG.terapias.filter(c => c.grupo === "B" && c.id !== t.id) : [];
+
+// nome, duração e valor de referência do pedido montado
+function pedido(){
+  const t = terapiaAtual(); if (!t) return null;
+  const pacote = estado.formato !== CONFIG.formatos[0];
+  if (t.cartas){
+    const n = estado.perguntas, num = estado.numerologia;
+    return { nome: `Cartomancia (${n} perguntas)${num ? " + Numerologia" : ""}`, duracao: num ? "50 a 70 min" : "30 a 50 min",
+      valor: pacote ? "combinado na conversa" : reais(t.precoPergunta * n + (num ? CONFIG.numerologia.preco : 0)) };
+  }
+  const todos = [t, ...estado.complementos.map(terapiaPorId).filter(Boolean)];
+  const total = todos.every(x => x.preco) ? todos.reduce((s, x) => s + x.preco, 0) : 0;
+  return { nome: todos.map(x => x.nome).join(" + "), duracao: `cerca de ${tempo(todos.reduce((s, x) => s + x.min, 0))}`,
+    valor: pacote || !total ? "combinado na conversa" : todos.length > 1 ? `${reais(total)} (referência)` : reais(total) };
+}
+
+const GRUPOS = [["A", "Podem receber um complemento"], ["B", "Complementos ou sozinhos"], ["I", "Atendimentos individuais"]];
 function renderTerapias(){
-  const box = $("#opcoes-terapia");
-  box.innerHTML = CONFIG.terapias.map(t => `
-    <label class="opcao"><input type="radio" name="terapia" value="${t.id}">
-      <span class="opcao-corpo"><strong>${t.nome}</strong><small>${t.duracao} · ${t.modalidades.join(" ou ").toLowerCase()}</small></span>
-    </label>`).join("");
+  $("#opcoes-terapia").innerHTML = GRUPOS.map(([g, titulo]) => `
+    <div class="grupo-opcoes"><span class="periodo">${titulo}</span><div class="terapia-opcoes">${CONFIG.terapias.filter(t => t.grupo === g).map(t => `
+      <label class="opcao"><input type="radio" name="terapia" value="${t.id}"${t.id === estado.terapia ? " checked" : ""}>
+        <span class="opcao-corpo"><strong>${t.nome}</strong><small>${detalhe(t)} · ${t.modalidades.join(" ou ").toLowerCase()}</small></span>
+      </label>`).join("")}</div></div>`).join("");
+}
+const notaFormato = () => estado.formato === CONFIG.formatos[0] ? "" : "Pacotes renovam todo mês. O valor é combinado na conversa.";
+// complementos, perguntas e formato: só aparecem as combinações permitidas
+function renderAjustes(){
+  const t = terapiaAtual(), box = $("#ajustes");
+  box.hidden = !t; if (!t) return;
+  let html = "";
+  const comps = complementosPara(t);
+  if (comps.length) html += `<fieldset><legend>Quer somar um complemento? (opcional)</legend><div class="checks">${comps.map(c =>
+    `<label class="check"><input type="checkbox" name="complemento" value="${c.id}"${estado.complementos.includes(c.id) ? " checked" : ""}>${c.nome}<small>+ ${reais(c.preco)} · ${tempo(c.min)}</small></label>`).join("")}</div></fieldset>`;
+  else if (t.cartas) html += `<fieldset><legend id="t-perg">Quantas perguntas?</legend><div class="linha-contador">
+      <div class="contador" role="group" aria-labelledby="t-perg"><button type="button" data-passo="-1" aria-label="Menos uma pergunta">−</button><output id="n-perguntas" aria-live="polite">${estado.perguntas}</output><button type="button" data-passo="1" aria-label="Mais uma pergunta">+</button></div>
+      <span class="nota-modalidade">${reais(t.precoPergunta)} cada, mínimo de ${t.minPerguntas}</span></div></fieldset>
+    <label class="check"><input type="checkbox" name="numerologia"${estado.numerologia ? " checked" : ""}>Somar Numerologia<small>+ ${reais(CONFIG.numerologia.preco)} · ${CONFIG.numerologia.min} min</small></label>`;
+  else if (t.grupo === "I") html += `<p class="nota-modalidade">Este atendimento é feito sozinho, sem combinações.</p>`;
+  html += `<fieldset><legend>Formato</legend><div class="segmentado">${CONFIG.formatos.map(f =>
+    `<label><input type="radio" name="formato" value="${f}"${f === estado.formato ? " checked" : ""}><span>${f === CONFIG.formatos[0] ? "1 sessão" : f.replace("Pacote de ", "")}</span></label>`).join("")}</div></fieldset>
+    <p class="nota-modalidade" id="nota-formato">${notaFormato()}</p>`;
+  box.innerHTML = html;
+  atualizaContador();
+}
+function atualizaContador(){
+  const t = terapiaAtual(); if (!t || !t.cartas) return;
+  $("#n-perguntas").textContent = estado.perguntas;
+  $('[data-passo="-1"]').disabled = estado.perguntas <= t.minPerguntas;
+  $('[data-passo="1"]').disabled = estado.perguntas >= t.maxPerguntas;
 }
 function renderModalidade(){
   const t = terapiaAtual(), box = $("#linha-modalidade");
@@ -930,7 +1073,7 @@ function faltando(){
 }
 
 function atualiza(){
-  const t = terapiaAtual();
+  const t = terapiaAtual(), p = pedido();
   const nome = $("#ag-nome").value.trim(), crianca = $("#ag-crianca").value.trim(), obs = $("#ag-obs").value.trim();
   $("#passo-terapia").classList.toggle("feito", !!t);
   $("#passo-dia").classList.toggle("feito", !!estado.data);
@@ -938,18 +1081,20 @@ function atualiza(){
   $("#passo-nome").classList.toggle("feito", !!nome);
 
   const linhas = [
-    ["Terapia", t ? t.nome : ""],
+    ["Terapia", p ? p.nome : ""],
+    ["Formato", t ? estado.formato : ""],
     ["Modalidade", t ? estado.modalidade : ""],
     ["Dia", estado.data ? dataLonga(estado.data) : ""],
     ["Horário", estado.hora || ""],
-    ["Nome", nome]
+    ["Nome", nome],
+    ["Valor", p ? p.valor : ""]
   ];
   $("#resumo-lista").innerHTML = linhas.map(([k, v]) => `<div><dt>${k}</dt><dd class="${v ? "" : "pendente"}">${v ? v.replace(/</g, "&lt;") : "—"}</dd></div>`).join("");
 
   const f = faltando(), pronto = !f.length;
   let href = "#agenda";
   if (pronto){
-    let msg = `Olá, Kairavana! Gostaria de agendar:\n\n• Terapia: ${t.nome} (${t.duracao})\n• Modalidade: ${estado.modalidade}\n• Dia: ${dataLonga(estado.data)}\n• Horário: ${estado.hora}\n• Nome: ${nome}`;
+    let msg = `Olá, Kairavana! Gostaria de agendar:\n\n• Terapia: ${p.nome} (${p.duracao})\n• Formato: ${estado.formato}\n• Modalidade: ${estado.modalidade}\n• Dia: ${dataLonga(estado.data)}\n• Horário: ${estado.hora}\n• Nome: ${nome}\n• Valor: ${p.valor}`;
     if (t.crianca && crianca) msg += `\n• Criança: ${crianca}`;
     if (obs) msg += `\n\n${obs}`;
     msg += `\n\nFico no aguardo da confirmação.`;
@@ -957,7 +1102,7 @@ function atualiza(){
   }
   ["#ag-enviar", "#barra-btn"].forEach(s => { const a = $(s); a.href = href; a.classList.toggle("incompleto", !pronto); });
   $("#ag-status").textContent = pronto ? "Tudo certo! O WhatsApp abre com a mensagem pronta para você enviar." : "Falta escolher: " + f.map(x => x[0]).join(", ") + ".";
-  const partes = [t && t.nome, estado.data && dataCurta(estado.data), estado.hora].filter(Boolean);
+  const partes = [p && p.nome, estado.data && dataCurta(estado.data), estado.hora].filter(Boolean);
   $("#barra-texto").innerHTML = partes.length
     ? `<strong>${partes.join(" · ")}</strong>${pronto ? "Pronto para enviar" : "Falta: " + f.map(x => x[0]).join(", ")}`
     : `<strong>Monte seu pedido</strong>Escolha terapia, dia e horário`;
@@ -973,7 +1118,20 @@ function atualiza(){
   const alvo = passo.querySelector("input:not([type=radio]), button, input"); alvo?.focus({ preventScroll: true });
 }));
 
-$("#opcoes-terapia").addEventListener("change", e => { estado.terapia = e.target.value; renderModalidade(); atualiza(); if (!estado.data) mostrar($("#passo-dia")); });
+$("#opcoes-terapia").addEventListener("change", e => { estado.terapia = e.target.value; estado.complementos = []; estado.numerologia = false; renderAjustes(); renderModalidade(); atualiza(); });
+$("#ajustes").addEventListener("change", e => {
+  const el = e.target;
+  if (el.name === "complemento") estado.complementos = [...$("#ajustes").querySelectorAll('[name="complemento"]:checked')].map(x => x.value);
+  if (el.name === "numerologia") estado.numerologia = el.checked;
+  if (el.name === "formato"){ estado.formato = el.value; $("#nota-formato").textContent = notaFormato(); }
+  atualiza();
+});
+$("#ajustes").addEventListener("click", e => {
+  const b = e.target.closest("[data-passo]"); if (!b) return;
+  const t = terapiaAtual();
+  estado.perguntas = Math.min(t.maxPerguntas, Math.max(t.minPerguntas, estado.perguntas + Number(b.dataset.passo)));
+  atualizaContador(); atualiza();
+});
 $("#linha-modalidade").addEventListener("change", e => { estado.modalidade = e.target.value; atualiza(); });
 $("#dias-ant").addEventListener("click", () => $("#dias").scrollBy({ left: -320, behavior: suave }));
 $("#dias-prox").addEventListener("click", () => $("#dias").scrollBy({ left: 320, behavior: suave }));
