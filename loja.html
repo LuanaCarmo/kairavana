@@ -271,16 +271,16 @@ function rota(){
     // cada palavra vale pelo começo, para achar plurais e variações (cristal → cristais)
     const radicais = norm(valor).split(/\s+/).filter(w => w.length > 1).map(w => w.slice(0, Math.max(4, w.length - 2)));
     document.getElementById("busca").value = valor || "";
-    vitrine({ titulo: `Busca: “${valor || ""}”`, texto: "Resultados para a sua busca.", base: cat.produtos.filter(p => { const t = norm(p.nome + " " + p.descricao + " " + (catDe(p)?.nome || "")); return radicais.every(r => t.includes(r)); }), trilha: "Busca" });
+    vitrine({ titulo: `Busca: “${valor || ""}”`, texto: "Veja o que encontramos para você.", base: cat.produtos.filter(p => { const t = norm(p.nome + " " + p.descricao + " " + (catDe(p)?.nome || "")); return radicais.every(r => t.includes(r)); }), trilha: "Busca" });
   } else if (tipo === "favoritos"){
     montarTopo("favoritos");
     const f = Loja.favoritos.ler();
-    vitrine({ titulo: "Seus favoritos", texto: "Os produtos que você marcou com o coração ficam guardados neste navegador.", base: cat.produtos.filter(p => f.includes(p.id)), trilha: "Favoritos" });
+    vitrine({ titulo: "Seus favoritos", texto: "Os produtos que você marcou com o coração ficam guardados aqui, neste navegador.", base: cat.produtos.filter(p => f.includes(p.id)), trilha: "Favoritos" });
   } else if (tipo === "finalizar"){ montarTopo(""); finalizar(); }
   else if (tipo === "pedido"){ montarTopo(""); pedidoConcluido(valor); }
   else {
     montarTopo("todos"); filtros.cats = [];
-    vitrine({ titulo: "Loja Kairavana", texto: "Velas, óleos essenciais, incensos, sprays, banhos de ervas, sais, cristais, florais e oráculos. Tudo vai em embalagem própria, com cartão, mensagem e um aroma escolhido com carinho.", base: cat.produtos });
+    vitrine({ titulo: "Loja Kairavana", texto: "Velas, óleos essenciais, incensos, sprays, banhos de ervas, sais, cristais, florais e oráculos. Cada pedido segue numa embalagem Kairavana, com cartão, mensagem e um aroma escolhido com carinho.", base: cat.produtos });
   }
   document.getElementById("contagem") && document.dispatchEvent(new CustomEvent("carrinho"));
   if (partes[0]) scrollTo({ top: 0 });
