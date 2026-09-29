@@ -58,6 +58,8 @@ test("jornada completa: agendar em 4 toques e abrir o WhatsApp com a mensagem ce
   await hora.click();                                                                             // toque 3
   await expect(page.locator("#passo-nome")).toBeVisible();
   await page.fill("#ag-nome", "Maria Teste");
+  await expect(botaoEnviar(page)).toHaveClass(/incompleto/);                                  // falta a data de nascimento
+  await page.fill("#ag-nasc", "1990-03-07");
 
   const enviar = botaoEnviar(page);
   await expect(enviar).toBeInViewport();
@@ -65,7 +67,7 @@ test("jornada completa: agendar em 4 toques e abrir o WhatsApp com a mensagem ce
   const href = await enviar.getAttribute("href");
   expect(href).toMatch(/^https:\/\/wa\.me\/\d+\?text=/);
   const msg = decodeURIComponent(href.split("text=")[1]);
-  for (const trecho of ["Reiki para adultos", "Maria Teste", `Horário: ${horaEscolhida}`, "Modalidade:"]) expect(msg).toContain(trecho);
+  for (const trecho of ["Reiki para adultos", "Maria Teste", "07/03/1990", `Horário: ${horaEscolhida}`, "Modalidade:"]) expect(msg).toContain(trecho);
 
   const [aba] = await Promise.all([page.waitForEvent("popup"), enviar.click()]);                  // toque 4
   expect(aba.url()).toMatch(/wa\.me|whatsapp\.com/);
@@ -104,11 +106,20 @@ test("no computador o resumo acompanha a rolagem e o Enviar fica sempre à vista
   await expect(page.locator("#ag-enviar")).toBeInViewport();
 });
 
-test("reiki infantil pede nome e idade da criança e é só a distância", async ({ page }) => {
+test("reiki infantil pede nome completo e nascimento da criança e é só a distância", async ({ page }) => {
   await page.goto("/index.html#agenda");
   await page.locator("#opcoes-terapia label", { hasText: "infantil" }).click();
   await page.locator("#dias button.dia:not([disabled])").first().click();
   await expect(page.locator("#campo-crianca")).toBeVisible();
+  await expect(page.locator("#campo-nasc")).toBeHidden();
+  await page.locator("#horas button").first().click();
+  await page.fill("#ag-nome", "Ana Responsável");
+  await expect(page.locator("#ag-status")).toContainText("nome da criança");
+  await page.fill("#ag-crianca", "Laura Teste");
+  await page.fill("#ag-crianca-nasc", "2019-03-07");
+  const msg = decodeURIComponent((await page.locator("#ag-enviar").getAttribute("href")).split("text=")[1]);
+  expect(msg).toContain("Criança: Laura Teste");
+  expect(msg).toContain("07/03/2019");
   await expect(page.locator("#linha-modalidade")).toContainText(/a distância/i);
 });
 

@@ -731,8 +731,12 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 
         <div class="passo" id="passo-nome">
           <div class="passo-topo"><span class="passo-num" aria-hidden="true">4</span><h3>Como podemos te chamar?</h3></div>
-          <div class="campo"><label for="ag-nome" class="sr">Seu nome</label><input id="ag-nome" name="nome" autocomplete="name" placeholder="Seu nome" required></div>
-          <div class="campo" id="campo-crianca" hidden><label for="ag-crianca">Nome e idade da criança</label><input id="ag-crianca" name="crianca" placeholder="Ex.: Laura, 7 anos"></div>
+          <div class="campo"><label for="ag-nome">Seu nome completo</label><input id="ag-nome" name="nome" autocomplete="name" placeholder="Nome e sobrenome" required></div>
+          <div class="campo" id="campo-nasc"><label for="ag-nasc">Sua data de nascimento</label><input id="ag-nasc" name="nascimento" type="date" autocomplete="bday" min="1900-01-01"></div>
+          <div id="campo-crianca" hidden>
+            <div class="campo"><label for="ag-crianca">Nome completo da criança</label><input id="ag-crianca" name="crianca" placeholder="Nome e sobrenome"></div>
+            <div class="campo"><label for="ag-crianca-nasc">Data de nascimento da criança</label><input id="ag-crianca-nasc" name="crianca-nascimento" type="date" min="2000-01-01"></div>
+          </div>
           <details class="recado">
             <summary>Quer deixar um recado? (opcional)</summary>
             <div class="campo"><label for="ag-obs" class="sr">Recado</label><textarea id="ag-obs" name="obs" placeholder="Como você está chegando, dúvidas, preferências…"></textarea></div>
@@ -1108,6 +1112,7 @@ function renderModalidade(){
     : `<span id="t-mod">Presencial ou a distância?</span><div class="segmentado" role="radiogroup" aria-labelledby="t-mod">${mods.map(m =>
         `<label><input type="radio" name="modalidade" value="${m}"${m === estado.modalidade ? " checked" : ""}><span>${m}</span></label>`).join("")}</div>`;
   $("#campo-crianca").hidden = !t.crianca;
+  $("#campo-nasc").hidden = !!t.crianca;
 }
 
 function renderDias(){
@@ -1157,22 +1162,29 @@ function renderHoras(){
   box.innerHTML = ""; box.append(g);
 }
 
+// "2019-03-07" -> "07/03/2019"
+const dataNasc = v => v ? v.split("-").reverse().join("/") : "";
+
 function faltando(){
-  const f = [];
+  const f = [], crianca = !!terapiaAtual()?.crianca;
   if (!estado.terapia) f.push(["atendimento", "#passo-terapia"]);
   if (!estado.data) f.push(["dia", "#passo-dia"]);
   if (!estado.hora) f.push(["horário", "#passo-hora"]);
-  if (!$("#ag-nome").value.trim()) f.push(["seu nome", "#passo-nome"]);
+  if (!$("#ag-nome").value.trim()) f.push(["seu nome completo", "#passo-nome"]);
+  // no Reiki infantil a data de nascimento pedida é a da criança
+  if (!crianca && !$("#ag-nasc").value) f.push(["sua data de nascimento", "#passo-nome"]);
+  if (crianca && !$("#ag-crianca").value.trim()) f.push(["nome da criança", "#passo-nome"]);
+  if (crianca && !$("#ag-crianca-nasc").value) f.push(["nascimento da criança", "#passo-nome"]);
   return f;
 }
 
 function atualiza(){
   const t = terapiaAtual(), p = pedido();
-  const nome = $("#ag-nome").value.trim(), crianca = $("#ag-crianca").value.trim(), obs = $("#ag-obs").value.trim();
+  const nome = $("#ag-nome").value.trim(), nasc = dataNasc($("#ag-nasc").value), crianca = $("#ag-crianca").value.trim(), criancaNasc = dataNasc($("#ag-crianca-nasc").value), obs = $("#ag-obs").value.trim();
   $("#passo-terapia").classList.toggle("feito", !!t);
   $("#passo-dia").classList.toggle("feito", !!estado.data);
   $("#passo-hora").classList.toggle("feito", !!estado.hora);
-  $("#passo-nome").classList.toggle("feito", !!nome);
+  $("#passo-nome").classList.toggle("feito", !faltando().some(x => x[1] === "#passo-nome"));
 
   const linhas = [
     ["Atendimento", p ? p.nome : ""],
@@ -1181,6 +1193,7 @@ function atualiza(){
     ["Dia", estado.data ? dataLonga(estado.data) : ""],
     ["Horário", estado.hora || ""],
     ["Nome", nome],
+    [t?.crianca ? "Criança" : "Nascimento", t?.crianca ? [crianca, criancaNasc].filter(Boolean).join(", ") : nasc],
     ["Valor estimado", p ? p.valor : ""]
   ];
   $("#resumo-lista").innerHTML = linhas.map(([k, v]) => `<div><dt>${k}</dt><dd class="${v ? "" : "pendente"}">${v ? v.replace(/</g, "&lt;") : "—"}</dd></div>`).join("");
@@ -1188,8 +1201,7 @@ function atualiza(){
   const f = faltando(), pronto = !f.length;
   let href = "#agenda";
   if (pronto){
-    let msg = `Olá, Kairavana! Gostaria de agendar:\n\n• Atendimento: ${p.nome} (${p.duracao})\n• Sessões: ${estado.formato}\n• Modalidade: ${estado.modalidade}\n• Dia: ${dataLonga(estado.data)}\n• Horário: ${estado.hora}\n• Nome: ${nome}\n• Valor estimado: ${p.valor}`;
-    if (t.crianca && crianca) msg += `\n• Criança: ${crianca}`;
+    let msg = `Olá, Kairavana! Gostaria de agendar:\n\n• Atendimento: ${p.nome} (${p.duracao})\n• Sessões: ${estado.formato}\n• Modalidade: ${estado.modalidade}\n• Dia: ${dataLonga(estado.data)}\n• Horário: ${estado.hora}\n• Nome: ${nome}${t.crianca ? `\n• Criança: ${crianca}\n• Nascimento da criança: ${criancaNasc}` : `\n• Data de nascimento: ${nasc}`}\n• Valor estimado: ${p.valor}`;
     if (obs) msg += `\n\n${obs}`;
     msg += `\n\nFico no aguardo da confirmação.`;
     href = waLink(msg);
@@ -1239,7 +1251,7 @@ $("#ajustes").addEventListener("click", e => {
 $("#linha-modalidade").addEventListener("change", e => { estado.modalidade = e.target.value; atualiza(); });
 $("#dias-ant").addEventListener("click", () => $("#dias").scrollBy({ left: -320, behavior: suave }));
 $("#dias-prox").addEventListener("click", () => $("#dias").scrollBy({ left: 320, behavior: suave }));
-["#ag-nome", "#ag-crianca", "#ag-obs"].forEach(s => $(s).addEventListener("input", atualiza));
+["#ag-nome", "#ag-nasc", "#ag-crianca", "#ag-crianca-nasc", "#ag-obs"].forEach(s => $(s).addEventListener("input", atualiza));
 $("#form-agenda").addEventListener("submit", e => e.preventDefault());
 
 function iniciarAgenda(){
