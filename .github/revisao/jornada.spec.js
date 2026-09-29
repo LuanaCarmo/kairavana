@@ -112,20 +112,32 @@ test("reiki infantil pede nome e idade da criança e é só a distância", async
   await expect(page.locator("#linha-modalidade")).toContainText(/a distância/i);
 });
 
-test("Reiki aceita complemento do Grupo B e soma o valor de referência", async ({ page }) => {
+test("Reiki aceita práticas curtas e soma o valor de referência", async ({ page }) => {
   await page.goto("/index.html#agenda");
   await page.locator("#opcoes-terapia label", { hasText: "Reiki para adultos" }).click();
-  await expect(page.locator('#ajustes [name="complemento"]')).toHaveCount(4);
-  await page.locator("#ajustes label.check", { hasText: "Aromaterapia" }).click();
+  await page.locator("#opcoes-terapia label", { hasText: "Aromaterapia" }).click();
   await expect(page.locator("#resumo-lista")).toContainText("Reiki para adultos + Aromaterapia");
   await expect(page.locator("#resumo-lista")).toContainText("R$ 250");
+  await page.locator("#opcoes-terapia label", { hasText: "Florais de Bach" }).click();
+  await expect(page.locator("#resumo-lista")).toContainText("Reiki para adultos + Aromaterapia + Florais de Bach");
+  await expect(page.locator("#resumo-lista")).toContainText("R$ 350");
+});
+
+test("práticas curtas podem ser somadas entre si", async ({ page }) => {
+  await page.goto("/index.html#agenda");
+  await page.locator("#opcoes-terapia label", { hasText: "Aromaterapia" }).click();
+  await page.locator("#opcoes-terapia label", { hasText: "Mindfulness" }).click();
+  await expect(page.locator('#opcoes-terapia input[data-grupo="B"]:checked')).toHaveCount(2);
+  await expect(page.locator("#resumo-lista")).toContainText("Aromaterapia + Mindfulness");
+  await expect(page.locator("#resumo-lista")).toContainText("R$ 200");
 });
 
 test("atendimentos individuais não aceitam combinações", async ({ page }) => {
   await page.goto("/index.html#agenda");
   for (const nome of ["Constelação Familiar", "Mesa Radiônica", "Arteterapia"]){
+    await page.locator("#opcoes-terapia label", { hasText: "Aromaterapia" }).click();
     await page.locator("#opcoes-terapia label", { hasText: nome }).click();
-    await expect(page.locator('#ajustes [name="complemento"]')).toHaveCount(0);
+    await expect(page.locator("#opcoes-terapia input:checked"), "o individual fica sozinho").toHaveCount(1);
     await expect(page.locator("#ajustes")).toContainText("feito sozinho");
   }
 });

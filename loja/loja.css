@@ -65,45 +65,55 @@ button,input,select,textarea{font:inherit; color:inherit}
 /* barra de avisos e cabeçalho: igual ao topo do site */
 .faixa{background:var(--vinho); color:var(--cal); font-size:var(--fs-meta); text-align:center; padding:8px var(--gutter)}
 .faixa strong{color:var(--rosa)}
-.cab{position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--cal) 92%,transparent); backdrop-filter:blur(8px); border-bottom:1px solid color-mix(in srgb,var(--vinho) 10%,transparent)}
-.cab-linha{position:relative; display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:76px}
+/* cabeçalho: igual ao topo do site (logo · menu em texto com sublinhado · Agendar, conta e sacola) */
+.cab{position:sticky; top:0; z-index:40; --altura-topo:80px; background:color-mix(in srgb,var(--cal) 94%,transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--linha)}
+.cab-linha{position:relative; display:flex; align-items:center; gap:24px; min-height:var(--altura-topo)}
 .logo{display:inline-flex; align-items:center; gap:.3em; text-decoration:none; font-family:var(--display); font-size:30px; line-height:1; color:var(--vinho)}
 .logo svg{width:.8em; height:.8em; color:var(--tijolo); flex:none}
 .logo small{font-family:var(--texto); font-size:var(--fs-mini); font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--tijolo); margin-left:6px}
-.cab-menu{display:flex; align-items:center; gap:4px; margin-left:auto}
-.cab-menu a:not(.btn){display:inline-flex; align-items:center; min-height:44px; padding:0 14px; text-decoration:none; font-weight:500; font-size:var(--fs-apoio); border-radius:999px}
-.cab-menu a:not(.btn):hover{background:var(--cal-clara)}
-.cab-menu .btn{margin-left:10px}
-/* item da página atual: preenchido na cor da marca */
-.cab-menu a[aria-current="page"],.cats a[aria-current="page"],.icone[aria-current="page"]{background:var(--tijolo); color:var(--cal)}
-.cab-menu a[aria-current="page"]:hover,.cats a[aria-current="page"]:hover{background:var(--vinho)}
+.cab-menu{display:flex; align-items:center; gap:30px; flex:1}
+.cab-menu a:not(.btn){position:relative; display:inline-flex; align-items:center; min-height:44px; text-decoration:none; font-weight:500; font-size:16px; letter-spacing:.01em; color:color-mix(in srgb,var(--vinho) 80%,transparent); transition:color .2s}
+.cab-menu a:not(.btn)::after{content:""; position:absolute; left:0; right:0; bottom:7px; height:2px; border-radius:2px; background:var(--tijolo); transform:scaleX(0); transform-origin:left; transition:transform .25s ease}
+.cab-menu a:not(.btn):hover{color:var(--vinho)}
+.cab-menu a:not(.btn):hover::after{transform:scaleX(1)}
+/* página atual: texto na cor da marca, com o sublinhado fixo */
+.cab-menu a[aria-current="page"]{color:var(--tijolo)}
+.cab-menu a[aria-current="page"]::after{transform:scaleX(1)}
+.cab-menu .btn{min-height:44px; padding:10px 22px; font-size:15px}
+/* categoria atual da loja e ícone da página atual: preenchidos na cor da marca */
+.cats a[aria-current="page"],.icone[aria-current="page"]{background:var(--tijolo); color:var(--cal)}
+.cats a[aria-current="page"]:hover{background:var(--vinho)}
 .icones{display:flex; align-items:center; gap:2px}
-.icone{position:relative; width:46px; height:46px; display:grid; place-items:center; border-radius:50%; border:0; background:transparent; color:var(--vinho); cursor:pointer; text-decoration:none}
-.icone:hover{background:var(--cal-clara)}
-.icone svg{width:24px; height:24px}
-.contagem{position:absolute; top:2px; right:0; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:var(--tijolo); color:var(--cal); font:700 var(--fs-mini)/20px var(--texto); text-align:center}
+.icone{position:relative; width:44px; height:44px; display:grid; place-items:center; border-radius:50%; border:0; background:transparent; color:var(--vinho); cursor:pointer; text-decoration:none; transition:color .2s, background-color .2s}
+.icone:hover{color:var(--tijolo); background:color-mix(in srgb,var(--cal-clara) 80%,transparent)}
+.icone svg{width:22px; height:22px}
+.contagem{position:absolute; top:3px; right:1px; min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:var(--tijolo); color:var(--cal); font:700 11px/18px var(--texto); text-align:center}
 .cab-menu-botao{display:none}
-@media (min-width:1280px){ .cab-menu a.so-celular{display:none} }
-@media (max-width:1279px){
-  .cab-menu-botao{display:grid; border:2px solid var(--vinho)}
-  .cab-menu{position:absolute; left:calc(-1 * var(--gutter)); right:calc(-1 * var(--gutter)); top:100%; display:none; flex-direction:column; align-items:stretch; gap:4px; padding:12px var(--gutter) 24px; background:var(--cal); border-bottom:1px solid var(--linha); box-shadow:0 12px 24px rgba(59,26,22,.08)}
-  .cab-menu.aberto{display:flex}
-  .cab-menu a:not(.btn){min-height:52px; font-size:18px}
-  .cab-menu .btn{margin:8px 0 0}
-  .icones{margin-left:auto}
-}
-@media (max-width:379px){ .icone-conta{display:none} .logo{font-size:26px} }
-/* ordem do topo: conteúdo do site · Loja (separada) · Agendar · conta e sacola no fim */
 @media (min-width:1280px){
-  .cab-menu a.menu-loja{margin-left:13px; position:relative}
-  .cab-menu a.menu-loja::before{content:""; position:absolute; left:-9px; top:12px; bottom:12px; width:1px; background:var(--linha)}
-  .icones{margin-left:6px; padding-left:12px; border-left:1px solid var(--linha)}
+  .cab-menu a:first-child{margin-left:auto}
+  .cab-menu .btn{margin-left:auto}
+  .cab-menu a.so-celular{display:none}
+  .icones{margin-left:-8px}
 }
+@media (prefers-reduced-motion:reduce){ .cab-menu a:not(.btn)::after{transition:none} }
+/* celular e tablet: menu em tela cheia, links grandes separados por linhas finas */
 @media (max-width:1279px){
-  .icone-conta{display:none} /* no celular a conta fica dentro do menu */
-  .cab-menu a.menu-loja{margin-top:8px; border-top:1px solid var(--linha); border-radius:0; padding-top:4px}
-  .cab-menu a.menu-loja[aria-current="page"]{border-radius:999px; border-top:0}
+  .cab{--altura-topo:72px}
+  .cab-linha{gap:4px}
+  .icones{margin-left:auto}
+  .icone-conta{display:none} /* a conta fica dentro do menu */
+  .cab-menu-botao{display:grid; border:1.5px solid color-mix(in srgb,var(--vinho) 30%,transparent); width:48px; height:48px}
+  .cab-menu-botao[aria-expanded="true"]{background:var(--vinho); border-color:var(--vinho); color:var(--cal)}
+  .cab-menu{position:absolute; left:calc(-1 * var(--gutter)); right:calc(-1 * var(--gutter)); top:100%; height:calc(100dvh - var(--altura-topo)); display:none; flex-direction:column; align-items:stretch; gap:0; padding:8px var(--gutter) calc(28px + env(safe-area-inset-bottom,0px)); background:var(--cal); overflow-y:auto; border-top:1px solid var(--linha)}
+  .cab-menu.aberto{display:flex}
+  .cab-menu a:not(.btn){min-height:64px; font-family:var(--display); font-weight:400; font-size:28px; letter-spacing:0; color:var(--vinho); border-bottom:1px solid var(--linha)}
+  .cab-menu a:not(.btn)::after{display:none}
+  .cab-menu a.menu-loja, .cab-menu a.so-celular{min-height:52px; font-family:var(--texto); font-size:18px; font-weight:500}
+  .cab-menu a.menu-loja{margin-top:20px; border-top:1px solid var(--linha)}
+  .cab-menu .btn{margin-top:28px; min-height:56px; font-size:17px}
+  html.menu-aberto{overflow:hidden}
 }
+@media (max-width:379px){ .logo{font-size:26px} .cab-menu a:not(.btn){font-size:25px} }
 
 /* segunda linha da loja: categorias e busca */
 .cab-loja{border-top:1px solid var(--linha)}
@@ -119,7 +129,7 @@ button,input,select,textarea{font:inherit; color:inherit}
 @media (max-width:759px){
   .cab-loja-linha{flex-direction:column; align-items:stretch; gap:6px}
   .busca{flex:none; order:-1}
-  .cab-linha{min-height:68px}
+
   .logo{font-size:26px}
 }
 

@@ -108,48 +108,56 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   .logo{font-size:26px}
 }
 
-/* cabeçalho */
-.topo{position:sticky; top:env(safe-area-inset-top,0px); z-index:50; background:color-mix(in srgb, var(--cal) 92%, transparent); backdrop-filter:blur(8px); border-bottom:1px solid color-mix(in srgb, var(--vinho) 10%, transparent)}
-.topo .wrap{display:flex; align-items:center; justify-content:space-between; gap:24px; min-height:76px}
+/* cabeçalho: logo · menu em texto com sublinhado · Agendar, conta e sacola à direita */
+.topo{position:sticky; top:env(safe-area-inset-top,0px); z-index:50; --altura-topo:80px; background:color-mix(in srgb, var(--cal) 94%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid transparent; transition:border-color .3s, box-shadow .3s}
+.topo.rolado{border-bottom-color:var(--linha-secao); box-shadow:0 8px 28px color-mix(in srgb,var(--vinho) 7%,transparent)}
+.topo .wrap{display:flex; align-items:center; gap:24px; min-height:var(--altura-topo)}
 .logo{display:inline-flex; align-items:center; gap:.3em; text-decoration:none; font-family:var(--display); font-size:30px; line-height:1; color:var(--vinho)}
 .logo svg{width:.8em; height:.8em; color:var(--tijolo); flex:none; transform:translateY(.02em)}
-.menu{display:flex; align-items:center; gap:4px}
-.menu a:not(.btn){display:inline-flex; align-items:center; min-height:44px; padding:0 14px; text-decoration:none; font-weight:500; font-size:var(--fs-apoio); border-radius:999px}
-.menu a:not(.btn):hover{background:var(--cal-clara)}
-.menu .btn{margin-left:10px}
-/* seção em que a pessoa está: preenchida na cor da marca */
-.menu a:not(.btn)[aria-current]{background:var(--tijolo); color:var(--cal)}
-.menu a:not(.btn)[aria-current]:hover{background:var(--vinho)}
-.menu .btn[aria-current]{background:var(--vinho); box-shadow:0 0 0 3px color-mix(in srgb,var(--tijolo) 45%,transparent)}
+.menu{display:flex; align-items:center; gap:30px; flex:1}
+.menu a:not(.btn){position:relative; display:inline-flex; align-items:center; min-height:44px; text-decoration:none; font-weight:500; font-size:16px; letter-spacing:.01em; color:color-mix(in srgb,var(--vinho) 80%,transparent); transition:color .2s}
+.menu a:not(.btn)::after{content:""; position:absolute; left:0; right:0; bottom:7px; height:2px; border-radius:2px; background:var(--tijolo); transform:scaleX(0); transform-origin:left; transition:transform .25s ease}
+.menu a:not(.btn):hover{color:var(--vinho)}
+.menu a:not(.btn):hover::after{transform:scaleX(1)}
+/* seção em que a pessoa está: texto na cor da marca, com o sublinhado fixo */
+.menu a:not(.btn)[aria-current]{color:var(--tijolo)}
+.menu a:not(.btn)[aria-current]::after{transform:scaleX(1)}
+.menu .btn{min-height:44px; padding:10px 22px; font-size:15px}
+.menu .btn[aria-current]{background:var(--vinho)}
 .menu-botao{display:none}
 .topo-icones{display:flex; align-items:center; gap:2px}
-.topo-icone{position:relative; width:46px; height:46px; display:grid; place-items:center; border-radius:50%; color:var(--vinho)}
-.topo-icone:hover{background:var(--cal-clara)}
-.topo-icone svg{width:24px; height:24px}
-.topo-contagem{position:absolute; top:2px; right:0; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:var(--tijolo); color:var(--cal); font:700 11.5px/20px var(--texto); text-align:center}
-@media (min-width:1280px){ .topo .wrap{gap:16px} .menu{margin-left:auto} .menu a.so-celular{display:none} }
-@media (max-width:379px){ .topo-icone[href="conta.html"]{display:none} }
-@media (max-width:1279px){
-  .topo .wrap{gap:8px}
-  .topo-icones{margin-left:auto}
-  .menu-botao{order:3}
-  .menu-botao{display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:999px; border:2px solid var(--vinho); background:transparent; color:var(--vinho); cursor:pointer}
-  .menu{position:absolute; left:0; right:0; top:100%; flex-direction:column; align-items:stretch; gap:4px; padding:12px var(--gutter) 24px; background:var(--cal); border-bottom:1px solid color-mix(in srgb, var(--vinho) 12%, transparent)}
-  .menu[hidden]{display:none!important}
-  .menu a:not(.btn){min-height:52px; font-size:18px}
-  .menu .btn{margin:8px 0 0}
-}
-@media (min-width:1280px){ .menu[hidden]{display:flex!important} }
-/* ordem do topo: conteúdo do site · Loja (separada) · Agendar · conta e sacola no fim */
+.topo-icone{position:relative; width:44px; height:44px; display:grid; place-items:center; border-radius:50%; color:var(--vinho); transition:color .2s, background-color .2s}
+.topo-icone:hover{color:var(--tijolo); background:color-mix(in srgb,var(--cal-clara) 80%,transparent)}
+.topo-icone svg{width:22px; height:22px}
+.topo-contagem{position:absolute; top:3px; right:1px; min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:var(--tijolo); color:var(--cal); font:700 11px/18px var(--texto); text-align:center}
 @media (min-width:1280px){
-  .menu a.menu-loja{margin-left:13px; position:relative}
-  .menu a.menu-loja::before{content:""; position:absolute; left:-9px; top:12px; bottom:12px; width:1px; background:var(--linha-secao)}
-  .topo-icones{margin-left:6px; padding-left:12px; border-left:1px solid var(--linha-secao)}
+  .menu[hidden]{display:flex!important}
+  .menu a:first-child{margin-left:auto}
+  .menu .btn{margin-left:auto}
+  .menu a.so-celular{display:none}
+  .topo-icones{margin-left:-8px}
 }
+@media (prefers-reduced-motion:reduce){ .menu a:not(.btn)::after{transition:none} }
+
+/* celular e tablet: menu em tela cheia, links grandes separados por linhas finas */
 @media (max-width:1279px){
-  .topo-icone[href="conta.html"]{display:none} /* no celular a conta fica dentro do menu */
-  .menu a.menu-loja{margin-top:8px; border-top:1px solid var(--linha-secao); border-radius:0; padding-top:4px}
+  .topo{--altura-topo:72px}
+  .topo .wrap{gap:4px}
+  .topo-icones{margin-left:auto}
+  .topo-icone[href="conta.html"]{display:none} /* a conta fica dentro do menu */
+  .menu-botao{order:3; display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:50%; border:1.5px solid color-mix(in srgb,var(--vinho) 30%,transparent); background:transparent; color:var(--vinho); cursor:pointer; transition:background-color .2s, border-color .2s}
+  .menu-botao[aria-expanded="true"]{background:var(--vinho); border-color:var(--vinho); color:var(--cal)}
+  .menu{position:absolute; left:0; right:0; top:100%; height:calc(100dvh - var(--altura-topo) - env(safe-area-inset-top,0px)); flex-direction:column; align-items:stretch; gap:0; padding:8px var(--gutter) calc(28px + env(safe-area-inset-bottom,0px)); background:var(--cal); overflow-y:auto; border-top:1px solid var(--linha-secao)}
+  .menu[hidden]{display:none!important}
+  .menu a:not(.btn){min-height:64px; font-family:var(--display); font-weight:400; font-size:28px; letter-spacing:0; color:var(--vinho); border-bottom:1px solid var(--linha-secao)}
+  .menu a:not(.btn)::after{display:none}
+  .menu a:not(.btn)[aria-current]{color:var(--tijolo)}
+  .menu a.menu-loja, .menu a.so-celular{min-height:52px; font-family:var(--texto); font-size:18px; font-weight:500}
+  .menu a.menu-loja{margin-top:20px; border-top:1px solid var(--linha-secao)}
+  .menu .btn{margin-top:28px; min-height:56px; font-size:17px}
+  html.menu-aberto{overflow:hidden}
 }
+@media (max-width:379px){ .logo{font-size:26px} .menu a:not(.btn){font-size:25px} }
 
 /* hero */
 .hero{padding-block:56px 96px}
@@ -295,6 +303,12 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .opcao input:checked + .opcao-corpo{background:var(--tijolo); border-color:var(--tijolo); color:var(--cal)}
 .opcao input:checked + .opcao-corpo small{color:var(--cal)}
 .opcao input:focus-visible + .opcao-corpo{outline:2px solid var(--tijolo); outline-offset:3px}
+/* marcador: redondo = escolhe uma · quadrado = pode escolher várias (práticas curtas) */
+.opcao-corpo{position:relative; padding-right:52px}
+.opcao-corpo::after{content:""; position:absolute; right:18px; top:50%; width:20px; height:20px; margin-top:-10px; border-radius:50%; border:2px solid color-mix(in srgb,var(--vinho) 35%,transparent); background:var(--cal-clara); transition:background-color .2s, border-color .2s}
+.opcao-multi .opcao-corpo::after{border-radius:6px}
+.opcao input:checked + .opcao-corpo::after{border-color:var(--cal); background:var(--cal); box-shadow:inset 0 0 0 4px var(--tijolo)}
+.opcao-multi input:checked + .opcao-corpo::after{box-shadow:none; background:var(--cal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238E3A30' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/16px no-repeat}
 .grupo-opcoes{margin-top:16px}
 .grupo-opcoes:first-child{margin-top:0}
 .grupo-opcoes .periodo{display:block; margin:0 0 10px}
@@ -913,7 +927,7 @@ const CONFIG = {
     { id: "cartomancia",    nome: "Cartomancia",                grupo: "I", cartas: true, precoPergunta: 35, minPerguntas: 3, maxPerguntas: 10, modalidades: ["Presencial", "A distância"] }
   ],
   numerologia: { preco: 60, min: 20 },  // só junto com a Cartomancia
-  grupoBEntreSi: false,                 // ligar quando as combinações dentro do Grupo B forem definidas
+  grupoBEntreSi: true,                  // práticas curtas (Grupo B) podem ser somadas entre si
   formatos: ["Sessão individual", "Pacote de 2 sessões", "Pacote de 4 sessões", "Pacote de 8 sessões"],
 
   // Horários de atendimento por dia da semana (0 = domingo … 6 = sábado)
@@ -963,20 +977,30 @@ aplicaContato();
 /* menu */
 const menu = $("#menu"), menuBtn = $("#menu-botao");
 const mq = matchMedia("(max-width:1279px)");
-function ajustaMenu(){ menu.hidden = mq.matches; menuBtn.setAttribute("aria-expanded","false"); }
-ajustaMenu(); mq.addEventListener("change", ajustaMenu);
-menuBtn.addEventListener("click", () => {
-  const abrir = menu.hidden; menu.hidden = !abrir;
+// abre/fecha o menu do celular; com ele aberto, a página por trás não rola
+function abreMenu(abrir){
+  if (abrir) menu.style.height = `${innerHeight - $(".topo").getBoundingClientRect().bottom}px`; // do topo até o fim da tela
+  menu.hidden = !abrir;
   menuBtn.setAttribute("aria-expanded", abrir);
   menuBtn.setAttribute("aria-label", abrir ? "Fechar menu" : "Abrir menu");
   menuBtn.querySelector("use").setAttribute("href", abrir ? "#i-fechar" : "#i-menu");
-});
-menu.addEventListener("click", e => { if (e.target.closest("a") && mq.matches) { menu.hidden = true; menuBtn.setAttribute("aria-expanded","false"); menuBtn.querySelector("use").setAttribute("href","#i-menu"); } });
+  document.documentElement.classList.toggle("menu-aberto", abrir);
+}
+function ajustaMenu(){ abreMenu(false); menu.hidden = mq.matches; }
+ajustaMenu(); mq.addEventListener("change", ajustaMenu);
+menuBtn.addEventListener("click", () => abreMenu(menu.hidden));
+menu.addEventListener("click", e => { if (e.target.closest("a") && mq.matches) abreMenu(false); });
+addEventListener("keydown", e => { if (e.key === "Escape" && mq.matches && !menu.hidden){ abreMenu(false); menuBtn.focus(); } });
+// sombra discreta no topo depois que a página rola
+const topo = $(".topo");
+const sombraTopo = () => topo.classList.toggle("rolado", scrollY > 8);
+addEventListener("scroll", sombraTopo, { passive: true }); sombraTopo();
 
 /* =========== agenda =========== */
 const DSEM = ["dom","seg","ter","qua","qui","sex","sáb"];
 const MES3 = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
-const estado = { terapia: null, complementos: [], perguntas: 3, numerologia: false, formato: "Sessão individual", modalidade: null, data: null, hora: null };
+// principal: uma terapia do grupo A ou I · praticas: práticas curtas (grupo B), quantas quiser
+const estado = { principal: null, praticas: [], terapia: null, complementos: [], perguntas: 3, numerologia: false, formato: "Sessão individual", modalidade: null, data: null, hora: null };
 const hoje = new Date(); hoje.setHours(0,0,0,0);
 const suave = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 
@@ -1016,9 +1040,14 @@ const tempo = m => m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ` ${
 const terapiaPorId = id => CONFIG.terapias.find(t => t.id === id);
 const detalhe = t => t.cartas ? `${reais(t.precoPergunta)} por pergunta · mín. ${t.minPerguntas}`
   : `${tempo(t.min)} · ${t.preco ? reais(t.preco) : "valor na conversa"}`;
-// complementos permitidos para o atendimento escolhido
-const complementosPara = t => !t ? [] : t.grupo === "A" || (t.grupo === "B" && CONFIG.grupoBEntreSi)
-  ? CONFIG.terapias.filter(c => c.grupo === "B" && c.id !== t.id) : [];
+// o pedido é a terapia principal (A ou I) + as práticas curtas marcadas; sem principal, a primeira prática abre o pedido
+function sincroniza(){
+  if (!CONFIG.grupoBEntreSi && !estado.principal) estado.praticas = estado.praticas.slice(-1);
+  estado.terapia = estado.principal || estado.praticas[0] || null;
+  estado.complementos = estado.principal ? [...estado.praticas] : estado.praticas.slice(1);
+  if (terapiaAtual()?.cartas !== true) estado.numerologia = false;
+}
+const escolhidas = () => [estado.terapia, ...estado.complementos].map(terapiaPorId).filter(Boolean);
 
 // nome, duração e valor de referência do pedido montado
 function pedido(){
@@ -1035,23 +1064,23 @@ function pedido(){
     valor: pacote || !total ? "a combinar pelo WhatsApp" : reais(total) };
 }
 
-const GRUPOS = [["A", "Principais · dá para somar uma prática"], ["B", "Práticas curtas · sozinhas ou somadas"], ["I", "Atendimentos individuais"]];
+const GRUPOS = [["A", "Principais · escolha uma, se quiser"], ["B", "Práticas curtas · escolha uma ou mais"], ["I", "Atendimentos individuais · feitos sozinhos"]];
 function renderTerapias(){
   $("#opcoes-terapia").innerHTML = GRUPOS.map(([g, titulo]) => `
     <div class="grupo-opcoes"><span class="periodo">${titulo}</span><div class="terapia-opcoes">${CONFIG.terapias.filter(t => t.grupo === g).map(t => `
-      <label class="opcao"><input type="radio" name="terapia" value="${t.id}"${t.id === estado.terapia ? " checked" : ""}>
+      <label class="opcao${g === "B" ? " opcao-multi" : ""}"><input type="checkbox" name="${g === "B" ? "pratica" : "principal"}" value="${t.id}" data-grupo="${g}"${[estado.principal, ...estado.praticas].includes(t.id) ? " checked" : ""}>
         <span class="opcao-corpo"><strong>${t.nome}</strong><small>${detalhe(t)} · ${t.modalidades.join(" ou ").toLowerCase()}</small></span>
       </label>`).join("")}</div></div>`).join("");
 }
+// marca/desmarca as opções conforme o estado, sem redesenhar (mantém o foco do teclado)
+const marcaOpcoes = () => $("#opcoes-terapia").querySelectorAll("input").forEach(i => { i.checked = [estado.principal, ...estado.praticas].includes(i.value); });
 const notaFormato = () => estado.formato === CONFIG.formatos[0] ? "" : "Os pacotes são renovados a cada mês. Combinamos o valor pelo WhatsApp.";
 // complementos, perguntas e formato: só aparecem as combinações permitidas
 function renderAjustes(){
   const t = terapiaAtual(), box = $("#ajustes");
   box.hidden = !t; if (!t) return;
   let html = "";
-  const comps = complementosPara(t);
-  if (comps.length) html += `<fieldset><legend>Quer somar mais uma prática? (opcional)</legend><div class="checks">${comps.map(c =>
-    `<label class="check"><input type="checkbox" name="complemento" value="${c.id}"${estado.complementos.includes(c.id) ? " checked" : ""}>${c.nome}<small>+ ${reais(c.preco)} · ${tempo(c.min)}</small></label>`).join("")}</div></fieldset>`;
+  if (t.grupo === "A" && !estado.complementos.length) html += `<p class="nota-modalidade">Quer somar? Marque uma ou mais práticas curtas acima (opcional).</p>`;
   else if (t.cartas) html += `<fieldset><legend id="t-perg">Quantas perguntas?</legend><div class="linha-contador">
       <div class="contador" role="group" aria-labelledby="t-perg"><button type="button" data-passo="-1" aria-label="Menos uma pergunta">−</button><output id="n-perguntas" aria-live="polite">${estado.perguntas}</output><button type="button" data-passo="1" aria-label="Mais uma pergunta">+</button></div>
       <span class="nota-modalidade">${reais(t.precoPergunta)} por pergunta · mínimo de ${t.minPerguntas}</span></div></fieldset>
@@ -1072,11 +1101,14 @@ function atualizaContador(){
 function renderModalidade(){
   const t = terapiaAtual(), box = $("#linha-modalidade");
   if (!t){ box.hidden = true; return; }
-  if (!t.modalidades.includes(estado.modalidade)) estado.modalidade = t.modalidades[0];
+  // só as modalidades que servem para tudo o que foi escolhido (ex.: Cristaloterapia é só presencial)
+  const mods = t.modalidades.filter(m => escolhidas().every(x => x.modalidades.includes(m)));
+  if (!mods.length) mods.push(t.modalidades[0]);
+  if (!mods.includes(estado.modalidade)) estado.modalidade = mods[0];
   box.hidden = false;
-  box.innerHTML = t.modalidades.length === 1
-    ? `<span class="nota-modalidade">Atendimento ${t.modalidades[0].toLowerCase()}.</span>`
-    : `<span id="t-mod">Presencial ou a distância?</span><div class="segmentado" role="radiogroup" aria-labelledby="t-mod">${t.modalidades.map(m =>
+  box.innerHTML = mods.length === 1
+    ? `<span class="nota-modalidade">Atendimento ${mods[0].toLowerCase()}.</span>`
+    : `<span id="t-mod">Presencial ou a distância?</span><div class="segmentado" role="radiogroup" aria-labelledby="t-mod">${mods.map(m =>
         `<label><input type="radio" name="modalidade" value="${m}"${m === estado.modalidade ? " checked" : ""}><span>${m}</span></label>`).join("")}</div>`;
   $("#campo-crianca").hidden = !t.crianca;
 }
@@ -1183,10 +1215,20 @@ function atualiza(){
   const alvo = passo.querySelector("input:not([type=radio]), button, input"); alvo?.focus({ preventScroll: true });
 }));
 
-$("#opcoes-terapia").addEventListener("change", e => { estado.terapia = e.target.value; estado.complementos = []; estado.numerologia = false; renderAjustes(); renderModalidade(); atualiza(); });
+// principal (A ou I): uma de cada vez · práticas curtas (B): quantas quiser · individual (I): sempre sozinho
+$("#opcoes-terapia").addEventListener("change", e => {
+  const el = e.target, grupo = el.dataset.grupo;
+  if (grupo === "B"){
+    estado.praticas = el.checked ? [...estado.praticas, el.value] : estado.praticas.filter(id => id !== el.value);
+    if (el.checked && terapiaPorId(estado.principal)?.grupo === "I") estado.principal = null;
+  } else {
+    estado.principal = el.checked ? el.value : null;
+    if (el.checked && grupo === "I") estado.praticas = [];
+  }
+  sincroniza(); marcaOpcoes(); renderAjustes(); renderModalidade(); atualiza();
+});
 $("#ajustes").addEventListener("change", e => {
   const el = e.target;
-  if (el.name === "complemento") estado.complementos = [...$("#ajustes").querySelectorAll('[name="complemento"]:checked')].map(x => x.value);
   if (el.name === "numerologia") estado.numerologia = el.checked;
   if (el.name === "formato"){ estado.formato = el.value; $("#nota-formato").textContent = notaFormato(); }
   atualiza();
