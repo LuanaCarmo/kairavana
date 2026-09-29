@@ -83,8 +83,8 @@ button,input,select,textarea{font:inherit; color:inherit}
 .icone svg{width:24px; height:24px}
 .contagem{position:absolute; top:2px; right:0; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:var(--tijolo); color:var(--cal); font:700 var(--fs-mini)/20px var(--texto); text-align:center}
 .cab-menu-botao{display:none}
-@media (min-width:1150px){ .cab-menu a.so-celular{display:none} }
-@media (max-width:1149px){
+@media (min-width:1280px){ .cab-menu a.so-celular{display:none} }
+@media (max-width:1279px){
   .cab-menu-botao{display:grid; border:2px solid var(--vinho)}
   .cab-menu{position:absolute; left:calc(-1 * var(--gutter)); right:calc(-1 * var(--gutter)); top:100%; display:none; flex-direction:column; align-items:stretch; gap:4px; padding:12px var(--gutter) 24px; background:var(--cal); border-bottom:1px solid var(--linha); box-shadow:0 12px 24px rgba(59,26,22,.08)}
   .cab-menu.aberto{display:flex}
@@ -93,6 +93,17 @@ button,input,select,textarea{font:inherit; color:inherit}
   .icones{margin-left:auto}
 }
 @media (max-width:379px){ .icone-conta{display:none} .logo{font-size:26px} }
+/* ordem do topo: conteúdo do site · Loja (separada) · Agendar · conta e sacola no fim */
+@media (min-width:1280px){
+  .cab-menu a.menu-loja{margin-left:13px; position:relative}
+  .cab-menu a.menu-loja::before{content:""; position:absolute; left:-9px; top:12px; bottom:12px; width:1px; background:var(--linha)}
+  .icones{margin-left:6px; padding-left:12px; border-left:1px solid var(--linha)}
+}
+@media (max-width:1279px){
+  .icone-conta{display:none} /* no celular a conta fica dentro do menu */
+  .cab-menu a.menu-loja{margin-top:8px; border-top:1px solid var(--linha); border-radius:0; padding-top:4px}
+  .cab-menu a.menu-loja[aria-current="page"]{border-radius:999px; border-top:0}
+}
 
 /* segunda linha da loja: categorias e busca */
 .cab-loja{border-top:1px solid var(--linha)}

@@ -317,9 +317,9 @@ Loja.cabecalho = (categorias = [], ativa = "", pagina = "loja") => `
         <a href="index.html#terapias">Terapias</a>
         <a href="index.html#cuidado">Nosso cuidado</a>
         <a href="index.html#perguntas">Perguntas</a>
-        <a href="loja.html#/"${atual(pagina === "loja")}>Loja</a>
-        <a href="conta.html" class="so-celular"${atual(pagina === "conta")}>Minha conta</a>
         <a href="index.html#contato">Contato</a>
+        <a href="loja.html#/" class="menu-loja"${atual(pagina === "loja")}>Loja</a>
+        <a href="conta.html" class="so-celular"${atual(pagina === "conta")}>Minha conta</a>
         <a class="btn btn-primario" href="index.html#agenda">Agendar um horário</a>
       </nav>
       <div class="icones">

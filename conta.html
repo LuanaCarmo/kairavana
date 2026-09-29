@@ -42,7 +42,7 @@ async function enviando(botao, fn){ botao.disabled = true; try { await fn(); } f
 function telaAcesso(aba = location.hash === "#cadastro" ? "cadastro" : "entrar"){
   main.innerHTML = `<div class="wrap acesso">
     <h1 style="text-align:center">Minha conta</h1>
-    <p class="apoio" style="text-align:center; margin-top:8px">Acompanhe pedidos e guarde seus endereços. Cada perfil é privado: só você vê os seus dados.</p>
+    <p class="apoio" style="text-align:center; margin-top:8px">Aqui você acompanha seus pedidos e guarda seus endereços. Seus dados são só seus: ninguém mais vê.</p>
     <div class="abas" role="tablist">
       <button role="tab" id="aba-entrar" aria-selected="${aba === "entrar"}" aria-controls="painel-acesso">Entrar</button>
       <button role="tab" id="aba-cadastro" aria-selected="${aba === "cadastro"}" aria-controls="painel-acesso">Criar conta</button>
@@ -110,7 +110,7 @@ async function montar(aba = (location.hash.slice(1) || "pedidos")){
   const perfil = await Loja.perfil();
   main.innerHTML = `<div class="wrap pagina">
     <h1>Olá, ${esc((perfil.nome || usuario.email).split(" ")[0])}</h1>
-    <p class="apoio">Seu perfil é privado. Ninguém vê os dados de outros clientes.</p>
+    <p class="apoio">Seu perfil é só seu. Ninguém mais vê os seus dados.</p>
     <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px">
       <a class="btn btn-primario btn-pequeno" href="index.html#agenda">Agendar um atendimento</a>
       <a class="btn btn-secundario btn-pequeno" href="loja.html">Ir para a loja</a>
@@ -136,7 +136,7 @@ async function abaPedidos(painel){
       ${p.rastreio ? `<p class="apoio">Código de rastreio: <strong>${esc(p.rastreio)}</strong></p>` : ""}
       ${p.status === "aguardando_pagamento" ? `<p class="apoio">Não concluiu o pagamento? <a href="https://wa.me/${esc(Loja.whatsapp)}?text=${encodeURIComponent("Olá! Preciso de ajuda com o pagamento do pedido nº " + p.numero)}" target="_blank" rel="noopener">Fale com a gente</a>.</p>` : ""}
     </article>`).join("")}</div>`
-    : `<p class="vazio">Você ainda não fez pedidos. <a href="loja.html">Conhecer a loja</a></p>`;
+    : `<p class="vazio">Você ainda não fez nenhum pedido. <a href="loja.html">Conhecer a loja</a></p>`;
 }
 
 async function abaEnderecos(painel, editando = null){

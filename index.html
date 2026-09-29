@@ -127,9 +127,9 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .topo-icone:hover{background:var(--cal-clara)}
 .topo-icone svg{width:24px; height:24px}
 .topo-contagem{position:absolute; top:2px; right:0; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:var(--tijolo); color:var(--cal); font:700 11.5px/20px var(--texto); text-align:center}
-@media (min-width:1150px){ .topo .wrap{gap:16px} .menu{margin-left:auto} .menu a.so-celular{display:none} }
+@media (min-width:1280px){ .topo .wrap{gap:16px} .menu{margin-left:auto} .menu a.so-celular{display:none} }
 @media (max-width:379px){ .topo-icone[href="conta.html"]{display:none} }
-@media (max-width:1149px){
+@media (max-width:1279px){
   .topo .wrap{gap:8px}
   .topo-icones{margin-left:auto}
   .menu-botao{order:3}
@@ -139,7 +139,17 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   .menu a:not(.btn){min-height:52px; font-size:18px}
   .menu .btn{margin:8px 0 0}
 }
-@media (min-width:1150px){ .menu[hidden]{display:flex!important} }
+@media (min-width:1280px){ .menu[hidden]{display:flex!important} }
+/* ordem do topo: conteúdo do site · Loja (separada) · Agendar · conta e sacola no fim */
+@media (min-width:1280px){
+  .menu a.menu-loja{margin-left:13px; position:relative}
+  .menu a.menu-loja::before{content:""; position:absolute; left:-9px; top:12px; bottom:12px; width:1px; background:var(--linha-secao)}
+  .topo-icones{margin-left:6px; padding-left:12px; border-left:1px solid var(--linha-secao)}
+}
+@media (max-width:1279px){
+  .topo-icone[href="conta.html"]{display:none} /* no celular a conta fica dentro do menu */
+  .menu a.menu-loja{margin-top:8px; border-top:1px solid var(--linha-secao); border-radius:0; padding-top:4px}
+}
 
 /* hero */
 .hero{padding-block:56px 96px}
@@ -170,7 +180,11 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .sobre-fotos{position:relative; margin-top:44px; max-width:400px}
 .foto-arco{aspect-ratio:4/5; border-radius:999px 999px 36px 36px}
 @media (max-width:899px){ .sobre-fotos{max-width:320px} }
-.cartao-foto{aspect-ratio:16/9; border-radius:var(--raio-p); margin-bottom:4px}
+/* foto pequena e quadrada, sempre ao lado do título: mesmo formato em todos os cartões de terapia */
+.cartao-cabeca{display:grid; grid-template-columns:88px minmax(0,1fr); gap:18px; align-items:center}
+@media (min-width:900px){ .cartao-cabeca{grid-template-columns:104px minmax(0,1fr); gap:22px} }
+.cartao-cabeca .topo-cartao{margin-bottom:8px}
+.cartao-foto{aspect-ratio:1; border-radius:var(--raio-p); margin:0}
 .foto-pilula{aspect-ratio:16/7; border-radius:999px; margin-block:8px}
 
 /* sobre */
@@ -483,9 +497,9 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       <a href="#terapias">Terapias</a>
       <a href="#cuidado">Nosso cuidado</a>
       <a href="#perguntas">Perguntas</a>
-      <a href="loja.html">Loja</a>
-      <a href="conta.html" class="so-celular">Minha conta</a>
       <a href="#contato">Contato</a>
+      <a href="loja.html" class="menu-loja">Loja</a>
+      <a href="conta.html" class="so-celular">Minha conta</a>
       <a class="btn btn-primario" href="#agenda">Agendar um horário</a>
     </nav>
     <div class="topo-icones">
@@ -551,16 +565,14 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   <div class="wrap">
     <div class="cabeca revelar">
       <p class="sobretitulo">Terapias</p>
-      <h2>Muitas formas de pausar.</h2>
-      <p>Cada cartão mostra como o atendimento costuma ser. Em “Saiba mais”, separamos o que diz a tradição, o que as pessoas relatam e o que a evidência científica mostra.</p>
+      <h2>Escolha o cuidado que combina com você.</h2>
+      <p>Cada terapia tem o seu jeito. Em cada cartão você vê como é a sessão, quanto tempo dura e quanto custa. Quer ir além? Abra “Saiba mais”: contamos de onde a prática vem, o que as pessoas costumam sentir e o que os estudos já mostram, sem exagero.</p>
     </div>
 
     <div class="terapias-grid">
       <article class="cartao revelar" id="reiki">
-        <figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1598901986949-f593ff2a31a6?w=640&q=60&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1598901986949-f593ff2a31a6?w=400&q=60&auto=format&fit=crop 400w, https://images.unsplash.com/photo-1598901986949-f593ff2a31a6?w=640&q=60&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1598901986949-f593ff2a31a6?w=1000&q=60&auto=format&fit=crop 1000w" sizes="(min-width:1240px) 560px, (min-width:760px) 46vw, 92vw" width="1000" height="563" style="--foco:40% 50%" alt="Mãos de terapeuta sobre a cabeça de uma pessoa deitada de olhos fechados, à luz de vela" loading="lazy"></figure>
-        <div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Presencial ou a distância</span></div>
-        <h3>Reiki para adultos</h3>
-        <p>Prática de origem japonesa feita em silêncio, com as mãos posicionadas a poucos centímetros do corpo. Cerca de 50 minutos para desacelerar, respirar e simplesmente estar.</p>
+        <div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1598901986949-f593ff2a31a6?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1598901986949-f593ff2a31a6?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1598901986949-f593ff2a31a6?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Mãos de terapeuta sobre a cabeça de uma pessoa deitada de olhos fechados, à luz de vela" loading="lazy"></figure><div><div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Presencial ou a distância</span></div><h3>Reiki para adultos</h3></div></div>
+        <p>Uma prática japonesa feita em silêncio. Você fica deitado(a), confortável, e as mãos ficam a poucos centímetros do corpo. São cerca de 50 minutos para desacelerar, respirar e simplesmente estar.</p>
         <dl class="ficha"><dt>Duração</dt><dd>cerca de 50 minutos</dd><dt>Valor</dt><dd>R$ 150</dd><dt>Modalidade</dt><dd>presencial ou a distância</dd></dl>
         <details>
           <summary>Saiba mais sobre o Reiki</summary>
@@ -574,10 +586,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       </article>
 
       <article class="cartao revelar" id="reiki-criancas">
-        <figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1672928499632-1d040212e3f4?w=640&q=60&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1672928499632-1d040212e3f4?w=400&q=60&auto=format&fit=crop 400w, https://images.unsplash.com/photo-1672928499632-1d040212e3f4?w=640&q=60&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1672928499632-1d040212e3f4?w=1000&q=60&auto=format&fit=crop 1000w" sizes="(min-width:1240px) 560px, (min-width:760px) 46vw, 92vw" width="1000" height="563" alt="Criança descansando em casa, deitada na cama sob uma manta listrada" loading="lazy"></figure>
-        <div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Somente a distância</span></div>
-        <h3>Reiki infantil a distância</h3>
-        <p>A criança fica em casa, no ritmo dela, sem precisar lidar com um ambiente novo nem ficar parada. Um formato pensado com carinho também para crianças autistas. Antes, conversamos com a família para conhecer a criança e o que a acolhe.</p>
+        <div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1565340419825-cd1ac212cbce?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1565340419825-cd1ac212cbce?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1565340419825-cd1ac212cbce?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Mãos de uma criança apoiadas nas mãos de um adulto" loading="lazy"></figure><div><div class="topo-cartao"><span class="etq etq-tradicao">Reiki</span><span class="apoio">Somente a distância</span></div><h3>Reiki infantil a distância</h3></div></div>
+        <p>A criança recebe a sessão em casa, no ritmo dela, sem precisar estar num lugar novo nem ficar parada. Pensamos esse formato com muito carinho, também para crianças autistas. Antes de começar, conversamos com a família para entender quem ela é e o que a acalma.</p>
         <dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Para quem</dt><dd>crianças, com autorização dos responsáveis</dd></dl>
         <details>
           <summary>Saiba mais sobre o Reiki infantil</summary>
@@ -591,10 +601,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       </article>
 
       <article class="cartao revelar" id="florais">
-        <figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=640&q=60&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=400&q=60&auto=format&fit=crop 400w, https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=640&q=60&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=1000&q=60&auto=format&fit=crop 1000w" sizes="(min-width:1240px) 560px, (min-width:760px) 46vw, 92vw" width="1000" height="563" alt="Frasco âmbar com conta-gotas, sem rótulo, sobre fundo claro" loading="lazy"></figure>
-        <div class="topo-cartao"><span class="etq etq-florais">Florais</span><span class="apoio">Presencial ou a distância</span></div>
-        <h3>Florais de Bach</h3>
-        <p>Começa com uma conversa sobre o seu momento. A partir dela, escolhemos juntos as essências, entre as 38 criadas por Edward Bach, e preparamos o seu frasco para uso em gotas.</p>
+        <div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Frasco âmbar com conta-gotas, sem rótulo, sobre fundo claro" loading="lazy"></figure><div><div class="topo-cartao"><span class="etq etq-florais">Florais</span><span class="apoio">Presencial ou a distância</span></div><h3>Florais de Bach</h3></div></div>
+        <p>Tudo começa com uma conversa sobre o momento que você está vivendo. Depois, escolhemos juntos as essências entre as 38 criadas por Edward Bach e preparamos o seu frasco, para usar em gotas no dia a dia.</p>
         <dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Valor</dt><dd>R$ 100</dd><dt>Atenção</dt><dd>a maioria das essências contém álcool</dd></dl>
         <details>
           <summary>Saiba mais sobre os Florais</summary>
@@ -608,10 +616,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       </article>
 
       <article class="cartao revelar" id="numerologia">
-        <figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=640&q=60&auto=format&fit=crop" srcset="https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=400&q=60&auto=format&fit=crop 400w, https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=640&q=60&auto=format&fit=crop 640w, https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=1000&q=60&auto=format&fit=crop 1000w" sizes="(min-width:1240px) 560px, (min-width:760px) 46vw, 92vw" width="1000" height="563" alt="Caderno e caneta sobre mesa de madeira, com sombras de luz natural" loading="lazy"></figure>
-        <div class="topo-cartao"><span class="etq etq-tradicao">Numerologia</span><span class="apoio">Presencial ou a distância</span></div>
-        <h3>Mapa numerológico</h3>
-        <p>Com o seu nome completo e a data de nascimento, preparamos um mapa escrito e conversamos sobre ele com calma. Um convite para olhar seus momentos, escolhas e caminhos por outro ângulo.</p>
+        <div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1637689113621-73951984fcc1?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Caderno e caneta sobre mesa de madeira, com sombras de luz natural" loading="lazy"></figure><div><div class="topo-cartao"><span class="etq etq-tradicao">Numerologia</span><span class="apoio">Presencial ou a distância</span></div><h3>Mapa numerológico</h3></div></div>
+        <p>Com o seu nome completo e a data de nascimento, preparamos o seu mapa e depois conversamos sobre ele, sem pressa. É um jeito diferente de olhar para os seus momentos, escolhas e caminhos.</p>
         <dl class="ficha"><dt>Duração</dt><dd>conversa de cerca de 90 minutos</dd><dt>Você recebe</dt><dd>o mapa por escrito, em PDF</dd></dl>
         <details>
           <summary>Saiba mais sobre o Mapa</summary>
@@ -626,21 +632,21 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 
     <div class="mais revelar" id="mais-atendimentos">
       <h3>Mais atendimentos</h3>
-      <p class="apoio">Reiki e Cristaloterapia podem receber um complemento de Florais, Aromaterapia, Alinhamento de Chakras ou Mindfulness. Os demais são feitos sozinhos. Na agenda, só aparecem as combinações possíveis.</p>
+      <p class="apoio">Quer combinar? O Reiki e a Cristaloterapia podem ganhar um complemento: Florais, Aromaterapia, Alinhamento de Chakras ou Mindfulness. Os outros atendimentos são feitos sozinhos. Não precisa decorar nada: a agenda só mostra as combinações possíveis.</p>
       <ul class="mais-grid">
-        <li><h4>Cristaloterapia</h4><p>Cristais e pedras dispostos ao seu redor enquanto você descansa e respira.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 50 minutos</dd><dt>Valor</dt><dd>R$ 150</dd></dl></li>
-        <li><h4>Aromaterapia</h4><p>Óleos essenciais escolhidos junto com você, num momento guiado pelo olfato.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Valor</dt><dd>R$ 100</dd></dl></li>
-        <li><h4>Alinhamento de Chakras</h4><p>Respiração e visualização inspiradas nos centros de energia da tradição indiana.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Valor</dt><dd>R$ 100</dd></dl></li>
-        <li><h4>Mindfulness</h4><p>Exercícios de atenção plena e respiração para trazer a mente ao presente.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Valor</dt><dd>R$ 100</dd></dl></li>
-        <li><h4>Constelação Familiar</h4><p>Dinâmica sistêmica para olhar relações e histórias de família por outro ângulo.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 1 hora</dd><dt>Valor</dt><dd>R$ 200</dd></dl></li>
-        <li><h4>Mesa Radiônica</h4><p>Uma leitura com um tabuleiro de símbolos e gráficos, a partir de uma conversa sobre o seu momento.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 1 hora</dd><dt>Valor</dt><dd>R$ 200</dd></dl></li>
-        <li><h4>Arteterapia</h4><p>Expressão por desenho, pintura e colagem. Não é preciso saber desenhar.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 40 minutos</dd><dt>Valor</dt><dd>R$ 130</dd></dl></li>
-        <li><h4>Cartomancia</h4><p>Cartas como ferramenta de reflexão, não de previsão. Pode incluir Numerologia (+ 20 min, + R$ 60).</p><dl class="ficha"><dt>Duração</dt><dd>30 a 50 minutos</dd><dt>Valor</dt><dd>R$ 35 por pergunta (mín. 3)</dd></dl></li>
+        <li><div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1567113463224-37cf03ba4577?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1567113463224-37cf03ba4577?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1567113463224-37cf03ba4577?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Cristais e pedras em tons quentes sobre uma bandeja de madeira" loading="lazy"></figure><div><div class="topo-cartao"><span class="apoio">Presencial</span></div><h4>Cristaloterapia</h4></div></div><p>Você descansa enquanto cristais e pedras são dispostos ao seu redor. Um tempo só para respirar.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 50 minutos</dd><dt>Valor</dt><dd>R$ 150</dd></dl></li>
+        <li><div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1671493235081-5842463637cd?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1671493235081-5842463637cd?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1671493235081-5842463637cd?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Frasco âmbar de óleo essencial sobre um tecido de linho" loading="lazy"></figure><div><div class="topo-cartao"><span class="apoio">Presencial ou a distância</span></div><h4>Aromaterapia</h4></div></div><p>Escolhemos juntos os óleos essenciais, e o aroma guia um momento de calma.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Valor</dt><dd>R$ 100</dd></dl></li>
+        <li><div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1714228499605-367154d9bdb2?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1714228499605-367154d9bdb2?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1714228499605-367154d9bdb2?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Vela acesa em um pote âmbar, com luz baixa" loading="lazy"></figure><div><div class="topo-cartao"><span class="apoio">Presencial ou a distância</span></div><h4>Alinhamento de Chakras</h4></div></div><p>Um momento de respiração e visualização, inspirado nos centros de energia da tradição indiana.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Valor</dt><dd>R$ 100</dd></dl></li>
+        <li><div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1547318114-eff5ea85ede9?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1547318114-eff5ea85ede9?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1547318114-eff5ea85ede9?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Xícara de chá sobre mesa de madeira, com ervas ao redor" loading="lazy"></figure><div><div class="topo-cartao"><span class="apoio">Presencial ou a distância</span></div><h4>Mindfulness</h4></div></div><p>Exercícios simples de atenção e respiração para trazer a mente de volta ao agora.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 30 minutos</dd><dt>Valor</dt><dd>R$ 100</dd></dl></li>
+        <li><div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1453828423292-392a660a502f?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1453828423292-392a660a502f?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1453828423292-392a660a502f?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Fotografias antigas de família guardadas em uma caixa de madeira" loading="lazy"></figure><div><div class="topo-cartao"><span class="apoio">Presencial ou a distância</span></div><h4>Constelação Familiar</h4></div></div><p>Um olhar cuidadoso para as relações e as histórias da sua família, por outro ângulo.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 1 hora</dd><dt>Valor</dt><dd>R$ 200</dd></dl></li>
+        <li><div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1648316804556-3ccdc79822c6?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1648316804556-3ccdc79822c6?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1648316804556-3ccdc79822c6?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Mão segurando um pêndulo pendurado em uma corrente" loading="lazy"></figure><div><div class="topo-cartao"><span class="apoio">Presencial ou a distância</span></div><h4>Mesa Radiônica</h4></div></div><p>Depois de uma conversa sobre o seu momento, fazemos uma leitura com um tabuleiro de símbolos e gráficos.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 1 hora</dd><dt>Valor</dt><dd>R$ 200</dd></dl></li>
+        <li><div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1510832842230-87253f48d74f?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1510832842230-87253f48d74f?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1510832842230-87253f48d74f?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Mão com pincel sobre uma paleta de aquarela" loading="lazy"></figure><div><div class="topo-cartao"><span class="apoio">Presencial ou a distância</span></div><h4>Arteterapia</h4></div></div><p>Desenho, pintura e colagem para expressar o que nem sempre cabe em palavras. Não precisa saber desenhar.</p><dl class="ficha"><dt>Duração</dt><dd>cerca de 40 minutos</dd><dt>Valor</dt><dd>R$ 130</dd></dl></li>
+        <li><div class="cartao-cabeca"><figure class="cartao-foto"><img class="img-kairavana" src="https://images.unsplash.com/photo-1607773709367-06b7a91f7e4a?w=200&amp;h=200&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format" srcset="https://images.unsplash.com/photo-1607773709367-06b7a91f7e4a?w=120&amp;h=120&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 120w, https://images.unsplash.com/photo-1607773709367-06b7a91f7e4a?w=240&amp;h=240&amp;fit=crop&amp;crop=entropy&amp;q=60&amp;auto=format 240w" sizes="(min-width:900px) 104px, 88px" width="240" height="240" alt="Cartas dispostas sobre a mesa ao lado de uma vela" loading="lazy"></figure><div><div class="topo-cartao"><span class="apoio">Presencial ou a distância</span></div><h4>Cartomancia</h4></div></div><p>As cartas como convite à reflexão, não como previsão. Dá para incluir Numerologia (+ 20 min, + R$ 60).</p><dl class="ficha"><dt>Duração</dt><dd>30 a 50 minutos</dd><dt>Valor</dt><dd>R$ 35 por pergunta (mín. 3)</dd></dl></li>
       </ul>
-      <p class="apoio">Pacotes de 2, 4 ou 8 sessões, com renovação mensal: valores na conversa.</p>
+      <p class="apoio">Também temos pacotes de 2, 4 ou 8 sessões, renovados a cada mês. Os valores a gente passa na conversa.</p>
     </div>
 
-    <div class="embreve revelar"><span class="etq etq-aberto">Em breve</span><span><strong>Baralho Cigano.</strong> A próxima parada da nossa caravana.</span></div>
+    <div class="embreve revelar"><span class="etq etq-aberto">Em breve</span><span><strong>Baralho Cigano.</strong> Está chegando: é a próxima parada da nossa caravana.</span></div>
     <p class="aviso-linha revelar">As terapias integrativas podem complementar, e nunca substituir, o acompanhamento médico ou psicológico.</p>
   </div>
 </section>
@@ -650,14 +656,14 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   <div class="wrap">
     <div class="cabeca revelar">
       <p class="sobretitulo">Nosso cuidado</p>
-      <h2>Informação separada, com honestidade.</h2>
-      <p>Em tudo o que publicamos, cada afirmação vem com uma etiqueta. Assim você sabe de onde vem aquilo que está lendo e decide com clareza.</p>
+      <h2>A verdade, dita com carinho.</h2>
+      <p>Tudo o que contamos aqui vem com uma etiqueta. Assim você sabe de onde vem cada informação e decide com tranquilidade.</p>
     </div>
     <div class="cuidado-grid">
-      <div class="pilar revelar"><span class="etq etq-tradicao">Tradição</span><p>O que a própria prática ensina: sua origem, sua história e como ela se explica.</p></div>
-      <div class="pilar revelar"><span class="etq etq-relatos">Relatos</span><p>O que algumas pessoas contam sentir. É experiência pessoal, não prova.</p></div>
+      <div class="pilar revelar"><span class="etq etq-tradicao">Tradição</span><p>Como a própria prática se explica: de onde ela vem e qual é a sua história.</p></div>
+      <div class="pilar revelar"><span class="etq etq-relatos">Relatos</span><p>O que algumas pessoas contam sentir. É uma experiência pessoal, não uma prova.</p></div>
       <div class="pilar revelar"><span class="etq etq-evidencia">Evidência</span><p>O que os estudos científicos já mostram, inclusive quando não encontram efeito.</p></div>
-      <div class="pilar revelar"><span class="etq etq-aberto">Em aberto</span><p>O que ainda não se sabe. Preferimos dizer isso a prometer o que não podemos.</p></div>
+      <div class="pilar revelar"><span class="etq etq-aberto">Em aberto</span><p>O que ainda ninguém sabe. Preferimos dizer isso a prometer o que não podemos cumprir.</p></div>
     </div>
     <p class="pnpic revelar">O Reiki e a terapia de florais fazem parte da Política Nacional de Práticas Integrativas e Complementares (PNPIC) do SUS, como terapias integrativas e complementares de cuidado. Estar na política pública não significa que resolvam doenças ou substituam o cuidado médico.</p>
   </div>
@@ -667,13 +673,13 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   <div class="wrap">
     <div class="cabeca revelar">
       <p class="sobretitulo">Como funciona um atendimento</p>
-      <h2>Do primeiro contato ao depois.</h2>
+      <h2>Como é, do começo ao fim.</h2>
     </div>
     <ol class="passos">
-      <li class="revelar"><span class="num" aria-hidden="true">1</span><h3>Você escolhe</h3><p>Na agenda abaixo, você vê os horários livres e envia seu pedido pelo WhatsApp.</p></li>
-      <li class="revelar"><span class="num" aria-hidden="true">2</span><h3>A gente conversa</h3><p>Confirmamos o horário e fazemos uma conversa breve sobre o que te traz e o que você espera.</p></li>
-      <li class="revelar"><span class="num" aria-hidden="true">3</span><h3>No seu tempo</h3><p>Um ambiente tranquilo, silencioso e respeitoso. Você pode fazer perguntas, pedir uma pausa ou encerrar quando quiser.</p></li>
-      <li class="revelar"><span class="num" aria-hidden="true">4</span><h3>Um espaço depois</h3><p>Ao final, há tempo para falar como foi. Sem pressa e sem interpretação forçada.</p></li>
+      <li class="revelar"><span class="num" aria-hidden="true">1</span><h3>Você escolhe</h3><p>Na agenda aqui embaixo você vê os horários livres e manda o seu pedido pelo WhatsApp.</p></li>
+      <li class="revelar"><span class="num" aria-hidden="true">2</span><h3>A gente conversa</h3><p>Confirmamos o horário e conversamos um pouco sobre o que te traz e o que você espera.</p></li>
+      <li class="revelar"><span class="num" aria-hidden="true">3</span><h3>No seu tempo</h3><p>Um lugar tranquilo e silencioso. Você pode perguntar, pedir uma pausa ou encerrar quando quiser.</p></li>
+      <li class="revelar"><span class="num" aria-hidden="true">4</span><h3>Depois da sessão</h3><p>No final, tem um tempo para você contar como foi. Sem pressa e sem interpretações forçadas.</p></li>
     </ol>
   </div>
 </section>
@@ -684,7 +690,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
     <div class="cabeca revelar">
       <p class="sobretitulo">Agenda</p>
       <h2>Escolha um horário com calma.</h2>
-      <p>Escolha a terapia, o dia e o horário. Seu pedido chega pronto no nosso WhatsApp, e confirmamos por lá.</p>
+      <p>É só escolher a terapia, o dia e o horário. O seu pedido chega pronto no nosso WhatsApp e confirmamos tudo por lá.</p>
     </div>
 
     <div class="agenda-grid">
@@ -730,7 +736,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
           <svg aria-hidden="true"><use href="#i-wa"/></svg>Enviar pelo WhatsApp
         </a>
         <p id="ag-status" aria-live="polite"></p>
-        <p>O horário fica reservado depois da nossa confirmação. Valores e formas de pagamento são informados na conversa.</p>
+        <p>O horário fica reservado assim que a gente confirmar. Valores e formas de pagamento combinamos na conversa.</p>
       </aside>
     </div>
   </div>
@@ -746,7 +752,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
     <div class="cabeca revelar">
       <p class="sobretitulo">Loja</p>
       <h2>Leve o cuidado para casa.</h2>
-      <p>Velas, óleos essenciais, cristais, florais e mais. Cada pedido vai em embalagem Kairavana, com cartão, mensagem e um aroma escolhido com carinho.</p>
+      <p>Velas, óleos essenciais, cristais, florais e outros mimos. Cada pedido vai numa embalagem Kairavana, com cartão, mensagem e um aroma escolhido com carinho.</p>
     </div>
     <div class="destaques-home" id="destaques-home" aria-live="polite" hidden></div>
     <ul class="vitrine-home revelar" aria-label="Categorias da loja">
@@ -771,7 +777,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   <div class="wrap faq-grid">
     <div class="revelar">
       <p class="sobretitulo">Perguntas frequentes</p>
-      <h2>O que as pessoas costumam perguntar.</h2>
+      <h2>Ficou alguma dúvida?</h2>
     </div>
     <div class="revelar">
       <details>
@@ -788,7 +794,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       </details>
       <details>
         <summary>Preciso acreditar para fazer?</summary>
-        <div class="resposta"><p>Não. Você pode chegar curioso(a), cético(a) ou só querendo um momento de pausa. Nossa proposta é que você experimente com informação e decida por si.</p></div>
+        <div class="resposta"><p>Não. Pode vir com curiosidade, com desconfiança ou só querendo uma pausa. A ideia é que você experimente, bem informado(a), e tire as suas próprias conclusões.</p></div>
       </details>
       <details>
         <summary>Como funciona o Reiki a distância para crianças?</summary>
@@ -833,8 +839,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   <div class="wrap contato-grid">
     <div class="contato-info revelar">
       <p class="sobretitulo">Contato</p>
-      <h2>Conte como você está chegando.</h2>
-      <p>Tire dúvidas, peça valores ou combine um horário. Respondemos com calma, geralmente no mesmo dia útil.</p>
+      <h2>Vamos conversar?</h2>
+      <p>Pode mandar sua dúvida, pedir valores ou marcar um horário. A gente responde com calma, quase sempre no mesmo dia útil.</p>
       <p class="crise"><strong>Em momentos de crise, procure ajuda profissional.</strong> O CVV atende pelo 188, 24 horas, gratuitamente.</p>
     </div>
 
@@ -956,7 +962,7 @@ aplicaContato();
 
 /* menu */
 const menu = $("#menu"), menuBtn = $("#menu-botao");
-const mq = matchMedia("(max-width:1149px)");
+const mq = matchMedia("(max-width:1279px)");
 function ajustaMenu(){ menu.hidden = mq.matches; menuBtn.setAttribute("aria-expanded","false"); }
 ajustaMenu(); mq.addEventListener("change", ajustaMenu);
 menuBtn.addEventListener("click", () => {
