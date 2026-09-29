@@ -67,3 +67,14 @@ Coloque na pasta `imagens/`, já editados conforme este guia:
 - Enquanto nenhum arquivo existir, o site continua mostrando a foto atual.
 - Para ajustar o enquadramento, mude `--hero-foco` em `.foto-hero` no `index.html`. O valor é "horizontal vertical": por exemplo, `50% 30%` sobe o foco e `40% 50%` puxa para a esquerda.
 - Nas outras fotos, o enquadramento se ajusta com `style="--foco:center 80%"` na própria imagem.
+
+## Fotos em uso
+
+| Onde | Foto | Observação |
+|---|---|---|
+| Hero | `imagens/hero-reiki*.webp` (Unsplash 1757066033647) | provisória, até chegar a foto real da sessão |
+| Sobre | trilha ao entardecer (Unsplash 1759357557586) | pesada em telas de alta resolução (~220 KB); trocar quando possível |
+| Reiki | mãos sobre a cabeça, à luz de vela (Unsplash 1598901986949) | |
+| Reiki infantil | criança descansando em casa (Unsplash 1672928499632) | |
+| Florais | frasco âmbar (Unsplash 1608571424237) | |
+| Numerologia | caderno sobre madeira (Unsplash 1637689113621) | |
