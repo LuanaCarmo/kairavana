@@ -321,7 +321,9 @@ Loja.cabecalho = (categorias = [], ativa = "") => `
     <nav class="cats" aria-label="Categorias"><ul class="wrap">
       <li><a href="loja.html#/"${ativa === "todos" ? ' aria-current="page"' : ""}>Todos</a></li>
       ${categorias.map(c => `<li><a href="loja.html#/categoria/${esc(c.slug)}"${ativa === c.slug ? ' aria-current="page"' : ""}>${esc(c.nome)}</a></li>`).join("")}
-      <li><a href="index.html#agenda">Agendar atendimento</a></li>
+      <li class="cats-site"><a href="index.html#terapias">Atendimentos</a></li>
+      <li><a href="index.html#agenda">Agendar</a></li>
+      <li><a href="index.html">Site Kairavana</a></li>
     </ul></nav>
   </header>`;
 
@@ -336,7 +338,7 @@ Loja.rodape = () => `
       <div><h2>Kairavana</h2><ul><li><a href="index.html#terapias">Atendimentos</a></li><li><a href="index.html#agenda">Agendar</a></li><li><a href="index.html#perguntas">Perguntas</a></li></ul></div>
       <div><h2>Atendimento</h2><ul><li><a href="https://wa.me/${esc(Loja.whatsapp)}" target="_blank" rel="noopener">WhatsApp</a></li><li><a href="https://www.instagram.com/kairavana/" target="_blank" rel="noopener">Instagram</a></li></ul></div>
     </div>
-    <div class="rod-base"><span>© ${new Date().getFullYear()} Kairavana</span><span>Em crise? CVV 188, 24 horas.</span></div>
+    <div class="rod-base"><span>© ${new Date().getFullYear()} Kairavana · <a href="equipe.html">Área da equipe</a></span><span>Em crise? CVV 188, 24 horas.</span></div>
   </div></footer>`;
 
 /* gaveta do carrinho, usada na loja e na conta */

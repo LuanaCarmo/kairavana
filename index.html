@@ -100,14 +100,24 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .menu a:not(.btn):hover{background:var(--cal-clara)}
 .menu .btn{margin-left:10px}
 .menu-botao{display:none}
-@media (max-width:959px){
+.topo-icones{display:flex; align-items:center; gap:2px}
+.topo-icone{position:relative; width:46px; height:46px; display:grid; place-items:center; border-radius:50%; color:var(--vinho)}
+.topo-icone:hover{background:var(--cal-clara)}
+.topo-icone svg{width:24px; height:24px}
+.topo-contagem{position:absolute; top:2px; right:0; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:var(--tijolo); color:var(--cal); font:700 11.5px/20px var(--texto); text-align:center}
+@media (min-width:1150px){ .topo .wrap{gap:16px} .menu{margin-left:auto} .menu a.so-celular{display:none} }
+@media (max-width:379px){ .topo-icone[href="conta.html"]{display:none} }
+@media (max-width:1149px){
+  .topo .wrap{gap:8px}
+  .topo-icones{margin-left:auto}
+  .menu-botao{order:3}
   .menu-botao{display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:999px; border:2px solid var(--vinho); background:transparent; color:var(--vinho); cursor:pointer}
   .menu{position:absolute; left:0; right:0; top:100%; flex-direction:column; align-items:stretch; gap:4px; padding:12px var(--gutter) 24px; background:var(--cal); border-bottom:1px solid color-mix(in srgb, var(--vinho) 12%, transparent)}
   .menu[hidden]{display:none!important}
   .menu a:not(.btn){min-height:52px; font-size:18px}
   .menu .btn{margin:8px 0 0}
 }
-@media (min-width:960px){ .menu[hidden]{display:flex!important} }
+@media (min-width:1150px){ .menu[hidden]{display:flex!important} }
 
 /* hero */
 .hero{padding-block:56px 96px}
@@ -174,6 +184,14 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .mais-grid strong{font-family:var(--display); font-weight:400; font-size:22px; line-height:1.15}
 .mais-grid span{font-size:15px; color:var(--marrom)}
 .mais-grid small{margin-top:auto; font-weight:700; font-size:14px; color:var(--tijolo)}
+.destaques-home{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-bottom:32px}
+@media (min-width:900px){ .destaques-home{grid-template-columns:repeat(4,minmax(0,1fr)); gap:20px} }
+.destaque{display:flex; flex-direction:column; gap:8px; padding:12px 12px 18px; border-radius:26px; background:var(--cal-clara); color:var(--vinho); text-decoration:none; transition:transform .3s}
+.destaque:hover{transform:translateY(-4px)}
+.destaque img{aspect-ratio:1; width:100%; object-fit:cover; border-radius:18px; background:var(--cal)}
+.destaque strong{font-weight:500; font-size:15px; line-height:1.35; padding-inline:4px}
+.destaque span{font-weight:700; font-size:17px; padding-inline:4px; margin-top:auto}
+.tijolo-bg .destaque:focus-visible{outline-color:var(--cal)}
 .vitrine-home{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:10px}
 .vitrine-home a{display:inline-flex; align-items:center; min-height:48px; padding:10px 20px; border-radius:999px; background:var(--cal-clara); border:1.5px solid color-mix(in srgb,var(--vinho) 18%,transparent); text-decoration:none; font-weight:500}
 .vitrine-home a:hover{border-color:var(--vinho)}
@@ -421,6 +439,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   <symbol id="i-seta-d" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="i-fechar" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-conta" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></g></symbol>
+  <symbol id="i-sacola" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 13H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></g></symbol>
   <symbol id="i-insta" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></g></symbol>
 </svg>
 
@@ -438,9 +458,14 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       <a href="#cuidado">Nosso cuidado</a>
       <a href="#perguntas">Perguntas</a>
       <a href="loja.html">Loja</a>
+      <a href="conta.html" class="so-celular">Minha conta</a>
       <a href="#contato">Contato</a>
       <a class="btn btn-primario" href="#agenda">Agendar um horário</a>
     </nav>
+    <div class="topo-icones">
+      <a class="topo-icone" href="conta.html" aria-label="Minha conta"><svg aria-hidden="true"><use href="#i-conta"/></svg></a>
+      <a class="topo-icone" href="loja.html" id="topo-carrinho" aria-label="Loja e carrinho"><svg aria-hidden="true"><use href="#i-sacola"/></svg><span class="topo-contagem" id="topo-contagem" hidden></span></a>
+    </div>
   </div>
 </header>
 
@@ -690,7 +715,8 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
       <h2>Leve o cuidado para casa.</h2>
       <p>Velas, óleos essenciais, cristais, florais e mais. Cada pedido vai em embalagem Kairavana, com cartão, mensagem e um aroma escolhido com carinho.</p>
     </div>
-    <ul class="vitrine-home revelar">
+    <div class="destaques-home" id="destaques-home" aria-live="polite" hidden></div>
+    <ul class="vitrine-home revelar" aria-label="Categorias da loja">
       <li><a href="loja.html#/categoria/velas">Velas aromáticas</a></li>
       <li><a href="loja.html#/categoria/oleos-essenciais">Óleos essenciais</a></li>
       <li><a href="loja.html#/categoria/incensos">Incensos</a></li>
@@ -814,7 +840,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
         <p>Fontes de referência: <a href="https://www.nccih.nih.gov/" target="_blank" rel="noopener">NCCIH</a>, <a href="https://www.bachcentre.com/" target="_blank" rel="noopener">Bach Centre</a> e <a href="https://www.gov.br/saude/pt-br/composicao/saps/pnpic" target="_blank" rel="noopener">Ministério da Saúde (PNPIC)</a>.</p>
       </div>
     </div>
-    <div class="rodape-base"><span>© <span id="ano"></span> Kairavana · Fotos: <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></span><span>Em crise? CVV 188, 24 horas.</span></div>
+    <div class="rodape-base"><span>© <span id="ano"></span> Kairavana · Fotos: <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a> · <a href="equipe.html">Área da equipe</a></span><span>Em crise? CVV 188, 24 horas.</span></div>
   </div>
 </footer>
 
@@ -897,7 +923,7 @@ aplicaContato();
 
 /* menu */
 const menu = $("#menu"), menuBtn = $("#menu-botao");
-const mq = matchMedia("(max-width:959px)");
+const mq = matchMedia("(max-width:1149px)");
 function ajustaMenu(){ menu.hidden = mq.matches; menuBtn.setAttribute("aria-expanded","false"); }
 ajustaMenu(); mq.addEventListener("change", ajustaMenu);
 menuBtn.addEventListener("click", () => {
@@ -1161,6 +1187,36 @@ function barra(){
   $("#wa-flutuante").classList.toggle("recolhido", naTela && innerWidth < 1000);
 }
 addEventListener("scroll", barra, { passive: true }); addEventListener("resize", barra); barra();
+
+/* =========== integração com a loja =========== */
+// contador do carrinho no topo (o carrinho é o mesmo da loja)
+function contadorCarrinho(){
+  let n = 0;
+  try { n = (JSON.parse(localStorage.getItem("kv-carrinho")) || []).reduce((s, i) => s + i.q, 0); } catch {}
+  const c = $("#topo-contagem"); c.hidden = !n; c.textContent = n;
+  $("#topo-carrinho").setAttribute("aria-label", n ? `Loja: ${n} ${n > 1 ? "itens" : "item"} no carrinho` : "Loja e carrinho");
+}
+contadorCarrinho();
+addEventListener("storage", e => { if (e.key === "kv-carrinho") contadorCarrinho(); });
+
+// produtos em destaque da loja, carregados só quando a seção se aproxima da tela
+function carregarScript(src){ return new Promise((ok, erro) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = erro; document.head.append(s); }); }
+let destaquesPedidos = false;
+async function mostrarDestaques(){
+  if (destaquesPedidos) return; destaquesPedidos = true;
+  try {
+    await carregarScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js").catch(() => {});
+    await carregarScript("loja/config.js"); await carregarScript("loja/comum.js");
+    const { produtos } = await Loja.catalogo();
+    const lista = [...produtos].filter(p => p.estoque > 0).sort((a, b) => b.destaque - a.destaque).slice(0, 4);
+    if (!lista.length) return;
+    const box = $("#destaques-home");
+    box.innerHTML = lista.map(p => `<a class="destaque" href="loja.html#/produto/${Loja.esc(p.slug)}"><img src="${Loja.esc(Loja.imagemDe(p))}" alt="" loading="lazy"><strong>${Loja.esc(p.nome)}</strong><span>${Loja.brl(p.preco)}</span></a>`).join("");
+    box.hidden = false;
+  } catch {} // se a loja não carregar, ficam só as categorias
+}
+function lojaPerto(){ if ($("#loja").getBoundingClientRect().top < innerHeight + 600){ removeEventListener("scroll", lojaPerto); mostrarDestaques(); } }
+addEventListener("scroll", lojaPerto, { passive: true }); lojaPerto();
 
 /* fade discreto ao rolar — só para o que ainda está abaixo da dobra */
 if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window){

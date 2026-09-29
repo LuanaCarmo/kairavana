@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Área da equipe | Kairavana</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%233B1A16'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Gloock&display=swap">
+<link rel="stylesheet" href="loja/loja.css">
+<style>
+body{background:var(--cal)}
+.portas{display:grid; gap:18px; margin-top:32px}
+@media (min-width:760px){ .portas{grid-template-columns:1fr 1fr} }
+.porta{display:grid; gap:12px; align-content:start; padding:30px 28px; border-radius:28px; background:var(--branco); border:1px solid var(--linha); text-decoration:none; transition:border-color .2s, transform .2s}
+.porta:hover{border-color:var(--tijolo); transform:translateY(-2px)}
+.porta h2{font-size:30px}
+.porta ul{margin:0; padding-left:18px; color:var(--marrom); font-size:15px}
+.porta .btn{justify-self:start; margin-top:6px}
+.atalhos-site{display:flex; flex-wrap:wrap; gap:10px; margin-top:28px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="roda" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="50" cy="50" r="42" stroke-width="12"/><path stroke-width="7" d="M50 41V16M50 59v25M41 50H16M59 50h25M43.6 43.6 26 26M56.4 56.4 74 74M56.4 43.6 74 26M43.6 56.4 26 74"/><circle cx="50" cy="50" r="7" stroke-width="5"/></g></symbol>
+</svg>
+<header class="cab"><div class="wrap cab-linha" style="grid-template-columns:auto 1fr">
+  <a class="logo" href="index.html"><svg aria-hidden="true"><use href="#roda"/></svg>kairavana<small>equipe</small></a>
+</div></header>
+<main class="wrap pagina">
+  <h1>Área da equipe</h1>
+  <p class="apoio">Escolha o que você quer gerenciar. Cada painel pede o próprio acesso.</p>
+  <div class="portas">
+    <a class="porta" href="admin.html">
+      <h2>Agenda de atendimentos</h2>
+      <ul><li>Fechar e reabrir dias</li><li>Marcar horários reservados</li><li>Editar a semana de atendimento e o WhatsApp</li></ul>
+      <span class="btn btn-primario">Gerenciar agenda</span>
+    </a>
+    <a class="porta" href="gestao-loja.html">
+      <h2>Loja</h2>
+      <ul><li>Pedidos, status e rastreio</li><li>Produtos, fotos, preços e estoque</li><li>Categorias, clientes, frete e parcelas</li></ul>
+      <span class="btn btn-primario">Gerenciar loja</span>
+    </a>
+  </div>
+  <div class="atalhos-site">
+    <a class="btn btn-secundario btn-pequeno" href="index.html">Ver o site</a>
+    <a class="btn btn-secundario btn-pequeno" href="loja.html">Ver a loja</a>
+  </div>
+</main>
+</body>
+</html>

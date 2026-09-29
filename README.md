@@ -9,6 +9,7 @@ Loja com área do cliente e painel de gestão: veja [LOJA.md](LOJA.md).
 - Site: https://luanacarmo.github.io/kairavana/
 - Loja: https://luanacarmo.github.io/kairavana/loja.html
 - Minha conta (clientes): https://luanacarmo.github.io/kairavana/conta.html
+- Área da equipe (entrada para as duas gestões): https://luanacarmo.github.io/kairavana/equipe.html
 - Gestão da agenda: https://luanacarmo.github.io/kairavana/admin.html
 - Gestão da loja: https://luanacarmo.github.io/kairavana/gestao-loja.html
 

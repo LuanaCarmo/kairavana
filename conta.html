@@ -111,6 +111,10 @@ async function montar(aba = (location.hash.slice(1) || "pedidos")){
   main.innerHTML = `<div class="wrap pagina">
     <h1>Olá, ${esc((perfil.nome || usuario.email).split(" ")[0])}</h1>
     <p class="apoio">Seu perfil é privado. Ninguém vê os dados de outros clientes.</p>
+    <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px">
+      <a class="btn btn-primario btn-pequeno" href="index.html#agenda">Agendar um atendimento</a>
+      <a class="btn btn-secundario btn-pequeno" href="loja.html">Ir para a loja</a>
+    </div>
     <div class="abas" role="tablist">${ABAS.map(([id, t]) => `<button role="tab" data-aba="${id}" aria-selected="${id === aba}" aria-controls="painel-conta">${t}</button>`).join("")}
       <button type="button" id="sair" style="margin-left:auto">Sair</button></div>
     <section id="painel-conta" role="tabpanel" style="margin-top:24px"></section></div>`;
