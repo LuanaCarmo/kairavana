@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFCF9">
+<title>Loja Kairavana</title>
+<meta name="description" content="Loja Kairavana: velas aromáticas, óleos essenciais, incensos, sprays, banhos de ervas, sais de banho, cristais, Florais de Bach e oráculos, com embalagem, cartão e mensagem.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%238E3A30'/%3E%3Cg fill='none' stroke='%23EFE3D8' stroke-linecap='round'%3E%3Ccircle cx='50' cy='50' r='27' stroke-width='9'/%3E%3Cpath stroke-width='7' d='M50 43V26M50 57v17M43 50H26M57 50h17M45 45 33 33M55 55l12 12M55 45l12-12M45 55 33 67'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Gloock&display=swap">
+<link rel="stylesheet" href="loja/loja.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+<script src="loja/config.js" defer></script>
+<script src="loja/comum.js" defer></script>
+</head>
+<body>
+<a class="sr" href="#conteudo">Pular para o conteúdo</a>
+<div id="topo"></div>
+<main id="conteudo" tabindex="-1"><p class="wrap vazio" style="margin-block:40px">Carregando a loja…</p></main>
+<div id="rodape"></div>
+
+<script>
+addEventListener("DOMContentLoaded", async () => {
+const { esc, brl, imagemDe } = Loja;
+document.body.insertAdjacentHTML("afterbegin", Loja.ICONES);
+const main = document.getElementById("conteudo");
+let cat, cfg, carrinho;
+const POR_PAGINA = 12;
+const FAIXAS = [["ate-30", "Até R$ 30", p => p < 30], ["30-60", "R$ 30 a R$ 60", p => p >= 30 && p < 60], ["60-100", "R$ 60 a R$ 100", p => p >= 60 && p < 100], ["100+", "Acima de R$ 100", p => p >= 100]];
+const ORDENS = { destaque: "Destaques", menor: "Menor preço", maior: "Maior preço", novos: "Mais recentes", nome: "Nome (A a Z)" };
+const filtros = { cats: [], faixas: [], estoque: false, ordem: "destaque", pagina: 1 };
+
+try {
+  [cat, cfg] = await Promise.all([Loja.catalogo(), Loja.config()]);
+} catch (e){
+  main.innerHTML = `<div class="wrap vazio" style="margin-block:40px">Não foi possível carregar a loja agora. ${esc(e.message)}</div>`; return;
+}
+const catDe = p => cat.categorias.find(c => c.id === p.categoria_id);
+const off = p => p.preco_antigo > p.preco ? Math.round((1 - p.preco / p.preco_antigo) * 100) : 0;
+const novo = p => Date.now() - new Date(p.criado_em).getTime() < 15 * 864e5;
+
+function montarTopo(ativa){
+  document.getElementById("topo").innerHTML = Loja.cabecalho(cat.categorias, ativa);
+  Loja.busca();
+}
+document.getElementById("rodape").innerHTML = Loja.rodape();
+montarTopo("todos");
+carrinho = await Loja.montarCarrinho();
+
+/* ---------- cartões ---------- */
+function cartao(p){
+  const favs = Loja.favoritos.ler(), esgotado = p.estoque <= 0, o = off(p);
+  return `<article class="card">
+    <a class="card-foto" href="#/produto/${esc(p.slug)}" tabindex="-1" aria-hidden="true"><img src="${esc(imagemDe(p))}" alt="" loading="lazy"></a>
+    <div class="card-selos">${o ? `<span class="selo selo-off">${o}% off</span>` : ""}${esgotado ? `<span class="selo selo-esgotado">Esgotado</span>` : p.destaque ? `<span class="selo selo-destaque">Mais amado</span>` : novo(p) ? `<span class="selo selo-novo">Novo</span>` : ""}</div>
+    <button class="fav" type="button" data-fav="${esc(p.id)}" aria-pressed="${favs.includes(p.id)}" aria-label="Favoritar ${esc(p.nome)}"><svg aria-hidden="true"><use href="#i-coracao"/></svg></button>
+    <h3><a href="#/produto/${esc(p.slug)}">${esc(p.nome)}</a></h3>
+    <div>${p.preco_antigo > p.preco ? `<span class="preco-antigo">${brl(p.preco_antigo)}</span>` : ""}
+      <p class="preco">${brl(p.preco)}</p>
+      <p class="parcelas">${Loja.parcelas(p.preco, cfg)}</p></div>
+    <button class="btn ${esgotado ? "btn-secundario" : "btn-primario"} btn-pequeno" type="button" data-comprar="${esc(p.id)}"${esgotado ? ' aria-disabled="true" disabled' : ""}>${esgotado ? "Indisponível" : "Adicionar ao carrinho"}</button>
+  </article>`;
+}
+
+/* ---------- vitrine (todos, categoria, busca, favoritos) ---------- */
+function vitrine({ titulo, texto, base, trilha }){
+  const doFiltro = base.filter(p => (!filtros.cats.length || filtros.cats.includes(p.categoria_id))
+    && (!filtros.faixas.length || filtros.faixas.some(f => FAIXAS.find(x => x[0] === f)[2](p.preco)))
+    && (!filtros.estoque || p.estoque > 0));
+  const ord = { destaque: (a, b) => (b.destaque - a.destaque) || (b.estoque > 0) - (a.estoque > 0), menor: (a, b) => a.preco - b.preco, maior: (a, b) => b.preco - a.preco,
+    novos: (a, b) => new Date(b.criado_em) - new Date(a.criado_em), nome: (a, b) => a.nome.localeCompare(b.nome, "pt-BR") }[filtros.ordem];
+  const lista = [...doFiltro].sort(ord);
+  const paginas = Math.max(1, Math.ceil(lista.length / POR_PAGINA));
+  filtros.pagina = Math.min(filtros.pagina, paginas);
+  const ini = (filtros.pagina - 1) * POR_PAGINA, fatia = lista.slice(ini, ini + POR_PAGINA);
+  const contaCat = id => base.filter(p => p.categoria_id === id).length;
+  const catsComItens = cat.categorias.filter(c => contaCat(c.id));
+
+  main.innerHTML = `
+  <div class="wrap">
+    <nav class="trilha" aria-label="Você está em"><a href="index.html">Início</a> › <a href="#/">Loja</a>${trilha ? ` › ${esc(trilha)}` : ""}</nav>
+    <section class="banner">
+      <div><h1>${esc(titulo)}</h1><p>${esc(texto)}</p></div>
+      <div class="banner-arte" aria-hidden="true"><img src="https://images.unsplash.com/photo-1608571424237-381e6b43a2a7?w=1200&q=70&auto=format&fit=crop" alt=""></div>
+    </section>
+    <div class="vitrine">
+      <aside class="filtros" id="filtros" aria-label="Filtros">
+        <div class="filtros-topo"><strong>Filtrar</strong><button class="icone" type="button" id="fechar-filtros" aria-label="Fechar filtros"><svg aria-hidden="true"><use href="#i-fechar"/></svg></button></div>
+        ${catsComItens.length > 1 ? `<details open><summary>Categoria</summary><ul>${catsComItens.map(c => `<li><label><input type="checkbox" name="cat" value="${esc(c.id)}"${filtros.cats.includes(c.id) ? " checked" : ""}>${esc(c.nome)}<span class="qtd">${contaCat(c.id)}</span></label></li>`).join("")}</ul></details>` : ""}
+        <details open><summary>Faixa de preço</summary><ul>${FAIXAS.map(([v, t, f]) => `<li><label><input type="checkbox" name="faixa" value="${v}"${filtros.faixas.includes(v) ? " checked" : ""}>${t}<span class="qtd">${base.filter(p => f(p.preco)).length}</span></label></li>`).join("")}</ul></details>
+        <details open><summary>Disponibilidade</summary><ul><li><label><input type="checkbox" name="estoque"${filtros.estoque ? " checked" : ""}>Só com estoque</label></li></ul></details>
+        ${filtros.cats.length || filtros.faixas.length || filtros.estoque ? `<button class="btn btn-secundario btn-pequeno" type="button" id="limpar-filtros" style="margin-top:12px">Limpar filtros</button>` : ""}
+      </aside>
+      <section aria-labelledby="t-resultados">
+        <div class="barra-lista">
+          <p id="t-resultados" class="apoio" aria-live="polite">${lista.length ? `Exibindo ${ini + 1}–${ini + fatia.length} de ${lista.length} produto${lista.length > 1 ? "s" : ""}` : "Nenhum produto encontrado"}</p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn btn-secundario btn-pequeno filtros-botao" type="button" id="abrir-filtros"><svg aria-hidden="true"><use href="#i-filtro"/></svg>Filtrar</button>
+            <label class="sr" for="ordem">Ordenar por</label>
+            <select id="ordem">${Object.entries(ORDENS).map(([v, t]) => `<option value="${v}"${v === filtros.ordem ? " selected" : ""}>${t}</option>`).join("")}</select>
+          </div>
+        </div>
+        ${fatia.length ? `<div class="grade">${fatia.map(cartao).join("")}</div>` : `<p class="vazio">Nada por aqui com esses filtros. <a href="#/">Ver todos os produtos</a></p>`}
+        ${paginas > 1 ? `<nav class="paginas" aria-label="Páginas">${Array.from({ length: paginas }, (_, i) => `<button type="button" data-pagina="${i + 1}"${i + 1 === filtros.pagina ? ' aria-current="page"' : ""}>${i + 1}</button>`).join("")}</nav>` : ""}
+      </section>
+    </div>
+  </div>`;
+  const redesenha = () => vitrine({ titulo, texto, base, trilha });
+  const painel = document.getElementById("filtros");
+  painel.addEventListener("change", e => {
+    const el = e.target;
+    if (el.name === "cat") filtros.cats = [...painel.querySelectorAll('[name="cat"]:checked')].map(x => x.value);
+    if (el.name === "faixa") filtros.faixas = [...painel.querySelectorAll('[name="faixa"]:checked')].map(x => x.value);
+    if (el.name === "estoque") filtros.estoque = el.checked;
+    filtros.pagina = 1; const aberto = painel.classList.contains("aberto"); redesenha();
+    if (aberto) document.getElementById("filtros").classList.add("aberto");
+  });
+  document.getElementById("limpar-filtros")?.addEventListener("click", () => { Object.assign(filtros, { cats: [], faixas: [], estoque: false, pagina: 1 }); redesenha(); });
+  document.getElementById("ordem").addEventListener("change", e => { filtros.ordem = e.target.value; filtros.pagina = 1; redesenha(); });
+  document.getElementById("abrir-filtros").addEventListener("click", () => { painel.classList.add("aberto"); document.getElementById("fechar-filtros").focus(); });
+  document.getElementById("fechar-filtros").addEventListener("click", () => painel.classList.remove("aberto"));
+  main.querySelectorAll("[data-pagina]").forEach(b => b.addEventListener("click", () => { filtros.pagina = +b.dataset.pagina; redesenha(); main.scrollIntoView({ behavior: "smooth" }); }));
+}
+
+/* ---------- página do produto ---------- */
+function paginaProduto(p){
+  const c = catDe(p), o = off(p), esgotado = p.estoque <= 0;
+  const imgs = p.imagens && p.imagens.length ? p.imagens : [imagemDe(p)];
+  const relacionados = cat.produtos.filter(x => x.categoria_id === p.categoria_id && x.id !== p.id).slice(0, 4);
+  let q = 1;
+  document.title = `${p.nome} | Loja Kairavana`;
+  main.innerHTML = `
+  <div class="wrap">
+    <nav class="trilha" aria-label="Você está em"><a href="index.html">Início</a> › <a href="#/">Loja</a>${c ? ` › <a href="#/categoria/${esc(c.slug)}">${esc(c.nome)}</a>` : ""} › ${esc(p.nome)}</nav>
+    <div class="produto">
+      <div class="galeria">
+        <div class="galeria-principal"><img id="foto-principal" src="${esc(imgs[0])}" alt="${esc(p.nome)}"></div>
+        ${imgs.length > 1 ? `<div class="miniaturas">${imgs.map((src, i) => `<button type="button" data-foto="${esc(src)}" aria-label="Ver foto ${i + 1}" aria-current="${i === 0}"><img src="${esc(src)}" alt=""></button>`).join("")}</div>` : ""}
+      </div>
+      <div class="produto-info">
+        <div style="display:flex; gap:8px; flex-wrap:wrap">${o ? `<span class="selo selo-off">${o}% off</span>` : ""}${p.destaque ? `<span class="selo selo-destaque">Mais amado</span>` : ""}${esgotado ? `<span class="selo selo-esgotado">Esgotado</span>` : ""}</div>
+        <h1>${esc(p.nome)}</h1>
+        <div>${p.preco_antigo > p.preco ? `<span class="preco-antigo">${brl(p.preco_antigo)}</span>` : ""}<p class="preco">${brl(p.preco)}</p><p class="parcelas">${Loja.parcelas(p.preco, cfg)}</p></div>
+        ${p.aviso ? `<p class="aviso"><strong>Atenção:</strong> ${esc(p.aviso)}</p>` : ""}
+        ${esgotado ? `<p class="apoio">Este produto está esgotado no momento. <a href="https://wa.me/${esc(Loja.whatsapp)}?text=${encodeURIComponent("Olá, Kairavana! Quero saber quando chega: " + p.nome)}" target="_blank" rel="noopener">Avise-me pelo WhatsApp</a></p>`
+          : `<div class="qtd-linha">
+              <div class="qtd" role="group" aria-label="Quantidade"><button type="button" id="q-menos" aria-label="Diminuir quantidade">−</button><output id="q" aria-live="polite">1</output><button type="button" id="q-mais" aria-label="Aumentar quantidade">+</button></div>
+              <button class="btn btn-primario" type="button" id="add">Adicionar ao carrinho</button>
+              <button class="btn btn-secundario" type="button" id="comprar-agora">Comprar agora</button>
+            </div>
+            ${p.estoque <= 3 ? `<p class="apoio">Últimas ${p.estoque} unidades.</p>` : ""}`}
+        <div class="experiencia"><strong>A experiência de receber</strong><ul><li>Embalagem própria da Kairavana</li><li>Cartão com uma mensagem, se você quiser escrever uma no fechamento do pedido</li><li>Um aroma e cuidado em cada envio</li></ul></div>
+        ${p.descricao ? `<div class="bloco-texto"><h2>Sobre o produto</h2><p>${esc(p.descricao)}</p></div>` : ""}
+        ${p.como_usar ? `<div class="bloco-texto"><h2>Como usar</h2><p>${esc(p.como_usar)}</p></div>` : ""}
+        <p class="apoio">Nossos produtos acompanham momentos de autocuidado e não substituem acompanhamento médico ou psicológico.</p>
+      </div>
+    </div>
+    ${relacionados.length ? `<section style="padding-bottom:72px"><h2 style="font-size:32px; margin-bottom:24px">Você também pode gostar</h2><div class="grade">${relacionados.map(cartao).join("")}</div></section>` : ""}
+  </div>`;
+  main.querySelectorAll("[data-foto]").forEach(b => b.addEventListener("click", () => {
+    document.getElementById("foto-principal").src = b.dataset.foto;
+    main.querySelectorAll("[data-foto]").forEach(x => x.setAttribute("aria-current", x === b));
+  }));
+  if (esgotado) return;
+  const atualizaQ = () => { document.getElementById("q").textContent = q; document.getElementById("q-menos").disabled = q <= 1; document.getElementById("q-mais").disabled = q >= p.estoque; };
+  document.getElementById("q-menos").addEventListener("click", () => { q = Math.max(1, q - 1); atualizaQ(); });
+  document.getElementById("q-mais").addEventListener("click", () => { q = Math.min(p.estoque, q + 1); atualizaQ(); });
+  atualizaQ();
+  document.getElementById("add").addEventListener("click", () => { Loja.carrinho.adicionar(p.id, q); carrinho.abrir(); });
+  document.getElementById("comprar-agora").addEventListener("click", () => { Loja.carrinho.adicionar(p.id, q); location.hash = "#/finalizar"; });
+}
+
+/* ---------- finalizar compra ---------- */
+async function finalizar(){
+  document.title = "Finalizar compra | Loja Kairavana";
+  const itens = Loja.carrinho.ler().map(i => ({ ...i, p: cat.produtos.find(p => p.id === i.id) })).filter(i => i.p && i.p.estoque > 0);
+  if (!itens.length){ main.innerHTML = `<div class="wrap pagina"><h1>Finalizar compra</h1><p class="vazio" style="margin-top:24px">Seu carrinho está vazio. <a href="#/">Ver produtos</a></p></div>`; return; }
+  const usuario = await Loja.usuario();
+  const subtotal = itens.reduce((s, i) => s + i.p.preco * i.q, 0), frete = Loja.frete(subtotal, cfg);
+  const resumo = `<aside class="painel" aria-labelledby="t-resumo"><h2 id="t-resumo">Resumo</h2>
+    ${itens.map(i => `<div class="linha-valor"><span>${i.q}× ${esc(i.p.nome)}</span><span>${brl(i.p.preco * i.q)}</span></div>`).join("")}
+    <hr style="border:0; border-top:1px solid var(--linha); margin:4px 0; width:100%">
+    <div class="linha-valor"><span>Subtotal</span><span>${brl(subtotal)}</span></div>
+    <div class="linha-valor"><span>Frete</span><span>${frete ? brl(frete) : "Grátis"}</span></div>
+    <div class="linha-valor total"><span>Total</span><span>${brl(subtotal + frete)}</span></div>
+    <p class="apoio">${Loja.parcelas(subtotal + frete, cfg)}${Loja.parcelas(subtotal + frete, cfg) ? ". " : ""}Pagamento seguro pelo Mercado Pago: cartão, Pix ou boleto.</p></aside>`;
+  if (!usuario){
+    main.innerHTML = `<div class="wrap pagina"><h1>Finalizar compra</h1><div class="duas-colunas">
+      <section class="painel"><h2>Entre para continuar</h2><p>Para acompanhar o pedido e guardar seus endereços, a compra é feita na sua conta Kairavana. Leva menos de um minuto.</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap"><a class="btn btn-primario" href="conta.html?voltar=finalizar">Entrar</a><a class="btn btn-secundario" href="conta.html?voltar=finalizar#cadastro">Criar conta</a></div></section>
+      ${resumo}</div></div>`;
+    return;
+  }
+  const enderecos = await Loja.enderecos();
+  main.innerHTML = `<div class="wrap pagina"><h1>Finalizar compra</h1><div class="duas-colunas">
+    <div style="display:grid; gap:20px">
+      <section class="painel" aria-labelledby="t-end"><h2 id="t-end">Entrega</h2>
+        <div class="opcoes-endereco" id="lista-end">${enderecos.map((e, i) => `<label class="opcao-endereco"><input type="radio" name="endereco" value="${esc(e.id)}"${e.principal || i === 0 ? " checked" : ""}><span><strong>${esc(e.apelido || "Endereço")}</strong><br><span class="apoio">${esc(e.rua)}, ${esc(e.numero)}${e.complemento ? " – " + esc(e.complemento) : ""} · ${esc(e.bairro)} · ${esc(e.cidade)}/${esc(e.uf)} · ${esc(e.cep)}</span></span></label>`).join("")}</div>
+        <details id="novo-end"${enderecos.length ? "" : " open"}><summary class="btn btn-secundario btn-pequeno" style="list-style:none; display:inline-flex">Adicionar endereço</summary>
+          <form id="form-end" class="campos" style="margin-top:16px">
+            <div class="campos campos-3"><div class="campo"><label for="e-cep">CEP</label><input id="e-cep" inputmode="numeric" autocomplete="postal-code" required maxlength="9"></div><div class="campo"><label for="e-uf">UF</label><input id="e-uf" maxlength="2" required autocomplete="address-level1"></div><div class="campo"><label for="e-cidade">Cidade</label><input id="e-cidade" required autocomplete="address-level2"></div></div>
+            <div class="campo"><label for="e-rua">Rua</label><input id="e-rua" required autocomplete="address-line1"></div>
+            <div class="campos campos-3"><div class="campo"><label for="e-bairro">Bairro</label><input id="e-bairro" required></div><div class="campo"><label for="e-numero">Número</label><input id="e-numero" required></div><div class="campo"><label for="e-comp">Complemento</label><input id="e-comp" autocomplete="address-line2"></div></div>
+            <button class="btn btn-primario" type="submit">Salvar endereço</button><p class="erro" id="erro-end" aria-live="polite"></p>
+          </form></details>
+      </section>
+      <section class="painel" aria-labelledby="t-msg"><h2 id="t-msg">Mensagem para o cartão</h2>
+        <div class="campo"><label for="mensagem">Vai de presente ou quer um recado? (opcional)</label><textarea id="mensagem" maxlength="300" placeholder="Escreva a mensagem que vai no cartão"></textarea><small>Até 300 caracteres.</small></div>
+      </section>
+      <button class="btn btn-primario" type="button" id="pagar" style="min-height:56px">${Loja.demo ? "Confirmar pedido (demonstração)" : "Ir para o pagamento"}</button>
+      <p class="erro" id="erro-pagar" aria-live="polite"></p>
+    </div>${resumo}</div></div>`;
+  const form = document.getElementById("form-end");
+  const cep = document.getElementById("e-cep");
+  cep.addEventListener("blur", async () => { // preenche o endereço pelo CEP (ViaCEP)
+    const n = cep.value.replace(/\D/g, ""); if (n.length !== 8) return;
+    try { const r = await (await fetch(`https://viacep.com.br/ws/${n}/json/`)).json(); if (r.erro) return;
+      Object.entries({ "e-rua": r.logradouro, "e-bairro": r.bairro, "e-cidade": r.localidade, "e-uf": r.uf }).forEach(([id, v]) => { if (v) document.getElementById(id).value = v; });
+      document.getElementById("e-numero").focus(); } catch {}
+  });
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const v = id => document.getElementById(id).value.trim();
+    try {
+      await Loja.salvarEndereco({ apelido: "Entrega", cep: v("e-cep"), uf: v("e-uf").toUpperCase(), cidade: v("e-cidade"), rua: v("e-rua"), bairro: v("e-bairro"), numero: v("e-numero"), complemento: v("e-comp"), principal: !enderecos.length });
+      finalizar();
+    } catch (err){ document.getElementById("erro-end").textContent = err.message; }
+  });
+  document.getElementById("pagar").addEventListener("click", async ev => {
+    const end = document.querySelector('[name="endereco"]:checked'), erro = document.getElementById("erro-pagar");
+    if (!end){ erro.textContent = "Adicione um endereço de entrega."; document.getElementById("novo-end").open = true; return; }
+    ev.currentTarget.disabled = true; erro.textContent = "";
+    try {
+      const r = await Loja.finalizar(itens.map(i => ({ produto_id: i.id, quantidade: i.q })), end.value, document.getElementById("mensagem").value.trim());
+      Loja.carrinho.limpar();
+      if (r.url) location.href = r.url; else location.hash = `#/pedido/${r.numero}`;
+    } catch (err){ erro.textContent = err.message; ev.currentTarget.disabled = false; }
+  });
+}
+
+function pedidoConcluido(numero){
+  const status = new URLSearchParams(location.search).get("status");
+  const falhou = status === "failure" || status === "rejected";
+  main.innerHTML = `<div class="wrap pagina acesso" style="text-align:center">
+    <h1>${falhou ? "O pagamento não foi concluído" : "Pedido recebido!"}</h1>
+    <p style="margin-block:12px 24px">${falhou ? "Nada foi cobrado. Você pode tentar de novo pela sua conta, em Meus pedidos." : `Seu pedido${numero ? ` nº ${esc(numero)}` : ""} foi registrado. ${status === "pending" ? "Assim que o pagamento for confirmado, avisamos por e-mail." : "Você acompanha tudo em Minha conta."}`}</p>
+    <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap"><a class="btn btn-primario" href="conta.html#pedidos">Ver meus pedidos</a><a class="btn btn-secundario" href="#/">Continuar comprando</a></div></div>`;
+}
+
+/* ---------- rotas ---------- */
+function rota(){
+  const partes = decodeURIComponent(location.hash.replace(/^#\/?/, "")).split("/");
+  const [tipo, valor] = partes;
+  document.title = "Loja Kairavana";
+  if (tipo !== "busca") document.getElementById("busca") && (document.getElementById("busca").value = "");
+  if (tipo === "produto"){
+    const p = cat.produtos.find(x => x.slug === valor);
+    montarTopo(p && catDe(p)?.slug);
+    if (p) paginaProduto(p); else main.innerHTML = `<div class="wrap pagina"><h1>Produto não encontrado</h1><p><a href="#/">Voltar para a loja</a></p></div>`;
+  } else if (tipo === "categoria"){
+    const c = cat.categorias.find(x => x.slug === valor);
+    montarTopo(valor); filtros.cats = [];
+    vitrine({ titulo: c ? c.nome : "Categoria", texto: c?.descricao || "", base: cat.produtos.filter(p => c && p.categoria_id === c.id), trilha: c?.nome });
+  } else if (tipo === "busca"){
+    montarTopo("");
+    const norm = s => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    // cada palavra vale pelo começo, para achar plurais e variações (cristal → cristais)
+    const radicais = norm(valor).split(/\s+/).filter(w => w.length > 1).map(w => w.slice(0, Math.max(4, w.length - 2)));
+    document.getElementById("busca").value = valor || "";
+    vitrine({ titulo: `Busca: “${valor || ""}”`, texto: "Resultados para a sua busca.", base: cat.produtos.filter(p => { const t = norm(p.nome + " " + p.descricao + " " + (catDe(p)?.nome || "")); return radicais.every(r => t.includes(r)); }), trilha: "Busca" });
+  } else if (tipo === "favoritos"){
+    montarTopo("");
+    const f = Loja.favoritos.ler();
+    vitrine({ titulo: "Seus favoritos", texto: "Os produtos que você marcou com o coração ficam guardados neste navegador.", base: cat.produtos.filter(p => f.includes(p.id)), trilha: "Favoritos" });
+  } else if (tipo === "finalizar"){ montarTopo(""); finalizar(); }
+  else if (tipo === "pedido"){ montarTopo(""); pedidoConcluido(valor); }
+  else {
+    montarTopo("todos"); filtros.cats = [];
+    vitrine({ titulo: "Loja Kairavana", texto: "Velas, óleos essenciais, incensos, sprays, banhos de ervas, sais, cristais, florais e oráculos. Tudo vai em embalagem própria, com cartão, mensagem e um aroma escolhido com carinho.", base: cat.produtos });
+  }
+  document.getElementById("contagem") && document.dispatchEvent(new CustomEvent("carrinho"));
+  if (partes[0]) scrollTo({ top: 0 });
+}
+// retorno do Mercado Pago: loja.html?pedido=ID&status=approved
+const volta = new URLSearchParams(location.search);
+if (volta.get("pedido") && !location.hash) location.hash = `#/pedido/${volta.get("numero") || ""}`;
+addEventListener("hashchange", rota);
+rota();
+
+main.addEventListener("click", e => {
+  const add = e.target.closest("[data-comprar]"), fav = e.target.closest("[data-fav]");
+  if (add){ Loja.carrinho.adicionar(add.dataset.comprar, 1); Loja.toast("Adicionado ao carrinho"); }
+  if (fav){ const on = Loja.favoritos.alternar(fav.dataset.fav); fav.setAttribute("aria-pressed", on); Loja.toast(on ? "Salvo nos favoritos" : "Removido dos favoritos"); }
+});
+});
+</script>
+</body>
+</html>

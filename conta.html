@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FFFCF9">
+<title>Minha conta | Kairavana</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%238E3A30'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Gloock&display=swap">
+<link rel="stylesheet" href="loja/loja.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+<script src="loja/config.js" defer></script>
+<script src="loja/comum.js" defer></script>
+</head>
+<body>
+<a class="sr" href="#conteudo">Pular para o conteúdo</a>
+<div id="topo"></div>
+<main id="conteudo" tabindex="-1"><p class="wrap vazio" style="margin-block:40px">Carregando…</p></main>
+<div id="rodape"></div>
+
+<script>
+addEventListener("DOMContentLoaded", async () => {
+const { esc, brl } = Loja;
+document.body.insertAdjacentHTML("afterbegin", Loja.ICONES);
+const main = document.getElementById("conteudo");
+const params = new URLSearchParams(location.search);
+const { categorias } = await Loja.catalogo().catch(() => ({ categorias: [] }));
+document.getElementById("topo").innerHTML = Loja.cabecalho(categorias, "");
+document.getElementById("rodape").innerHTML = Loja.rodape();
+Loja.busca();
+await Loja.montarCarrinho();
+
+const depoisDeEntrar = () => { if (params.get("voltar") === "finalizar") location.href = "loja.html#/finalizar"; else montar(); };
+const erroEm = (id, msg) => { const e = document.getElementById(id); if (e){ e.className = "erro"; e.textContent = msg; } };
+const okEm = (id, msg) => { const e = document.getElementById(id); if (e){ e.className = "ok"; e.textContent = msg; } };
+async function enviando(botao, fn){ botao.disabled = true; try { await fn(); } finally { botao.disabled = false; } }
+
+/* ---------- entrar, criar conta, recuperar senha ---------- */
+function telaAcesso(aba = location.hash === "#cadastro" ? "cadastro" : "entrar"){
+  main.innerHTML = `<div class="wrap acesso">
+    <h1 style="text-align:center">Minha conta</h1>
+    <p class="apoio" style="text-align:center; margin-top:8px">Acompanhe pedidos e guarde seus endereços. Cada perfil é privado: só você vê os seus dados.</p>
+    <div class="abas" role="tablist">
+      <button role="tab" id="aba-entrar" aria-selected="${aba === "entrar"}" aria-controls="painel-acesso">Entrar</button>
+      <button role="tab" id="aba-cadastro" aria-selected="${aba === "cadastro"}" aria-controls="painel-acesso">Criar conta</button>
+    </div>
+    <section class="painel" id="painel-acesso" role="tabpanel" style="margin-top:20px"></section>
+    ${Loja.demo ? `<p class="aviso" style="margin-top:16px">Modo demonstração: use qualquer e-mail e senha. Nada é salvo em servidor.</p>` : ""}
+  </div>`;
+  document.getElementById("aba-entrar").onclick = () => telaAcesso("entrar");
+  document.getElementById("aba-cadastro").onclick = () => telaAcesso("cadastro");
+  const painel = document.getElementById("painel-acesso");
+  if (aba === "entrar"){
+    painel.innerHTML = `<form id="f-entrar" class="campos">
+      <div class="campo"><label for="l-email">E-mail</label><input id="l-email" type="email" autocomplete="email" required></div>
+      <div class="campo"><label for="l-senha">Senha</label><input id="l-senha" type="password" autocomplete="current-password" required></div>
+      <button class="btn btn-primario" type="submit">Entrar</button>
+      <button class="remover" type="button" id="esqueci" style="justify-self:start">Esqueci minha senha</button>
+      <p id="msg-entrar" aria-live="polite"></p></form>`;
+    document.getElementById("f-entrar").addEventListener("submit", e => { e.preventDefault(); enviando(e.submitter, async () => {
+      try { await Loja.entrar(document.getElementById("l-email").value.trim(), document.getElementById("l-senha").value); depoisDeEntrar(); }
+      catch (err){ erroEm("msg-entrar", err.message); }
+    }); });
+    document.getElementById("esqueci").onclick = async () => {
+      const email = document.getElementById("l-email").value.trim();
+      if (!email){ erroEm("msg-entrar", "Digite seu e-mail acima e clique de novo em “Esqueci minha senha”."); document.getElementById("l-email").focus(); return; }
+      try { await Loja.recuperarSenha(email); okEm("msg-entrar", "Se houver uma conta com esse e-mail, enviamos um link para criar uma nova senha."); }
+      catch (err){ erroEm("msg-entrar", err.message); }
+    };
+  } else {
+    painel.innerHTML = `<form id="f-cadastro" class="campos">
+      <div class="campo"><label for="c-nome">Nome</label><input id="c-nome" autocomplete="name" required></div>
+      <div class="campo"><label for="c-email">E-mail</label><input id="c-email" type="email" autocomplete="email" required></div>
+      <div class="campo"><label for="c-tel">Celular (opcional)</label><input id="c-tel" type="tel" autocomplete="tel" placeholder="(11) 90000-0000"></div>
+      <div class="campo"><label for="c-senha">Senha</label><input id="c-senha" type="password" autocomplete="new-password" minlength="8" required><small>Pelo menos 8 caracteres.</small></div>
+      <label class="marcar"><input type="checkbox" id="c-aceite" required>Li e concordo com os termos de uso e a política de privacidade da Kairavana, e autorizo o uso dos meus dados para processar pedidos.</label>
+      <button class="btn btn-primario" type="submit">Criar conta</button>
+      <p id="msg-cadastro" aria-live="polite"></p></form>`;
+    document.getElementById("f-cadastro").addEventListener("submit", e => { e.preventDefault(); enviando(e.submitter, async () => {
+      const v = id => document.getElementById(id).value.trim();
+      try {
+        const r = await Loja.cadastrar({ nome: v("c-nome"), email: v("c-email"), telefone: v("c-tel"), senha: document.getElementById("c-senha").value });
+        if (r.session) depoisDeEntrar();
+        else painel.innerHTML = `<h2>Confira seu e-mail</h2><p>Enviamos um link de confirmação para <strong>${esc(v("c-email"))}</strong>. Depois de confirmar, é só entrar.</p>`;
+      } catch (err){ erroEm("msg-cadastro", err.message); }
+    }); });
+  }
+}
+
+function telaNovaSenha(){
+  main.innerHTML = `<div class="wrap acesso"><h1>Criar nova senha</h1>
+    <form id="f-nova" class="painel campos" style="margin-top:20px">
+      <div class="campo"><label for="n-senha">Nova senha</label><input id="n-senha" type="password" autocomplete="new-password" minlength="8" required></div>
+      <button class="btn btn-primario" type="submit">Salvar senha</button><p id="msg-nova" aria-live="polite"></p></form></div>`;
+  document.getElementById("f-nova").addEventListener("submit", e => { e.preventDefault(); enviando(e.submitter, async () => {
+    try { await Loja.novaSenha(document.getElementById("n-senha").value); history.replaceState(null, "", "conta.html"); montar(); }
+    catch (err){ erroEm("msg-nova", err.message); }
+  }); });
+}
+
+/* ---------- painel do cliente ---------- */
+const ABAS = [["pedidos", "Meus pedidos"], ["enderecos", "Endereços"], ["dados", "Meus dados"]];
+async function montar(aba = (location.hash.slice(1) || "pedidos")){
+  const usuario = await Loja.usuario();
+  if (!usuario) return telaAcesso();
+  if (!ABAS.some(a => a[0] === aba)) aba = "pedidos";
+  const perfil = await Loja.perfil();
+  main.innerHTML = `<div class="wrap pagina">
+    <h1>Olá, ${esc((perfil.nome || usuario.email).split(" ")[0])}</h1>
+    <p class="apoio">Seu perfil é privado. Ninguém vê os dados de outros clientes.</p>
+    <div class="abas" role="tablist">${ABAS.map(([id, t]) => `<button role="tab" data-aba="${id}" aria-selected="${id === aba}" aria-controls="painel-conta">${t}</button>`).join("")}
+      <button type="button" id="sair" style="margin-left:auto">Sair</button></div>
+    <section id="painel-conta" role="tabpanel" style="margin-top:24px"></section></div>`;
+  main.querySelectorAll("[data-aba]").forEach(b => b.onclick = () => { history.replaceState(null, "", "#" + b.dataset.aba); montar(b.dataset.aba); });
+  document.getElementById("sair").onclick = async () => { await Loja.sair(); location.href = "conta.html"; };
+  const painel = document.getElementById("painel-conta");
+  if (aba === "pedidos") abaPedidos(painel);
+  if (aba === "enderecos") abaEnderecos(painel);
+  if (aba === "dados") abaDados(painel, perfil, usuario);
+}
+
+async function abaPedidos(painel){
+  const pedidos = await Loja.meusPedidos();
+  painel.innerHTML = pedidos.length ? `<div class="lista">${pedidos.map(p => `
+    <article class="pedido-linha">
+      <div><strong>Pedido nº ${esc(p.numero)}</strong> <span class="status status-${esc(p.status)}">${esc(Loja.STATUS[p.status] || p.status)}</span></div>
+      <strong>${brl(p.total)}</strong>
+      <p class="apoio">${new Date(p.criado_em).toLocaleDateString("pt-BR")} · ${(p.itens_pedido || []).map(i => `${i.quantidade}× ${esc(i.nome)}`).join(", ")}</p>
+      ${p.rastreio ? `<p class="apoio">Código de rastreio: <strong>${esc(p.rastreio)}</strong></p>` : ""}
+      ${p.status === "aguardando_pagamento" ? `<p class="apoio">Não concluiu o pagamento? <a href="https://wa.me/${esc(Loja.whatsapp)}?text=${encodeURIComponent("Olá! Preciso de ajuda com o pagamento do pedido nº " + p.numero)}" target="_blank" rel="noopener">Fale com a gente</a>.</p>` : ""}
+    </article>`).join("")}</div>`
+    : `<p class="vazio">Você ainda não fez pedidos. <a href="loja.html">Conhecer a loja</a></p>`;
+}
+
+async function abaEnderecos(painel, editando = null){
+  const lista = await Loja.enderecos();
+  const e = editando || {};
+  painel.innerHTML = `<div class="duas-colunas" style="margin-top:0">
+    <div class="lista">${lista.length ? lista.map(x => `<article class="pedido-linha">
+      <div><strong>${esc(x.apelido || "Endereço")}</strong>${x.principal ? ` <span class="status">Principal</span>` : ""}</div>
+      <div style="display:flex; gap:6px"><button class="remover" type="button" data-editar="${esc(x.id)}">Editar</button><button class="remover" type="button" data-excluir="${esc(x.id)}">Excluir</button></div>
+      <p class="apoio">${esc(x.rua)}, ${esc(x.numero)}${x.complemento ? " – " + esc(x.complemento) : ""} · ${esc(x.bairro)} · ${esc(x.cidade)}/${esc(x.uf)} · ${esc(x.cep)}</p></article>`).join("")
+      : `<p class="vazio">Nenhum endereço salvo ainda.</p>`}</div>
+    <form class="painel campos" id="f-end"><h2>${e.id ? "Editar endereço" : "Novo endereço"}</h2>
+      <div class="campo"><label for="a-apelido">Nome do endereço</label><input id="a-apelido" placeholder="Casa, trabalho…" value="${esc(e.apelido)}"></div>
+      <div class="campos campos-2"><div class="campo"><label for="a-cep">CEP</label><input id="a-cep" inputmode="numeric" required maxlength="9" value="${esc(e.cep)}"></div><div class="campo"><label for="a-uf">UF</label><input id="a-uf" maxlength="2" required value="${esc(e.uf)}"></div></div>
+      <div class="campo"><label for="a-cidade">Cidade</label><input id="a-cidade" required value="${esc(e.cidade)}"></div>
+      <div class="campo"><label for="a-rua">Rua</label><input id="a-rua" required value="${esc(e.rua)}"></div>
+      <div class="campos campos-2"><div class="campo"><label for="a-numero">Número</label><input id="a-numero" required value="${esc(e.numero)}"></div><div class="campo"><label for="a-bairro">Bairro</label><input id="a-bairro" required value="${esc(e.bairro)}"></div></div>
+      <div class="campo"><label for="a-comp">Complemento</label><input id="a-comp" value="${esc(e.complemento)}"></div>
+      <label class="marcar"><input type="checkbox" id="a-principal"${e.principal || !lista.length ? " checked" : ""}>Usar como endereço principal</label>
+      <button class="btn btn-primario" type="submit">Salvar</button>${e.id ? `<button class="btn btn-secundario" type="button" id="cancelar">Cancelar</button>` : ""}
+      <p id="msg-end" aria-live="polite"></p></form></div>`;
+  painel.querySelectorAll("[data-editar]").forEach(b => b.onclick = () => abaEnderecos(painel, lista.find(x => x.id === b.dataset.editar)));
+  painel.querySelectorAll("[data-excluir]").forEach(b => b.onclick = async () => { if (confirm("Excluir este endereço?")){ await Loja.excluirEndereco(b.dataset.excluir); abaEnderecos(painel); } });
+  document.getElementById("cancelar")?.addEventListener("click", () => abaEnderecos(painel));
+  const cep = document.getElementById("a-cep");
+  cep.addEventListener("blur", async () => {
+    const n = cep.value.replace(/\D/g, ""); if (n.length !== 8) return;
+    try { const r = await (await fetch(`https://viacep.com.br/ws/${n}/json/`)).json(); if (r.erro) return;
+      Object.entries({ "a-rua": r.logradouro, "a-bairro": r.bairro, "a-cidade": r.localidade, "a-uf": r.uf }).forEach(([id, v]) => { if (v) document.getElementById(id).value = v; }); } catch {}
+  });
+  document.getElementById("f-end").addEventListener("submit", ev => { ev.preventDefault(); enviando(ev.submitter, async () => {
+    const v = id => document.getElementById(id).value.trim();
+    try {
+      await Loja.salvarEndereco({ ...(e.id ? { id: e.id } : {}), apelido: v("a-apelido"), cep: v("a-cep"), uf: v("a-uf").toUpperCase(), cidade: v("a-cidade"), rua: v("a-rua"), numero: v("a-numero"), bairro: v("a-bairro"), complemento: v("a-comp"), principal: document.getElementById("a-principal").checked });
+      abaEnderecos(painel); Loja.toast("Endereço salvo");
+    } catch (err){ erroEm("msg-end", err.message); }
+  }); });
+}
+
+function abaDados(painel, perfil, usuario){
+  painel.innerHTML = `<div class="duas-colunas" style="margin-top:0">
+    <form class="painel campos" id="f-dados"><h2>Meus dados</h2>
+      <div class="campo"><label for="d-nome">Nome</label><input id="d-nome" autocomplete="name" required value="${esc(perfil.nome)}"></div>
+      <div class="campo"><label for="d-tel">Celular</label><input id="d-tel" type="tel" autocomplete="tel" value="${esc(perfil.telefone)}"></div>
+      <div class="campo"><label for="d-email">E-mail</label><input id="d-email" type="email" value="${esc(usuario.email)}" disabled></div>
+      <button class="btn btn-primario" type="submit">Salvar</button><p id="msg-dados" aria-live="polite"></p></form>
+    <form class="painel campos" id="f-senha"><h2>Trocar senha</h2>
+      <div class="campo"><label for="d-senha">Nova senha</label><input id="d-senha" type="password" autocomplete="new-password" minlength="8" required></div>
+      <button class="btn btn-secundario" type="submit">Trocar senha</button><p id="msg-senha" aria-live="polite"></p>
+      <p class="apoio">Quer apagar sua conta e seus dados? <a href="https://wa.me/${esc(Loja.whatsapp)}?text=${encodeURIComponent("Olá! Quero pedir a exclusão da minha conta e dos meus dados na Kairavana.")}" target="_blank" rel="noopener">Peça pelo WhatsApp</a>.</p></form></div>`;
+  document.getElementById("f-dados").addEventListener("submit", e => { e.preventDefault(); enviando(e.submitter, async () => {
+    try { await Loja.salvarPerfil({ nome: document.getElementById("d-nome").value.trim(), telefone: document.getElementById("d-tel").value.trim() }); okEm("msg-dados", "Dados salvos."); }
+    catch (err){ erroEm("msg-dados", err.message); }
+  }); });
+  document.getElementById("f-senha").addEventListener("submit", e => { e.preventDefault(); enviando(e.submitter, async () => {
+    try { await Loja.novaSenha(document.getElementById("d-senha").value); okEm("msg-senha", "Senha trocada."); e.target.reset(); }
+    catch (err){ erroEm("msg-senha", err.message); }
+  }); });
+}
+
+if (location.hash === "#nova-senha" || /type=recovery/.test(location.hash)) telaNovaSenha();
+else montar();
+if (Loja.sb) Loja.sb.auth.onAuthStateChange(ev => { if (ev === "PASSWORD_RECOVERY") telaNovaSenha(); });
+});
+</script>
+</body>
+</html>

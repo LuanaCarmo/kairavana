@@ -2,10 +2,15 @@
 
 Site institucional da Kairavana: terapias holísticas com delicadeza e com os pés no chão.
 
-Reiki para adultos, Reiki infantil a distância, Florais de Bach e Mapa numerológico, com agenda de horários que envia o pedido pelo WhatsApp.
+Reiki, Cristaloterapia, Florais, Aromaterapia, Alinhamento de Chakras, Mindfulness, Constelação Familiar, Mesa Radiônica, Arteterapia, Cartomancia (com Numerologia), Reiki infantil a distância e Mapa numerológico. A agenda só mostra as combinações permitidas e envia o pedido pelo WhatsApp. O catálogo, os preços e as regras ficam em `CONFIG.terapias`, no script do `index.html`.
+
+Loja com área do cliente e painel de gestão: veja [LOJA.md](LOJA.md).
 
 - Site: https://luanacarmo.github.io/kairavana/
+- Loja: https://luanacarmo.github.io/kairavana/loja.html
+- Minha conta (clientes): https://luanacarmo.github.io/kairavana/conta.html
 - Gestão da agenda: https://luanacarmo.github.io/kairavana/admin.html
+- Gestão da loja: https://luanacarmo.github.io/kairavana/gestao-loja.html
 
 ## Gerenciar a agenda
 

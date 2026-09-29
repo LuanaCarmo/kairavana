@@ -112,6 +112,89 @@ test("reiki infantil pede nome e idade da criança e é só a distância", async
   await expect(page.locator("#linha-modalidade")).toContainText(/a distância/i);
 });
 
+test("Reiki aceita complemento do Grupo B e soma o valor de referência", async ({ page }) => {
+  await page.goto("/index.html#agenda");
+  await page.locator("#opcoes-terapia label", { hasText: "Reiki para adultos" }).click();
+  await expect(page.locator('#ajustes [name="complemento"]')).toHaveCount(4);
+  await page.locator("#ajustes label.check", { hasText: "Aromaterapia" }).click();
+  await expect(page.locator("#resumo-lista")).toContainText("Reiki para adultos + Aromaterapia");
+  await expect(page.locator("#resumo-lista")).toContainText("R$ 250");
+});
+
+test("atendimentos individuais não aceitam combinações", async ({ page }) => {
+  await page.goto("/index.html#agenda");
+  for (const nome of ["Constelação Familiar", "Mesa Radiônica", "Arteterapia"]){
+    await page.locator("#opcoes-terapia label", { hasText: nome }).click();
+    await expect(page.locator('#ajustes [name="complemento"]')).toHaveCount(0);
+    await expect(page.locator("#ajustes")).toContainText("feito sozinho");
+  }
+});
+
+test("Numerologia só aparece com a Cartomancia, que tem no mínimo 3 perguntas", async ({ page }) => {
+  await page.goto("/index.html#agenda");
+  await page.locator("#opcoes-terapia label", { hasText: "Cartomancia" }).click();
+  await expect(page.locator('[data-passo="-1"]')).toBeDisabled();
+  await page.locator("#ajustes label.check", { hasText: "Numerologia" }).click();
+  await expect(page.locator("#resumo-lista")).toContainText("Cartomancia (3 perguntas) + Numerologia");
+  await expect(page.locator("#resumo-lista")).toContainText("R$ 165");
+  await page.locator("#opcoes-terapia label", { hasText: "Reiki para adultos" }).click();
+  await expect(page.locator('#ajustes [name="numerologia"]')).toHaveCount(0);
+});
+
+/* ---------- loja (modo demonstração, sem Supabase) ---------- */
+test("loja: vitrine, filtro, produto e carrinho", async ({ page }) => {
+  await page.goto("/loja.html");
+  await expect(page.locator(".grade .card").first()).toBeVisible();
+  const sobra = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  expect(sobra, "a loja não pode rolar para os lados").toBeLessThanOrEqual(0);
+  await page.goto("/loja.html#/categoria/florais");
+  await expect(page.locator(".grade .card")).toHaveCount(2);
+  await expect(page.locator("main")).toContainText("álcool");
+  await page.locator(".grade .card h3 a").first().click();
+  await expect(page.locator(".produto-info h1")).toBeVisible();
+  await expect(page.locator(".produto-info .aviso")).toContainText("álcool");
+  await page.click("#add");
+  await expect(page.locator("#gaveta")).toHaveClass(/aberta/);
+  await expect(page.locator("#contagem")).toHaveText("1");
+  await page.click("#ir-finalizar");
+  await expect(page.locator("main")).toContainText("Entre para continuar");
+});
+
+test("loja: compra completa na demonstração, do login ao pedido", async ({ page }) => {
+  await page.goto("/loja.html");
+  await page.locator(".grade [data-comprar]:not([disabled])").first().click();
+  await page.goto("/conta.html?voltar=finalizar");
+  await page.fill("#l-email", "teste@exemplo.com");
+  await page.fill("#l-senha", "senha-de-teste");
+  await page.locator("#f-entrar button[type=submit]").click();
+  await expect(page).toHaveURL(/loja\.html#\/finalizar/);
+  for (const [id, v] of [["e-cep", "01310-100"], ["e-uf", "SP"], ["e-cidade", "São Paulo"], ["e-rua", "Av. Paulista"], ["e-bairro", "Bela Vista"], ["e-numero", "1000"]]) await page.fill("#" + id, v);
+  await page.locator("#form-end button[type=submit]").click();
+  await expect(page.locator('[name="endereco"]')).toHaveCount(1);
+  await page.click("#pagar");
+  await expect(page.locator("main h1")).toHaveText("Pedido recebido!");
+  await page.goto("/conta.html#pedidos");
+  await expect(page.locator(".pedido-linha")).toHaveCount(1);
+});
+
+test("gestão da loja: fora do Google e com painel de demonstração", async ({ page }) => {
+  await page.goto("/gestao-loja.html");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  await page.click("#demo");
+  await expect(page.locator(".numero")).toHaveCount(4);
+  await page.locator('[data-aba="pedidos"]').click();
+  await expect(page.locator("[data-pedido]").first()).toBeVisible();
+});
+
+test("acessibilidade da loja (sem problemas graves)", async ({ page }) => {
+  await page.goto("/loja.html");
+  await expect(page.locator(".grade .card").first()).toBeVisible();
+  const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  const graves = r.violations.filter(v => ["critical", "serious"].includes(v.impact))
+    .map(v => `${v.id}: ${v.help} → ${v.nodes.slice(0, 3).map(n => n.target.join(" ")).join(" | ")}`);
+  expect(graves).toEqual([]);
+});
+
 test("dia sem horários aparece desativado com o aviso", async ({ page }) => {
   const amanha = new Date(Date.now() + 864e5);
   const k = `${amanha.getFullYear()}-${String(amanha.getMonth() + 1).padStart(2, "0")}-${String(amanha.getDate()).padStart(2, "0")}`;

@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Gestão da loja | Kairavana</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%233B1A16'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Gloock&display=swap">
+<link rel="stylesheet" href="loja/loja.css">
+<style>
+body{background:var(--cal)}
+.gestao{display:grid; min-height:100vh}
+@media (min-width:960px){ .gestao{grid-template-columns:240px 1fr} }
+.lateral{background:var(--vinho); color:var(--cal); padding:20px 16px; display:flex; flex-direction:column; gap:18px}
+.lateral .logo{color:var(--cal); font-size:24px} .lateral .logo svg{color:var(--cal)}
+.lateral nav{display:flex; gap:4px; overflow-x:auto}
+@media (min-width:960px){ .lateral{position:sticky; top:0; height:100vh} .lateral nav{flex-direction:column} }
+.lateral nav button{min-height:44px; padding:0 14px; border:0; border-radius:12px; background:none; color:var(--cal); text-align:left; font-weight:500; cursor:pointer; white-space:nowrap}
+.lateral nav button[aria-current="page"]{background:color-mix(in srgb,var(--cal) 16%,transparent); font-weight:700}
+.lateral :focus-visible{outline-color:var(--cal)}
+.lateral .rodape-lateral{margin-top:auto; display:grid; gap:6px; font-size:14px}
+.lateral .rodape-lateral a,.lateral .rodape-lateral button{color:var(--cal); background:none; border:0; text-align:left; min-height:40px; cursor:pointer; padding:0}
+.area{padding:24px var(--gutter) 64px; display:grid; gap:20px; align-content:start; min-width:0}
+.area h1{font-size:clamp(30px,3.6vw,40px)}
+.topo-area{display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between}
+.numeros{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.numero{background:var(--branco); border:1px solid var(--linha); border-radius:20px; padding:18px 20px; display:grid; gap:4px}
+.numero strong{font:400 32px/1.1 var(--display)}
+.tabela-caixa{background:var(--branco); border:1px solid var(--linha); border-radius:20px; overflow-x:auto}
+table{width:100%; border-collapse:collapse; font-size:14.5px}
+th,td{padding:12px 14px; text-align:left; border-bottom:1px solid var(--linha); vertical-align:middle}
+th{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--marrom); background:var(--cal-clara)}
+tr:last-child td{border-bottom:0}
+td img{width:48px; height:48px; border-radius:10px; object-fit:cover}
+.linha-clicavel{cursor:pointer} .linha-clicavel:hover{background:var(--cal-clara)}
+.filtros-linha{display:flex; flex-wrap:wrap; gap:10px}
+.filtros-linha input,.filtros-linha select{min-height:44px; padding:6px 14px; border-radius:999px; border:1.5px solid var(--linha); background:var(--branco)}
+.fotos{display:flex; flex-wrap:wrap; gap:10px}
+.fotos figure{position:relative; margin:0; width:96px; height:96px; border-radius:14px; overflow:hidden; background:var(--cal)}
+.fotos img{width:100%; height:100%; object-fit:cover}
+.fotos button{position:absolute; top:4px; right:4px; width:32px; height:32px; border-radius:50%; border:0; background:var(--branco); cursor:pointer}
+.estoque-baixo{color:#9B1C1C; font-weight:700}
+.detalhe{display:grid; gap:14px}
+@media (min-width:1100px){ .detalhe{grid-template-columns:1fr 1fr} }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+<script src="loja/config.js" defer></script>
+<script src="loja/comum.js" defer></script>
+</head>
+<body>
+<main id="conteudo"><p class="wrap vazio" style="margin-block:40px">Carregando…</p></main>
+
+<script>
+addEventListener("DOMContentLoaded", async () => {
+const { esc, brl, imagemDe, admin } = Loja;
+document.body.insertAdjacentHTML("afterbegin", Loja.ICONES);
+const main = document.getElementById("conteudo");
+const ABAS = [["painel", "Visão geral"], ["pedidos", "Pedidos"], ["produtos", "Produtos"], ["categorias", "Categorias"], ["clientes", "Clientes"], ["ajustes", "Ajustes"]];
+const erroEm = (id, msg) => { const e = document.getElementById(id); if (e){ e.className = "erro"; e.textContent = msg; } };
+const data = d => new Date(d).toLocaleDateString("pt-BR");
+const VENDIDO = ["pago", "em_preparo", "enviado", "entregue"];
+
+/* ---------- acesso ---------- */
+async function telaEntrar(msg = ""){
+  main.innerHTML = `<div class="wrap acesso">
+    <h1 style="text-align:center">Gestão da loja</h1>
+    <p class="apoio" style="text-align:center; margin-top:8px">Área restrita à equipe Kairavana.</p>
+    <form class="painel campos" id="f-admin" style="margin-top:20px">
+      <div class="campo"><label for="g-email">E-mail</label><input id="g-email" type="email" autocomplete="username" required></div>
+      <div class="campo"><label for="g-senha">Senha</label><input id="g-senha" type="password" autocomplete="current-password" required></div>
+      <button class="btn btn-primario" type="submit">Entrar</button>
+      <p id="msg-admin" class="erro" aria-live="polite">${esc(msg)}</p>
+    </form>
+    ${Loja.demo ? `<div class="painel" style="margin-top:16px"><p>A loja ainda não está ligada ao Supabase. Você pode explorar o painel com dados de exemplo; nada é salvo em servidor.</p><button class="btn btn-secundario" type="button" id="demo">Ver demonstração do painel</button></div>` : ""}
+  </div>`;
+  document.getElementById("f-admin").addEventListener("submit", async e => {
+    e.preventDefault(); e.submitter.disabled = true;
+    try {
+      if (Loja.demo){ admin.entrarDemo(); return iniciar(); }
+      await Loja.entrar(document.getElementById("g-email").value.trim(), document.getElementById("g-senha").value);
+      if (!(await admin.ehAdmin())){ await Loja.sair(); return telaEntrar("Esta conta não tem acesso à gestão da loja."); }
+      iniciar();
+    } catch (err){ erroEm("msg-admin", err.message); e.submitter.disabled = false; }
+  });
+  document.getElementById("demo")?.addEventListener("click", () => { admin.entrarDemo(); iniciar(); });
+}
+
+async function iniciar(aba = location.hash.slice(1) || "painel"){
+  if (!(await admin.ehAdmin())) return telaEntrar();
+  if (!ABAS.some(a => a[0] === aba)) aba = "painel";
+  main.innerHTML = `<div class="gestao">
+    <aside class="lateral">
+      <a class="logo" href="loja.html"><svg aria-hidden="true"><use href="#roda"/></svg>kairavana</a>
+      <nav aria-label="Gestão">${ABAS.map(([id, t]) => `<button type="button" data-aba="${id}"${id === aba ? ' aria-current="page"' : ""}>${t}</button>`).join("")}</nav>
+      <div class="rodape-lateral"><a href="loja.html" target="_blank" rel="noopener">Ver a loja ↗</a><a href="admin.html">Gestão da agenda</a><button type="button" id="sair">Sair</button></div>
+    </aside>
+    <section class="area" id="area" tabindex="-1">${Loja.demo ? `<p class="aviso-demo" style="border-radius:12px">Demonstração: dados de exemplo, alterações ficam só nesta aba do navegador.</p>` : ""}<div id="aba"></div></section>
+  </div>`;
+  main.querySelectorAll("[data-aba]").forEach(b => b.onclick = () => { history.replaceState(null, "", "#" + b.dataset.aba); iniciar(b.dataset.aba); });
+  document.getElementById("sair").onclick = async () => { await admin.sair(); location.hash = ""; telaEntrar(); };
+  const alvo = document.getElementById("aba");
+  try { await ({ painel: abaPainel, pedidos: abaPedidos, produtos: abaProdutos, categorias: abaCategorias, clientes: abaClientes, ajustes: abaAjustes })[aba](alvo); }
+  catch (err){ alvo.innerHTML = `<p class="erro">Não foi possível carregar: ${esc(err.message)}</p>`; }
+}
+
+/* ---------- visão geral ---------- */
+async function abaPainel(alvo){
+  const [pedidos, { produtos }] = await Promise.all([admin.pedidos(), Loja.catalogo({ todos: true })]);
+  const inicioMes = new Date(); inicioMes.setDate(1); inicioMes.setHours(0, 0, 0, 0);
+  const doMes = pedidos.filter(p => VENDIDO.includes(p.status) && new Date(p.criado_em) >= inicioMes);
+  const baixo = produtos.filter(p => p.ativo && p.estoque <= 3);
+  alvo.innerHTML = `<div style="display:grid; gap:20px">
+    <h1>Visão geral</h1>
+    <div class="numeros">
+      <div class="numero"><span class="apoio">Vendas do mês</span><strong>${brl(doMes.reduce((s, p) => s + Number(p.total), 0))}</strong><span class="apoio">${doMes.length} pedido(s)</span></div>
+      <div class="numero"><span class="apoio">Para preparar</span><strong>${pedidos.filter(p => p.status === "pago").length}</strong><span class="apoio">pagos, aguardando envio</span></div>
+      <div class="numero"><span class="apoio">Aguardando pagamento</span><strong>${pedidos.filter(p => p.status === "aguardando_pagamento").length}</strong></div>
+      <div class="numero"><span class="apoio">Estoque baixo</span><strong>${baixo.length}</strong><span class="apoio">produtos com 3 ou menos</span></div>
+    </div>
+    <h2 style="font-size:26px">Últimos pedidos</h2>${tabelaPedidos(pedidos.slice(0, 6))}
+    ${baixo.length ? `<h2 style="font-size:26px">Repor estoque</h2><div class="tabela-caixa"><table><thead><tr><th>Produto</th><th>Estoque</th></tr></thead><tbody>${baixo.map(p => `<tr><td>${esc(p.nome)}</td><td class="estoque-baixo">${p.estoque}</td></tr>`).join("")}</tbody></table></div>` : ""}
+  </div>`;
+  ligarPedidos(alvo, pedidos);
+}
+
+/* ---------- pedidos ---------- */
+const tabelaPedidos = lista => lista.length ? `<div class="tabela-caixa"><table><thead><tr><th>Nº</th><th>Data</th><th>Cliente</th><th>Itens</th><th>Total</th><th>Status</th></tr></thead><tbody>${lista.map(p => `
+  <tr class="linha-clicavel" data-pedido="${esc(p.id)}" tabindex="0"><td><strong>${esc(p.numero)}</strong></td><td>${data(p.criado_em)}</td><td>${esc(p.perfis?.nome || p.perfis?.email || "—")}</td>
+  <td>${(p.itens_pedido || []).reduce((s, i) => s + i.quantidade, 0)}</td><td>${brl(p.total)}</td><td><span class="status status-${esc(p.status)}">${esc(Loja.STATUS[p.status])}</span></td></tr>`).join("")}</tbody></table></div>` : `<p class="vazio">Nenhum pedido.</p>`;
+function ligarPedidos(alvo, pedidos){
+  alvo.querySelectorAll("[data-pedido]").forEach(tr => {
+    const abrir = () => { history.replaceState(null, "", "#pedidos"); detalhePedido(document.getElementById("aba"), pedidos.find(p => p.id === tr.dataset.pedido)); };
+    tr.onclick = abrir; tr.onkeydown = e => { if (e.key === "Enter") abrir(); };
+  });
+}
+async function abaPedidos(alvo, filtro = { status: "", busca: "" }){
+  const pedidos = await admin.pedidos();
+  const lista = pedidos.filter(p => (!filtro.status || p.status === filtro.status)
+    && (!filtro.busca || `${p.numero} ${p.perfis?.nome || ""} ${p.perfis?.email || ""}`.toLowerCase().includes(filtro.busca.toLowerCase())));
+  alvo.innerHTML = `<div style="display:grid; gap:20px"><div class="topo-area"><h1>Pedidos</h1>
+    <div class="filtros-linha"><label class="sr" for="f-status">Status</label><select id="f-status"><option value="">Todos os status</option>${Object.entries(Loja.STATUS).map(([v, t]) => `<option value="${v}"${v === filtro.status ? " selected" : ""}>${t}</option>`).join("")}</select>
+    <label class="sr" for="f-busca">Buscar</label><input id="f-busca" type="search" placeholder="Nº, nome ou e-mail" value="${esc(filtro.busca)}"></div></div>
+    ${tabelaPedidos(lista)}</div>`;
+  document.getElementById("f-status").onchange = e => abaPedidos(alvo, { ...filtro, status: e.target.value });
+  document.getElementById("f-busca").onchange = e => abaPedidos(alvo, { ...filtro, busca: e.target.value.trim() });
+  ligarPedidos(alvo, pedidos);
+}
+function detalhePedido(alvo, p){
+  const e = p.endereco || {};
+  alvo.innerHTML = `<div style="display:grid; gap:20px">
+    <div class="topo-area"><h1>Pedido nº ${esc(p.numero)}</h1><button class="btn btn-secundario btn-pequeno" type="button" id="voltar">← Todos os pedidos</button></div>
+    <div class="detalhe">
+      <section class="painel"><h2>Itens</h2>
+        ${(p.itens_pedido || []).map(i => `<div class="linha-valor"><span>${i.quantidade}× ${esc(i.nome)}</span><span>${brl(i.preco * i.quantidade)}</span></div>`).join("")}
+        <div class="linha-valor"><span>Frete</span><span>${Number(p.frete) ? brl(p.frete) : "Grátis"}</span></div>
+        <div class="linha-valor total"><span>Total</span><span>${brl(p.total)}</span></div>
+        ${p.mensagem_cartao ? `<div class="aviso"><strong>Mensagem para o cartão:</strong><br>${esc(p.mensagem_cartao)}</div>` : `<p class="apoio">Sem mensagem para o cartão.</p>`}
+      </section>
+      <section class="painel"><h2>Cliente e entrega</h2>
+        <p><strong>${esc(p.perfis?.nome || "—")}</strong><br>${esc(p.perfis?.email || "")}${p.perfis?.telefone ? "<br>" + esc(p.perfis.telefone) : ""}</p>
+        <p class="apoio">${e.rua ? `${esc(e.rua)}, ${esc(e.numero)}${e.complemento ? " – " + esc(e.complemento) : ""}<br>${esc(e.bairro)} · ${esc(e.cidade)}/${esc(e.uf)} · CEP ${esc(e.cep)}` : "Endereço não informado."}</p>
+        <p class="apoio">Feito em ${new Date(p.criado_em).toLocaleString("pt-BR")}${p.mp_payment_id ? ` · Pagamento Mercado Pago ${esc(p.mp_payment_id)}` : ""}</p>
+      </section>
+      <form class="painel campos" id="f-pedido"><h2>Andamento</h2>
+        <div class="campo"><label for="p-status">Status</label><select id="p-status">${Object.entries(Loja.STATUS).map(([v, t]) => `<option value="${v}"${v === p.status ? " selected" : ""}>${t}</option>`).join("")}</select>
+          <small>“Pago” é marcado automaticamente quando o Mercado Pago confirma o pagamento.</small></div>
+        <div class="campo"><label for="p-rastreio">Código de rastreio</label><input id="p-rastreio" value="${esc(p.rastreio)}"></div>
+        <button class="btn btn-primario" type="submit">Salvar</button><p id="msg-pedido" aria-live="polite"></p>
+      </form>
+    </div></div>`;
+  document.getElementById("voltar").onclick = () => abaPedidos(alvo);
+  document.getElementById("f-pedido").onsubmit = async ev => {
+    ev.preventDefault();
+    try { await admin.atualizarPedido(p.id, { status: document.getElementById("p-status").value, rastreio: document.getElementById("p-rastreio").value.trim() }); Loja.toast("Pedido atualizado"); abaPedidos(alvo); }
+    catch (err){ erroEm("msg-pedido", err.message); }
+  };
+}
+
+/* ---------- produtos ---------- */
+async function abaProdutos(alvo, busca = ""){
+  const { produtos, categorias } = await Loja.catalogo({ todos: true });
+  const nomeCat = id => categorias.find(c => c.id === id)?.nome || "—";
+  const lista = produtos.filter(p => !busca || p.nome.toLowerCase().includes(busca.toLowerCase()));
+  alvo.innerHTML = `<div style="display:grid; gap:20px"><div class="topo-area"><h1>Produtos</h1>
+    <div class="filtros-linha"><label class="sr" for="busca-prod">Buscar produto</label><input id="busca-prod" type="search" placeholder="Buscar produto" value="${esc(busca)}"><button class="btn btn-primario btn-pequeno" type="button" id="novo">+ Novo produto</button></div></div>
+    ${lista.length ? `<div class="tabela-caixa"><table><thead><tr><th></th><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Na loja</th></tr></thead><tbody>${lista.map(p => `
+      <tr class="linha-clicavel" data-produto="${esc(p.id)}" tabindex="0"><td><img src="${esc(imagemDe(p))}" alt=""></td><td><strong>${esc(p.nome)}</strong>${p.destaque ? ` <span class="selo selo-destaque">destaque</span>` : ""}</td><td>${esc(nomeCat(p.categoria_id))}</td>
+      <td>${brl(p.preco)}${p.preco_antigo ? `<br><span class="preco-antigo">${brl(p.preco_antigo)}</span>` : ""}</td><td class="${p.estoque <= 3 ? "estoque-baixo" : ""}">${p.estoque}</td><td>${p.ativo ? "Sim" : "Oculto"}</td></tr>`).join("")}</tbody></table></div>`
+    : `<p class="vazio">Nenhum produto. Clique em “Novo produto”.</p>`}</div>`;
+  document.getElementById("busca-prod").onchange = e => abaProdutos(alvo, e.target.value.trim());
+  document.getElementById("novo").onclick = () => formProduto(alvo, { ativo: true, estoque: 0, imagens: [] }, categorias);
+  alvo.querySelectorAll("[data-produto]").forEach(tr => {
+    const abrir = () => formProduto(alvo, produtos.find(p => p.id === tr.dataset.produto), categorias);
+    tr.onclick = abrir; tr.onkeydown = e => { if (e.key === "Enter") abrir(); };
+  });
+}
+function formProduto(alvo, p, categorias){
+  let imagens = [...(p.imagens || [])];
+  alvo.innerHTML = `<form class="painel campos" id="f-prod" style="max-width:860px">
+    <div class="topo-area"><h1>${p.id ? "Editar produto" : "Novo produto"}</h1><button class="btn btn-secundario btn-pequeno" type="button" id="voltar">← Produtos</button></div>
+    <div class="campo"><label for="pr-nome">Nome</label><input id="pr-nome" required value="${esc(p.nome)}"></div>
+    <div class="campos campos-2">
+      <div class="campo"><label for="pr-cat">Categoria</label><select id="pr-cat" required><option value="">Escolha</option>${categorias.map(c => `<option value="${esc(c.id)}"${c.id === p.categoria_id ? " selected" : ""}>${esc(c.nome)}</option>`).join("")}</select></div>
+      <div class="campo"><label for="pr-estoque">Estoque</label><input id="pr-estoque" type="number" min="0" step="1" required value="${esc(p.estoque ?? 0)}"></div>
+      <div class="campo"><label for="pr-preco">Preço (R$)</label><input id="pr-preco" type="number" min="0" step="0.01" required value="${esc(p.preco ?? "")}"></div>
+      <div class="campo"><label for="pr-antigo">Preço antigo (R$, opcional)</label><input id="pr-antigo" type="number" min="0" step="0.01" value="${esc(p.preco_antigo ?? "")}"><small>Preencha para mostrar o selo de desconto.</small></div>
+    </div>
+    <div class="campo"><label for="pr-desc">Descrição</label><textarea id="pr-desc">${esc(p.descricao)}</textarea><small>Descreva o que o produto é. Não repita benefícios alegados pelo fornecedor como se fossem fatos.</small></div>
+    <div class="campo"><label for="pr-uso">Como usar</label><textarea id="pr-uso">${esc(p.como_usar)}</textarea></div>
+    <div class="campo"><label for="pr-aviso">Aviso de segurança</label><input id="pr-aviso" value="${esc(p.aviso)}" placeholder="Ex.: Contém álcool. Uso externo."><small>Aparece em destaque na página do produto.</small></div>
+    <div class="campo"><span style="font-weight:700; font-size:14px">Fotos</span><div class="fotos" id="fotos"></div>
+      <label class="btn btn-secundario btn-pequeno" style="justify-self:start">Adicionar fotos<input type="file" id="pr-fotos" accept="image/*" multiple class="sr"></label><small>A primeira foto é a capa. Use imagens quadradas, de até 1 MB.</small></div>
+    <label class="marcar"><input type="checkbox" id="pr-destaque"${p.destaque ? " checked" : ""}>Destacar na loja (selo “Mais amado”)</label>
+    <label class="marcar"><input type="checkbox" id="pr-ativo"${p.ativo ? " checked" : ""}>Mostrar na loja</label>
+    <div style="display:flex; gap:10px; flex-wrap:wrap"><button class="btn btn-primario" type="submit">Salvar produto</button>${p.id ? `<button class="btn btn-perigo" type="button" id="excluir">Excluir</button>` : ""}</div>
+    <p id="msg-prod" aria-live="polite"></p></form>`;
+  const desenhaFotos = () => document.getElementById("fotos").innerHTML = imagens.map((src, i) => `<figure><img src="${esc(src)}" alt="Foto ${i + 1}"><button type="button" data-tirar="${i}" aria-label="Remover foto ${i + 1}">×</button></figure>`).join("") || `<p class="apoio">Sem fotos: a loja mostra uma ilustração.</p>`;
+  desenhaFotos();
+  document.getElementById("fotos").onclick = e => { const b = e.target.closest("[data-tirar]"); if (b){ imagens.splice(+b.dataset.tirar, 1); desenhaFotos(); } };
+  document.getElementById("pr-fotos").onchange = async e => {
+    const msg = document.getElementById("msg-prod");
+    for (const f of e.target.files){
+      if (f.size > 2e6){ erroEm("msg-prod", `${f.name} tem mais de 2 MB. Reduza a imagem e tente de novo.`); continue; }
+      msg.className = "apoio"; msg.textContent = `Enviando ${f.name}…`;
+      try { imagens.push(await admin.enviarImagem(f)); desenhaFotos(); msg.textContent = ""; } catch (err){ erroEm("msg-prod", err.message); }
+    }
+    e.target.value = "";
+  };
+  document.getElementById("voltar").onclick = () => abaProdutos(alvo);
+  document.getElementById("excluir")?.addEventListener("click", async () => {
+    if (!confirm(`Excluir “${p.nome}”? Pedidos antigos continuam com o nome do produto.`)) return;
+    try { await admin.excluirProduto(p.id); Loja.toast("Produto excluído"); abaProdutos(alvo); } catch (err){ erroEm("msg-prod", err.message); }
+  });
+  document.getElementById("f-prod").onsubmit = async e => {
+    e.preventDefault();
+    const v = id => document.getElementById(id).value.trim();
+    const nome = v("pr-nome");
+    const dados = { ...(p.id ? { id: p.id, slug: p.slug } : {}), nome, categoria_id: v("pr-cat"), preco: Number(v("pr-preco")), preco_antigo: v("pr-antigo") ? Number(v("pr-antigo")) : null,
+      estoque: parseInt(v("pr-estoque"), 10) || 0, descricao: v("pr-desc"), como_usar: v("pr-uso"), aviso: v("pr-aviso"), imagens,
+      destaque: document.getElementById("pr-destaque").checked, ativo: document.getElementById("pr-ativo").checked };
+    if (dados.preco_antigo !== null && dados.preco_antigo <= dados.preco){ erroEm("msg-prod", "O preço antigo precisa ser maior que o preço atual."); return; }
+    try { await admin.salvarProduto(dados); Loja.toast("Produto salvo"); abaProdutos(alvo); } catch (err){ erroEm("msg-prod", err.message); }
+  };
+}
+
+/* ---------- categorias ---------- */
+async function abaCategorias(alvo, editando = null){
+  const { categorias, produtos } = await Loja.catalogo({ todos: true });
+  const c = editando || { ordem: categorias.length };
+  alvo.innerHTML = `<div style="display:grid; gap:20px"><h1>Categorias</h1><div class="duas-colunas" style="margin-top:0">
+    <div class="tabela-caixa"><table><thead><tr><th>Ordem</th><th>Categoria</th><th>Produtos</th><th></th></tr></thead><tbody>${categorias.map(x => `
+      <tr><td>${esc(x.ordem)}</td><td><strong>${esc(x.nome)}</strong><br><span class="apoio">${esc(x.descricao)}</span></td><td>${produtos.filter(p => p.categoria_id === x.id).length}</td>
+      <td><button class="remover" type="button" data-editar="${esc(x.id)}">Editar</button></td></tr>`).join("")}</tbody></table></div>
+    <form class="painel campos" id="f-cat"><h2>${c.id ? "Editar categoria" : "Nova categoria"}</h2>
+      <div class="campo"><label for="ct-nome">Nome</label><input id="ct-nome" required value="${esc(c.nome)}"></div>
+      <div class="campo"><label for="ct-desc">Texto do topo da categoria</label><textarea id="ct-desc">${esc(c.descricao)}</textarea></div>
+      <div class="campo"><label for="ct-ordem">Ordem no menu</label><input id="ct-ordem" type="number" step="1" value="${esc(c.ordem)}"></div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap"><button class="btn btn-primario" type="submit">Salvar</button>${c.id ? `<button class="btn btn-secundario" type="button" id="cancelar">Cancelar</button><button class="btn btn-perigo" type="button" id="excluir">Excluir</button>` : ""}</div>
+      <p id="msg-cat" aria-live="polite"></p></form></div></div>`;
+  alvo.querySelectorAll("[data-editar]").forEach(b => b.onclick = () => abaCategorias(alvo, categorias.find(x => x.id === b.dataset.editar)));
+  document.getElementById("cancelar")?.addEventListener("click", () => abaCategorias(alvo));
+  document.getElementById("excluir")?.addEventListener("click", async () => {
+    if (produtos.some(p => p.categoria_id === c.id)){ erroEm("msg-cat", "Mova ou exclua os produtos desta categoria antes de excluí-la."); return; }
+    if (confirm(`Excluir a categoria “${c.nome}”?`)){ await admin.excluirCategoria(c.id); abaCategorias(alvo); }
+  });
+  document.getElementById("f-cat").onsubmit = async e => {
+    e.preventDefault();
+    try { await admin.salvarCategoria({ ...(c.id ? { id: c.id, slug: c.slug } : {}), nome: document.getElementById("ct-nome").value.trim(), descricao: document.getElementById("ct-desc").value.trim(), ordem: parseInt(document.getElementById("ct-ordem").value, 10) || 0 });
+      Loja.toast("Categoria salva"); abaCategorias(alvo); } catch (err){ erroEm("msg-cat", err.message); }
+  };
+}
+
+/* ---------- clientes ---------- */
+async function abaClientes(alvo){
+  const lista = await admin.clientes();
+  alvo.innerHTML = `<div style="display:grid; gap:20px"><h1>Clientes</h1>
+    <p class="apoio">Dados pessoais: use só para atender pedidos. Não exporte nem compartilhe.</p>
+    ${lista.length ? `<div class="tabela-caixa"><table><thead><tr><th>Nome</th><th>E-mail</th><th>Celular</th><th>Pedidos</th><th>Total comprado</th></tr></thead><tbody>${lista.map(c => `
+      <tr><td>${esc(c.nome || "—")}</td><td>${esc(c.email)}</td><td>${esc(c.telefone || "—")}</td><td>${c.pedidos}</td><td>${brl(c.total)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="vazio">Nenhum cliente ainda.</p>`}</div>`;
+}
+
+/* ---------- ajustes ---------- */
+async function abaAjustes(alvo){
+  const cfg = await Loja.config();
+  alvo.innerHTML = `<form class="painel campos" id="f-cfg" style="max-width:640px"><h1>Ajustes da loja</h1>
+    <div class="campos campos-2">
+      <div class="campo"><label for="cf-frete">Frete fixo (R$)</label><input id="cf-frete" type="number" min="0" step="0.01" value="${esc(cfg.frete_fixo)}"></div>
+      <div class="campo"><label for="cf-gratis">Frete grátis a partir de (R$)</label><input id="cf-gratis" type="number" min="0" step="0.01" value="${esc(cfg.frete_gratis_acima)}"></div>
+    </div>
+    <div class="campo"><label for="cf-parcelas">Parcelas sem juros exibidas</label><input id="cf-parcelas" type="number" min="0" max="12" step="1" value="${esc(cfg.parcelas_sem_juros)}">
+      <small>Precisa bater com o que está configurado na sua conta do Mercado Pago. Use 0 para não mostrar parcelas.</small></div>
+    <button class="btn btn-primario" type="submit">Salvar ajustes</button><p id="msg-cfg" aria-live="polite"></p></form>`;
+  document.getElementById("f-cfg").onsubmit = async e => {
+    e.preventDefault();
+    const n = id => Number(document.getElementById(id).value || 0);
+    try { await admin.salvarConfig({ frete_fixo: n("cf-frete"), frete_gratis_acima: n("cf-gratis"), parcelas_sem_juros: Math.round(n("cf-parcelas")) }); Loja.toast("Ajustes salvos"); }
+    catch (err){ erroEm("msg-cfg", err.message); }
+  };
+}
+
+(await admin.ehAdmin()) ? iniciar() : telaEntrar();
+});
+</script>
+</body>
+</html>

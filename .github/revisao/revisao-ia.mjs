@@ -29,13 +29,13 @@ if (!arquivos.length){
 const diff = sh(`git diff ${intervalo} -- ${arquivos.map(f => `"${f}"`).join(" ")} || true`).slice(0, 120_000);
 const paginas = arquivos.filter(f => f.endsWith(".html")).map(f => `===== ${f} (versão completa) =====\n${readFileSync(f, "utf8")}`).join("\n\n").slice(0, 250_000);
 
-const instrucoes = `Você revisa o site da Kairavana, uma marca de terapias integrativas (Reiki para adultos, Reiki infantil a distância, Florais de Bach, Mapa numerológico). O site é uma página única, com agenda que envia o pedido pelo WhatsApp, e uma área de gestão (admin.html) que publica a agenda pela API do GitHub com uma chave da própria responsável.
+const instrucoes = `Você revisa o site da Kairavana, uma marca de terapias integrativas e centro holístico de bem-estar. O site tem uma página principal com os atendimentos e uma agenda que respeita regras de combinação (Grupo A + complemento do Grupo B; atendimentos individuais sempre sozinhos; Numerologia só com Cartomancia) e envia o pedido pelo WhatsApp; uma área de gestão da agenda (admin.html) que publica pela API do GitHub; e uma loja (loja.html, conta.html para clientes e gestao-loja.html para a equipe) ligada ao Supabase, com pagamento pelo Mercado Pago feito por funções do servidor (supabase/functions).
 
 Revise as ALTERAÇÕES deste commit, usando a página completa só como contexto. Responda em português do Brasil, em Markdown, curto e direto, para uma pessoa que não é programadora. Não elogie; aponte só o que vale mudar, citando o trecho e sugerindo o texto ou a correção.
 
 Seções (omita as que não tiverem nada):
 ### 🔒 Segurança
-Chaves, tokens ou senhas expostos; dados pessoais de clientes em arquivos públicos (o repositório é público); links externos inseguros; scripts de origem desconhecida; a chave da área de gestão indo para outro lugar que não api.github.com.
+Chaves, tokens ou senhas expostos; dados pessoais de clientes em arquivos públicos (o repositório é público); links externos inseguros; scripts de origem desconhecida; a chave da área de gestão indo para outro lugar que não api.github.com; na loja, a chave service_role do Supabase ou o token do Mercado Pago no site, preços ou pedidos definidos pelo navegador, e regras de acesso (RLS) que deixem um cliente ver dados de outro.
 ### ✍️ Textos
 Clareza, tom acolhedor e simples, repetição, erros de português. Regras da marca: nunca prometer cura ou resultado; manter o aviso de que as terapias são complementares e nunca substituem tratamento médico ou psicológico; avisar que os florais contêm álcool; manter o CVV 188; usar "a distância" e não "on-line"; evitar palavras ligadas a toque físico; não repetir "crianças e crianças autistas".
 ### 🧭 Navegação e jornada
