@@ -50,7 +50,7 @@ test("jornada completa: agendar em 4 toques e abrir o WhatsApp com a mensagem ce
   await page.goto("/index.html#agenda");
   await expect(page.locator("#passo-hora"), "horários só aparecem depois de escolher o dia").toBeHidden();
 
-  await page.locator("#opcoes-terapia label", { hasText: "Reiki para adultos" }).click();         // toque 1
+  await page.locator("#opcoes-terapia label", { hasText: "Reiki" }).click();                      // toque 1
   await page.locator("#dias button.dia:not([disabled])").first().click();                         // toque 2
   await expect(page.locator("#passo-hora")).toBeVisible();
   const hora = page.locator("#horas button").first();
@@ -65,7 +65,7 @@ test("jornada completa: agendar em 4 toques e abrir o WhatsApp com a mensagem ce
   const href = await enviar.getAttribute("href");
   expect(href).toMatch(/^https:\/\/wa\.me\/\d+\?text=/);
   const msg = decodeURIComponent(href.split("text=")[1]);
-  for (const trecho of ["Reiki para adultos", "Maria Teste", `Horário: ${horaEscolhida}`, "Modalidade:"]) expect(msg).toContain(trecho);
+  for (const trecho of ["Atendimento: Reiki", "Maria Teste", `Horário: ${horaEscolhida}`, "Modalidade:", "Formato: Sessão individual", "Valor: R$ 150"]) expect(msg).toContain(trecho);
 
   const [aba] = await Promise.all([page.waitForEvent("popup"), enviar.click()]);                  // toque 4
   expect(aba.url()).toMatch(/wa\.me|whatsapp\.com/);
@@ -104,12 +104,46 @@ test("no computador o resumo acompanha a rolagem e o Enviar fica sempre à vista
   await expect(page.locator("#ag-enviar")).toBeInViewport();
 });
 
-test("reiki infantil pede nome e idade da criança e é só a distância", async ({ page }) => {
+test("Grupo A aceita complementos do Grupo B e soma o valor", async ({ page }) => {
   await page.goto("/index.html#agenda");
-  await page.locator("#opcoes-terapia label", { hasText: "infantil" }).click();
-  await page.locator("#dias button.dia:not([disabled])").first().click();
-  await expect(page.locator("#campo-crianca")).toBeVisible();
-  await expect(page.locator("#linha-modalidade")).toContainText(/a distância/i);
+  await page.locator("#opcoes-terapia label", { hasText: "Reiki" }).click();
+  const comps = page.locator('#ajustes [name="complemento"]');
+  await expect(comps).toHaveCount(4);
+  await page.locator("#ajustes label.check", { hasText: "Aromaterapia" }).click();
+  await expect(page.locator("#resumo-lista")).toContainText("Reiki + Aromaterapia");
+  await expect(page.locator("#resumo-lista")).toContainText("R$ 250");
+});
+
+test("independentes não aceitam combinações", async ({ page }) => {
+  await page.goto("/index.html#agenda");
+  for (const nome of ["Constelação Familiar", "Mesa Radiônica", "Arteterapia"]){
+    await page.locator("#opcoes-terapia label", { hasText: nome }).click();
+    await expect(page.locator('#ajustes [name="complemento"]')).toHaveCount(0);
+    await expect(page.locator("#ajustes")).toContainText("feito sozinho");
+  }
+});
+
+test("Numerologia só aparece junto com a Cartomancia, com no mínimo 3 perguntas", async ({ page }) => {
+  await page.goto("/index.html#agenda");
+  await expect(page.locator("#opcoes-terapia label", { hasText: "Numerologia" })).toHaveCount(0);
+  await expect(page.locator('#ajustes [name="numerologia"]')).toHaveCount(0);
+  await page.locator("#opcoes-terapia label", { hasText: "Cartomancia" }).click();
+  await expect(page.locator('[data-passo="-1"]')).toBeDisabled();
+  await expect(page.locator("#n-perguntas")).toHaveText("3");
+  await page.locator("#ajustes label.check", { hasText: "Numerologia" }).click();
+  await expect(page.locator("#resumo-lista")).toContainText("Cartomancia (3 perguntas) + Numerologia");
+  await expect(page.locator("#resumo-lista")).toContainText("R$ 165");
+  await page.locator("#opcoes-terapia label", { hasText: "Reiki" }).click();
+  await expect(page.locator('#ajustes [name="numerologia"]')).toHaveCount(0);
+});
+
+test("as 5 perguntas sugerem caminhos e levam à agenda", async ({ page }) => {
+  await page.goto("/index.html#perguntas-guia");
+  for (let i = 0; i < 5; i++) await page.locator("#guia .guia-opcoes button").first().click();
+  await expect(page.locator("#guia .sugestoes li")).toHaveCount(3);
+  await expect(page.locator("#guia")).toContainText("não uma indicação de tratamento");
+  await page.locator("#guia [data-atendimento]").first().click();
+  await expect(page.locator("#opcoes-terapia input:checked")).toHaveCount(1);
 });
 
 test("dia sem horários aparece desativado com o aviso", async ({ page }) => {

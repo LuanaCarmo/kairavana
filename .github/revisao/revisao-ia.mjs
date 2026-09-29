@@ -29,7 +29,7 @@ if (!arquivos.length){
 const diff = sh(`git diff ${intervalo} -- ${arquivos.map(f => `"${f}"`).join(" ")} || true`).slice(0, 120_000);
 const paginas = arquivos.filter(f => f.endsWith(".html")).map(f => `===== ${f} (versão completa) =====\n${readFileSync(f, "utf8")}`).join("\n\n").slice(0, 250_000);
 
-const instrucoes = `Você revisa o site da Kairavana, uma marca de terapias integrativas (Reiki para adultos, Reiki infantil a distância, Florais de Bach, Mapa numerológico). O site é uma página única, com agenda que envia o pedido pelo WhatsApp, e uma área de gestão (admin.html) que publica a agenda pela API do GitHub com uma chave da própria responsável.
+const instrucoes = `Você revisa o site da Kairavana, um centro holístico de bem-estar (atendimentos dos Grupos A e B, atendimentos independentes, Cartomancia com Numerologia, loja, app em breve e oferta para empresas). O site é uma página única, com um guia de 5 perguntas que sugere caminhos sem diagnosticar e uma agenda que envia o pedido pelo WhatsApp, e uma área de gestão (admin.html) que publica a agenda pela API do GitHub com uma chave da própria responsável.
 
 Revise as ALTERAÇÕES deste commit, usando a página completa só como contexto. Responda em português do Brasil, em Markdown, curto e direto, para uma pessoa que não é programadora. Não elogie; aponte só o que vale mudar, citando o trecho e sugerindo o texto ou a correção.
 
@@ -37,9 +37,9 @@ Seções (omita as que não tiverem nada):
 ### 🔒 Segurança
 Chaves, tokens ou senhas expostos; dados pessoais de clientes em arquivos públicos (o repositório é público); links externos inseguros; scripts de origem desconhecida; a chave da área de gestão indo para outro lugar que não api.github.com.
 ### ✍️ Textos
-Clareza, tom acolhedor e simples, repetição, erros de português. Regras da marca: nunca prometer cura ou resultado; manter o aviso de que as terapias são complementares e nunca substituem tratamento médico ou psicológico; avisar que os florais contêm álcool; manter o CVV 188; usar "a distância" e não "on-line"; evitar palavras ligadas a toque físico; não repetir "crianças e crianças autistas".
+Clareza, tom acolhedor e simples, repetição, erros de português. Regras da marca: nunca prometer cura ou resultado; manter o aviso de que as terapias são complementares e nunca substituem tratamento médico ou psicológico; avisar que os florais contêm álcool; manter o CVV 188; usar "a distância" e não "on-line"; evitar palavras ligadas a toque físico; não apresentar práticas como tratamento médico; não repetir benefícios alegados por fornecedores como fatos; não explorar a vulnerabilidade de quem chega; WhatsApp é opção, nunca obrigação.
 ### 🧭 Navegação e jornada
-O caminho do cliente até agendar deve ser curto: terapia → dia → horário → nome → WhatsApp. Aponte passos extras, botões confusos, rótulos vagos, links que não levam a lugar nenhum, excesso de caminhos para o mesmo destino, problemas no celular, foco/teclado e leitores de tela.
+O caminho do cliente até agendar deve ser curto: atendimento → dia → horário → nome → WhatsApp. A agenda só pode mostrar combinações permitidas (Grupo A + complementos do B; Constelação, Mesa Radiônica e Arteterapia sempre sozinhas; Numerologia só com Cartomancia). Aponte passos extras, botões confusos, rótulos vagos, links que não levam a lugar nenhum, excesso de caminhos para o mesmo destino, problemas no celular, foco/teclado e leitores de tela.
 
 Termine com uma linha exatamente neste formato:
 **Parecer:** ✅ Pode seguir | ⚠️ Ajustes recomendados | ❌ Corrigir antes de publicar

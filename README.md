@@ -1,8 +1,8 @@
 # Kairavana
 
-Site institucional da Kairavana: terapias holísticas com delicadeza e com os pés no chão.
+Site da Kairavana, centro holístico de bem-estar: atendimentos, loja, app (em breve) e oferta para empresas.
 
-Reiki para adultos, Reiki infantil a distância, Florais de Bach e Mapa numerológico, com agenda de horários que envia o pedido pelo WhatsApp.
+Tem um guia de 5 perguntas que sugere caminhos (sem diagnosticar) e uma agenda que só mostra combinações permitidas de atendimentos e envia o pedido pelo WhatsApp. Catálogo, preços e regras de combinação ficam no início do script do `index.html` (`CONFIG.atendimentos`).
 
 - Site: https://luanacarmo.github.io/kairavana/
 - Gestão da agenda: https://luanacarmo.github.io/kairavana/admin.html
