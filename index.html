@@ -41,7 +41,8 @@ function kvFotoReserva(img){
 
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
-html{scroll-behavior:smooth; scroll-padding-top:88px}
+html{scroll-padding-top:88px}
+html.suave{scroll-behavior:smooth} /* ligada só depois do carregamento: a rolagem suave na abertura da página atrapalhava o salto até a âncora */
 body{margin:0; background:var(--cal); color:var(--vinho); font-family:var(--texto); font-size:var(--fs-corpo); line-height:1.6; -webkit-font-smoothing:antialiased}
 img,svg{max-width:100%}
 a{color:inherit}
@@ -470,7 +471,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
   .revelar{transition:opacity .9s ease, transform .9s ease}
 }
 @media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
+  html.suave{scroll-behavior:auto}
   *{transition:none!important; animation:none!important}
 }
 </style>
@@ -1278,6 +1279,13 @@ function barra(){
   $("#wa-flutuante").classList.toggle("recolhido", naTela && innerWidth < 1000);
 }
 addEventListener("scroll", barra, { passive: true }); addEventListener("resize", barra); barra();
+
+// link direto para uma seção (ex.: index.html#agenda, vindo da loja ou da conta): o Chrome às vezes
+// não rola até a âncora ao abrir a página e a pessoa fica no topo; aqui a rolagem é garantida
+addEventListener("load", () => {
+  if (location.hash.length > 1) document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView({ behavior: "instant" });
+  document.documentElement.classList.add("suave"); // rolagem suave nos cliques do menu, só depois do salto inicial
+});
 
 /* menu: destaca a seção que está na tela */
 const linksMenu = [...menu.querySelectorAll("a")];
