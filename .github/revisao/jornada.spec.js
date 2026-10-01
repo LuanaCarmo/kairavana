@@ -14,6 +14,8 @@ test.beforeEach(async ({ page }) => {
   errosJs = [];
   page.on("pageerror", e => errosJs.push(e.message));
   await page.route("**/agenda.json*", r => r.fulfill({ contentType: "application/json", body: JSON.stringify(AGENDA) }));
+  // loja sempre em modo demonstração: os testes não dependem dos produtos reais nem gravam no banco
+  await page.route("**/loja/config.js*", r => r.fulfill({ contentType: "text/javascript", body: 'window.KAIRAVANA_LOJA = { supabaseUrl: "", supabaseChave: "", whatsapp: "5511999999999" };' }));
 });
 test.afterEach(() => expect(errosJs, "erros de JavaScript na página").toEqual([]));
 
