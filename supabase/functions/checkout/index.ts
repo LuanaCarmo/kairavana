@@ -27,7 +27,12 @@ Deno.serve(async (req) => {
 
   let corpo: { itens?: { produto_id: string; quantidade: number }[]; endereco_id?: string; mensagem_cartao?: string };
   try { corpo = await req.json(); } catch { return resposta({ erro: "Pedido inválido." }, 400); }
-  const itens = (corpo.itens || []).filter((i) => i && typeof i.produto_id === "string" && Number.isInteger(i.quantidade) && i.quantidade > 0 && i.quantidade <= 20);
+  // junta linhas repetidas do mesmo produto, senão cada uma passaria sozinha na conferência de estoque
+  const somadas = new Map<string, number>();
+  for (const i of corpo.itens || []) {
+    if (i && typeof i.produto_id === "string" && Number.isInteger(i.quantidade) && i.quantidade > 0) somadas.set(i.produto_id, (somadas.get(i.produto_id) || 0) + i.quantidade);
+  }
+  const itens = [...somadas].map(([produto_id, quantidade]) => ({ produto_id, quantidade })).filter((i) => i.quantidade <= 20);
   if (!itens.length || itens.length > 50) return resposta({ erro: "Seu carrinho está vazio." }, 400);
   const mensagem = String(corpo.mensagem_cartao || "").slice(0, 300);
 
@@ -52,7 +57,11 @@ Deno.serve(async (req) => {
     .insert({ usuario_id: usuario.id, subtotal, frete, total, endereco: enderecoLimpo, mensagem_cartao: mensagem })
     .select("id, numero").single();
   if (error) return resposta({ erro: "Não foi possível registrar o pedido." }, 500);
-  await servico.from("itens_pedido").insert(linhas.map((l) => ({ ...l, pedido_id: pedido.id })));
+  const { error: erroItens } = await servico.from("itens_pedido").insert(linhas.map((l) => ({ ...l, pedido_id: pedido.id })));
+  if (erroItens) {
+    await servico.from("pedidos").update({ status: "cancelado" }).eq("id", pedido.id);
+    return resposta({ erro: "Não foi possível registrar o pedido." }, 500);
+  }
 
   const site = (Deno.env.get("SITE_URL") || "").replace(/\/$/, "");
   const volta = (status: string) => `${site}/loja.html?pedido=${pedido.id}&numero=${pedido.numero}&status=${status}`;

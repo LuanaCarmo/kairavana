@@ -8,7 +8,8 @@ async function assinaturaValida(req: Request, dataId: string) {
   const segredo = Deno.env.get("MP_WEBHOOK_SECRET");
   if (!segredo) return true;
   const partes = Object.fromEntries((req.headers.get("x-signature") || "").split(",").map((p) => p.trim().split("=")));
-  const manifesto = `id:${dataId};request-id:${req.headers.get("x-request-id") || ""};ts:${partes.ts};`;
+  const requestId = req.headers.get("x-request-id"); // pela documentação, sem o cabeçalho o trecho sai do manifesto
+  const manifesto = `id:${dataId};${requestId ? `request-id:${requestId};` : ""}ts:${partes.ts};`;
   const chave = await crypto.subtle.importKey("raw", new TextEncoder().encode(segredo), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const assinatura = await crypto.subtle.sign("HMAC", chave, new TextEncoder().encode(manifesto));
   const hex = [...new Uint8Array(assinatura)].map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -42,7 +43,11 @@ Deno.serve(async (req) => {
       await servico.from("pedidos").update({ status: "pago", mp_payment_id: pagamentoId }).eq("id", pedido.id);
     }
     await servico.rpc("baixar_estoque", { p_pedido: pedido.id });
-  } else if (["rejected", "cancelled", "refunded", "charged_back"].includes(pagamento.status) && pedido.status === "aguardando_pagamento") {
+  } else if (pagamento.status === "cancelled" && pedido.status === "aguardando_pagamento") {
+    // "rejected" não cancela: a pessoa pode tentar outro cartão ou Pix no mesmo link de pagamento
+    await servico.from("pedidos").update({ status: "cancelado", mp_payment_id: pagamentoId }).eq("id", pedido.id);
+  } else if (["refunded", "charged_back"].includes(pagamento.status) && ["aguardando_pagamento", "pago"].includes(pedido.status)) {
+    // estorno ou contestação antes do preparo: tira o pedido da fila de envio (o estoque a equipe ajusta)
     await servico.from("pedidos").update({ status: "cancelado", mp_payment_id: pagamentoId }).eq("id", pedido.id);
   }
   return new Response("ok", { status: 200 });

@@ -124,7 +124,8 @@ const Loja = {
     const r = await sb.from("configuracoes").select("*").eq("id", 1).maybeSingle();
     return { ...CONFIG_PADRAO, ...(r.data || {}) };
   },
-  frete(subtotal, cfg){ return subtotal <= 0 || (cfg.frete_gratis_acima && subtotal >= cfg.frete_gratis_acima) ? 0 : Number(cfg.frete_fixo || 0); },
+  // mesma regra da função checkout: com "frete grátis a partir de" 0, todo pedido tem frete grátis
+  frete(subtotal, cfg){ return subtotal <= 0 || subtotal >= Number(cfg.frete_gratis_acima) ? 0 : Number(cfg.frete_fixo || 0); },
   parcelas(valor, cfg){ const n = Number(cfg.parcelas_sem_juros || 0); return n > 1 && valor >= n * 10 ? `ou ${n}x de ${brl(valor / n)} sem juros` : ""; },
 
   /* login */
@@ -196,7 +197,9 @@ const Loja = {
       return { demo: true, numero };
     }
     const { data, error } = await sb.functions.invoke("checkout", { body: { itens, endereco_id: enderecoId, mensagem_cartao: mensagem } });
-    if (error || !data?.url) throw new Error(data?.erro || "Não foi possível iniciar o pagamento. Tente de novo em instantes.");
+    // em respostas de erro (409, 400…) o corpo com a mensagem fica em error.context, não em data
+    const corpo = error ? await error.context?.json?.().catch(() => null) : data;
+    if (error || !data?.url) throw new Error(corpo?.erro || "Não foi possível iniciar o pagamento. Tente de novo em instantes.");
     return data;
   },
 

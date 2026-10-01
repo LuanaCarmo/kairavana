@@ -134,6 +134,7 @@ async function abaPedidos(painel){
       <strong>${brl(p.total)}</strong>
       <p class="apoio">${new Date(p.criado_em).toLocaleDateString("pt-BR")} · ${(p.itens_pedido || []).map(i => `${i.quantidade}× ${esc(i.nome)}`).join(", ")}</p>
       ${p.rastreio ? `<p class="apoio">Código de rastreio: <strong>${esc(p.rastreio)}</strong></p>` : ""}
+      ${p.status === "aguardando_pagamento" && p.mp_preference_id ? `<a class="btn btn-primario btn-pequeno" href="https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${encodeURIComponent(p.mp_preference_id)}">Pagar agora</a>` : ""}
       ${p.status === "aguardando_pagamento" ? `<p class="apoio">Não concluiu o pagamento? <a href="https://wa.me/${esc(Loja.whatsapp)}?text=${encodeURIComponent("Olá! Preciso de ajuda com o pagamento do pedido nº " + p.numero)}" target="_blank" rel="noopener">Fale com a gente</a>.</p>` : ""}
     </article>`).join("")}</div>`
     : `<p class="vazio">Você ainda não fez nenhum pedido. <a href="loja.html">Conhecer a loja</a></p>`;
