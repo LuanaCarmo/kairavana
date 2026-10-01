@@ -6,7 +6,7 @@
    NUNCA coloque aqui a chave "service_role" nem o token do Mercado Pago.
    Enquanto os campos estiverem vazios, a loja funciona em modo demonstração. */
 window.KAIRAVANA_LOJA = {
-  supabaseUrl: "",
-  supabaseChave: "",
+  supabaseUrl: "https://wcazezpubgbgjicxmrjr.supabase.co",
+  supabaseChave: "sb_publishable_1zjS_el5EOnieqQ8lY-xog_E9EIKSeG",
   whatsapp: "5511999999999"
 };
