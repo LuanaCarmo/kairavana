@@ -346,6 +346,7 @@ h1,h2,h3{overflow-wrap:break-word; hyphens:auto}
 .dia .sem{font-size:var(--fs-mini); font-weight:700; letter-spacing:.12em; text-transform:uppercase}
 .dia .num{font-family:var(--display); font-size:30px; line-height:1.05}
 .dia .mes{font-size:var(--fs-mini)}
+.so-leitor{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap}
 .dia .vagas{margin-top:4px; font-size:var(--fs-mini); font-weight:700; color:var(--tijolo)}
 .dia[aria-pressed="true"]{background:var(--tijolo); border-color:var(--tijolo); color:var(--cal)}
 .dia[aria-pressed="true"] .vagas{color:var(--cal)}
@@ -1122,9 +1123,9 @@ function renderDias(){
   box.innerHTML = "";
   diasAgenda.forEach(({ d, livres }) => {
     const b = document.createElement("button"); b.type = "button"; b.className = "dia";
-    b.innerHTML = `<span class="sem">${DSEM[d.getDay()]}</span><span class="num">${d.getDate()}</span><span class="mes">${MES3[d.getMonth()]}</span>${livres.length ? "" : `<span class="vagas">sem horários</span>`}`;
-    if (!livres.length){ b.disabled = true; b.setAttribute("aria-label", `${dataLonga(d)}, sem horários livres`); }
-    else b.setAttribute("aria-label", dataLonga(d));
+    // o leitor de tela lê a data por extenso; as abreviações visíveis ficam escondidas dele
+    b.innerHTML = `<span class="so-leitor">${dataLonga(d)}${livres.length ? "" : ", sem horários livres"}</span><span class="sem" aria-hidden="true">${DSEM[d.getDay()]}</span><span class="num" aria-hidden="true">${d.getDate()}</span><span class="mes" aria-hidden="true">${MES3[d.getMonth()]}</span>${livres.length ? "" : `<span class="vagas" aria-hidden="true">sem horários</span>`}`;
+    if (!livres.length) b.disabled = true;
     b.setAttribute("aria-pressed", estado.data && chave(estado.data) === chave(d) ? "true" : "false");
     b.addEventListener("click", () => {
       const desmarcar = estado.data && chave(estado.data) === chave(d); // clicar de novo no mesmo dia fecha

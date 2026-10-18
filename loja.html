@@ -33,7 +33,9 @@ const ORDENS = { destaque: "Destaques", menor: "Menor preço", maior: "Maior pre
 const filtros = { cats: [], faixas: [], estoque: false, ordem: "destaque", pagina: 1 };
 
 try {
-  [cat, cfg] = await Promise.all([Loja.catalogo(), Loja.config()]);
+  // se o banco não responder, mostra o aviso em vez de ficar em "Carregando…" para sempre
+  const demorou = new Promise((_, falhou) => setTimeout(() => falhou(new Error("A conexão demorou demais. Tente de novo em alguns minutos.")), 15000));
+  [cat, cfg] = await Promise.race([Promise.all([Loja.catalogo(), Loja.config()]), demorou]);
 } catch (e){
   main.innerHTML = `<div class="wrap vazio" style="margin-block:40px">Não foi possível carregar a loja agora. ${esc(e.message)}</div>`; return;
 }
@@ -199,7 +201,7 @@ async function finalizar(){
   main.innerHTML = `<div class="wrap pagina"><h1>Finalizar compra</h1><div class="duas-colunas">
     <div style="display:grid; gap:20px">
       <section class="painel" aria-labelledby="t-end"><h2 id="t-end">Onde vamos entregar?</h2>
-        <div class="opcoes-endereco" id="lista-end">${enderecos.map((e, i) => `<label class="opcao-endereco"><input type="radio" name="endereco" value="${esc(e.id)}"${e.principal || i === 0 ? " checked" : ""}><span><strong>${esc(e.apelido || "Endereço")}</strong><br><span class="apoio">${esc(e.rua)}, ${esc(e.numero)}${e.complemento ? " – " + esc(e.complemento) : ""} · ${esc(e.bairro)} · ${esc(e.cidade)}/${esc(e.uf)} · ${esc(e.cep)}</span></span></label>`).join("")}</div>
+        <div class="opcoes-endereco" id="lista-end">${enderecos.map((e, i) => `<label class="opcao-endereco"><input type="radio" name="endereco" value="${esc(e.id)}"${i === 0 ? " checked" : ""}><span><strong>${esc(e.apelido || "Endereço")}</strong><br><span class="apoio">${esc(e.rua)}, ${esc(e.numero)}${e.complemento ? " – " + esc(e.complemento) : ""} · ${esc(e.bairro)} · ${esc(e.cidade)}/${esc(e.uf)} · ${esc(e.cep)}</span></span></label>`).join("")}</div>
         <details id="novo-end"${enderecos.length ? "" : " open"}><summary class="btn btn-secundario btn-pequeno" style="list-style:none; display:inline-flex">Adicionar endereço</summary>
           <form id="form-end" class="campos" style="margin-top:16px">
             <div class="campos campos-3"><div class="campo"><label for="e-cep">CEP</label><input id="e-cep" inputmode="numeric" autocomplete="postal-code" required maxlength="9"></div><div class="campo"><label for="e-uf">UF</label><input id="e-uf" maxlength="2" required autocomplete="address-level1"></div><div class="campo"><label for="e-cidade">Cidade</label><input id="e-cidade" required autocomplete="address-level2"></div></div>
