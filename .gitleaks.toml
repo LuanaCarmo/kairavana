@@ -1,0 +1,9 @@
+# Regras do gitleaks (procura de chaves na revisão automática).
+# Usa as regras padrão e só libera a chave PÚBLICA do Supabase em loja/config.js.
+# A chave service_role (secreta) continua bloqueada pela verificação .github/revisao/seguranca.mjs.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "chave pública (anon/publishable) do Supabase usada pelo navegador"
+paths = ['''loja/config\.js''']

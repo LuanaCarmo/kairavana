@@ -1,11 +1,17 @@
 # Kairavana
 
-Site institucional da Kairavana: terapias holísticas com delicadeza e com os pés no chão.
+Site institucional da Kairavana: terapias integrativas e complementares com delicadeza e com os pés no chão.
 
-Reiki para adultos, Reiki infantil a distância, Florais de Bach e Mapa numerológico, com agenda de horários que envia o pedido pelo WhatsApp.
+Reiki, Cristaloterapia, Florais, Aromaterapia, Alinhamento de Chakras, Mindfulness, Constelação Familiar, Mesa Radiônica, Arteterapia, Cartomancia (com Numerologia), Reiki infantil a distância e Mapa numerológico. A agenda só mostra as combinações permitidas e envia o pedido pelo WhatsApp. O catálogo, os preços e as regras ficam em `CONFIG.terapias`, no script do `index.html`.
+
+Loja com área do cliente e painel de gestão: veja [LOJA.md](LOJA.md).
 
 - Site: https://luanacarmo.github.io/kairavana/
+- Loja: https://luanacarmo.github.io/kairavana/loja.html
+- Minha conta (clientes): https://luanacarmo.github.io/kairavana/conta.html
+- Área da equipe (entrada para as duas gestões): https://luanacarmo.github.io/kairavana/equipe.html
 - Gestão da agenda: https://luanacarmo.github.io/kairavana/admin.html
+- Gestão da loja: https://luanacarmo.github.io/kairavana/gestao-loja.html
 
 ## Gerenciar a agenda
 
@@ -23,13 +29,13 @@ Para entrar, é preciso uma chave de acesso do GitHub (fine-grained token) com a
 
 ## Fotos
 
-Fotos do [Unsplash](https://unsplash.com/license), de uso livre: Jared Rice, Jon Cartagena, Anna Blake, Susie Ho, Kadarius Seegars e Andres Molina.
+Fotos do [Unsplash](https://unsplash.com/license), de uso livre: Jared Rice, Jon Cartagena, Anna Blake, Susie Ho, Kadarius Seegars, Andres Molina e German Krupenin (trilha ao entardecer, na seção Sobre).
 
 ## Revisão automática (GitHub Actions)
 
 Todo commit na `main` ou na `dev` (e todo pull request para elas) passa por três verificações, em **Actions → Revisão automática**:
 
-1. **Segurança e dados expostos**: procura chaves e senhas em todo o histórico (gitleaks), confere se os links externos são seguros, se a área de gestão continua fora do Google e só fala com a API do GitHub, se o `agenda.json` tem só datas e horários (nunca dados de clientes) e se o CVV 188, o aviso de terapia complementar e o aviso do álcool nos florais continuam no site.
+1. **Segurança e dados expostos**: procura chaves e senhas em todo o histórico (gitleaks), confere se os links externos são seguros, se a área de gestão continua fora do Google e só fala com a API do GitHub, se o `agenda.json` tem só datas e horários (nunca dados de clientes) e se o CVV 188, o aviso de que as terapias integrativas não substituem acompanhamento médico, o aviso do álcool nos florais continuam no site.
 2. **Navegação e jornada do cliente**: abre o site no computador, num celular comum e num celular pequeno e percorre o agendamento como um cliente (terapia → dia → horário → nome → WhatsApp). Confere a mensagem gerada, os links do menu, o fechamento da data ao clicar de novo, o tamanho dos botões para o dedo, a rolagem lateral e a acessibilidade.
 3. **Revisão de textos e experiência (Claude)**: lê o que mudou e comenta no commit sobre clareza dos textos, regras de comunicação da marca, navegação e segurança. É consultiva. Para ativar, cadastre o segredo `ANTHROPIC_API_KEY` em *Settings → Secrets and variables → Actions*.
 

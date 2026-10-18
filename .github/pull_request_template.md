@@ -11,4 +11,4 @@
 
 - [ ] A revisão automática passou (segurança e jornada do cliente)
 - [ ] Conferi no ambiente de testes, no computador e no celular
-- [ ] Textos seguem a comunicação responsável (sem promessa de cura, "a distância", CVV 188)
+- [ ] Textos seguem a comunicação responsável ("terapias integrativas", sem promessa de resultado, "a distância", CVV 188)

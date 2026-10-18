@@ -14,6 +14,8 @@ test.beforeEach(async ({ page }) => {
   errosJs = [];
   page.on("pageerror", e => errosJs.push(e.message));
   await page.route("**/agenda.json*", r => r.fulfill({ contentType: "application/json", body: JSON.stringify(AGENDA) }));
+  // loja sempre em modo demonstração: os testes não dependem dos produtos reais nem gravam no banco
+  await page.route("**/loja/config.js*", r => r.fulfill({ contentType: "text/javascript", body: 'window.KAIRAVANA_LOJA = { supabaseUrl: "", supabaseChave: "", whatsapp: "5511999999999" };' }));
 });
 test.afterEach(() => expect(errosJs, "erros de JavaScript na página").toEqual([]));
 
@@ -58,6 +60,8 @@ test("jornada completa: agendar em 4 toques e abrir o WhatsApp com a mensagem ce
   await hora.click();                                                                             // toque 3
   await expect(page.locator("#passo-nome")).toBeVisible();
   await page.fill("#ag-nome", "Maria Teste");
+  await expect(botaoEnviar(page)).toHaveClass(/incompleto/);                                  // falta a data de nascimento
+  await page.fill("#ag-nasc", "1990-03-07");
 
   const enviar = botaoEnviar(page);
   await expect(enviar).toBeInViewport();
@@ -65,7 +69,7 @@ test("jornada completa: agendar em 4 toques e abrir o WhatsApp com a mensagem ce
   const href = await enviar.getAttribute("href");
   expect(href).toMatch(/^https:\/\/wa\.me\/\d+\?text=/);
   const msg = decodeURIComponent(href.split("text=")[1]);
-  for (const trecho of ["Reiki para adultos", "Maria Teste", `Horário: ${horaEscolhida}`, "Modalidade:"]) expect(msg).toContain(trecho);
+  for (const trecho of ["Reiki para adultos", "Maria Teste", "07/03/1990", `Horário: ${horaEscolhida}`, "Modalidade:"]) expect(msg).toContain(trecho);
 
   const [aba] = await Promise.all([page.waitForEvent("popup"), enviar.click()]);                  // toque 4
   expect(aba.url()).toMatch(/wa\.me|whatsapp\.com/);
@@ -104,16 +108,144 @@ test("no computador o resumo acompanha a rolagem e o Enviar fica sempre à vista
   await expect(page.locator("#ag-enviar")).toBeInViewport();
 });
 
-test("reiki infantil pede nome e idade da criança e é só a distância", async ({ page }) => {
+test("reiki infantil pede nome completo e nascimento da criança e é só a distância", async ({ page }) => {
   await page.goto("/index.html#agenda");
   await page.locator("#opcoes-terapia label", { hasText: "infantil" }).click();
   await page.locator("#dias button.dia:not([disabled])").first().click();
   await expect(page.locator("#campo-crianca")).toBeVisible();
+  await expect(page.locator("#campo-nasc")).toBeHidden();
+  await page.locator("#horas button").first().click();
+  await page.fill("#ag-nome", "Ana Responsável");
+  await expect(page.locator("#ag-status")).toContainText("nome da criança");
+  await page.fill("#ag-crianca", "Laura Teste");
+  await page.fill("#ag-crianca-nasc", "2019-03-07");
+  const msg = decodeURIComponent((await page.locator("#ag-enviar").getAttribute("href")).split("text=")[1]);
+  expect(msg).toContain("Criança: Laura Teste");
+  expect(msg).toContain("07/03/2019");
   await expect(page.locator("#linha-modalidade")).toContainText(/a distância/i);
 });
 
+test("Reiki aceita práticas curtas e soma o valor de referência", async ({ page }) => {
+  await page.goto("/index.html#agenda");
+  await page.locator("#opcoes-terapia label", { hasText: "Reiki para adultos" }).click();
+  await page.locator("#opcoes-terapia label", { hasText: "Aromaterapia" }).click();
+  await expect(page.locator("#resumo-lista")).toContainText("Reiki para adultos + Aromaterapia");
+  await expect(page.locator("#resumo-lista")).toContainText("R$ 250");
+  await page.locator("#opcoes-terapia label", { hasText: "Florais de Bach" }).click();
+  await expect(page.locator("#resumo-lista")).toContainText("Reiki para adultos + Aromaterapia + Florais de Bach");
+  await expect(page.locator("#resumo-lista")).toContainText("R$ 350");
+});
+
+test("práticas curtas podem ser somadas entre si", async ({ page }) => {
+  await page.goto("/index.html#agenda");
+  await page.locator("#opcoes-terapia label", { hasText: "Aromaterapia" }).click();
+  await page.locator("#opcoes-terapia label", { hasText: "Mindfulness" }).click();
+  await expect(page.locator('#opcoes-terapia input[data-grupo="B"]:checked')).toHaveCount(2);
+  await expect(page.locator("#resumo-lista")).toContainText("Aromaterapia + Mindfulness");
+  await expect(page.locator("#resumo-lista")).toContainText("R$ 200");
+});
+
+test("atendimentos individuais não aceitam combinações", async ({ page }) => {
+  await page.goto("/index.html#agenda");
+  for (const nome of ["Constelação Familiar", "Mesa Radiônica", "Arteterapia"]){
+    await page.locator("#opcoes-terapia label", { hasText: "Aromaterapia" }).click();
+    await page.locator("#opcoes-terapia label", { hasText: nome }).click();
+    await expect(page.locator("#opcoes-terapia input:checked"), "o individual fica sozinho").toHaveCount(1);
+    await expect(page.locator("#ajustes")).toContainText("feito sozinho");
+  }
+});
+
+test("Numerologia só aparece com a Cartomancia, que tem no mínimo 3 perguntas", async ({ page }) => {
+  await page.goto("/index.html#agenda");
+  await page.locator("#opcoes-terapia label", { hasText: "Cartomancia" }).click();
+  await expect(page.locator('[data-passo="-1"]')).toBeDisabled();
+  await page.locator("#ajustes label.check", { hasText: "Numerologia" }).click();
+  await expect(page.locator("#resumo-lista")).toContainText("Cartomancia (3 perguntas) + Numerologia");
+  await expect(page.locator("#resumo-lista")).toContainText("R$ 165");
+  await page.locator("#opcoes-terapia label", { hasText: "Reiki para adultos" }).click();
+  await expect(page.locator('#ajustes [name="numerologia"]')).toHaveCount(0);
+});
+
+/* ---------- loja (modo demonstração, sem Supabase) ---------- */
+test("loja: vitrine, filtro, produto e carrinho", async ({ page }) => {
+  await page.goto("/loja.html");
+  await expect(page.locator(".grade .card").first()).toBeVisible();
+  const sobra = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  expect(sobra, "a loja não pode rolar para os lados").toBeLessThanOrEqual(0);
+  await page.goto("/loja.html#/categoria/florais");
+  await expect(page.locator(".grade .card")).toHaveCount(2);
+  await expect(page.locator("main")).toContainText("álcool");
+  await page.locator(".grade .card h3 a").first().click();
+  await expect(page.locator(".produto-info h1")).toBeVisible();
+  await expect(page.locator(".produto-info .aviso")).toContainText("álcool");
+  await page.click("#add");
+  await expect(page.locator("#gaveta")).toHaveClass(/aberta/);
+  await expect(page.locator("#contagem")).toHaveText("1");
+  await page.click("#ir-finalizar");
+  await expect(page.locator("main")).toContainText("Entre para continuar");
+});
+
+test("loja: compra completa na demonstração, do login ao pedido", async ({ page }) => {
+  await page.goto("/loja.html");
+  await page.locator(".grade [data-comprar]:not([disabled])").first().click();
+  await page.goto("/conta.html?voltar=finalizar");
+  await page.fill("#l-email", "teste@exemplo.com");
+  await page.fill("#l-senha", "senha-de-teste");
+  await page.locator("#f-entrar button[type=submit]").click();
+  await expect(page).toHaveURL(/loja\.html#\/finalizar/);
+  for (const [id, v] of [["e-cep", "01310-100"], ["e-uf", "SP"], ["e-cidade", "São Paulo"], ["e-rua", "Av. Paulista"], ["e-bairro", "Bela Vista"], ["e-numero", "1000"]]) await page.fill("#" + id, v);
+  await page.locator("#form-end button[type=submit]").click();
+  await expect(page.locator('[name="endereco"]')).toHaveCount(1);
+  await page.click("#pagar");
+  await expect(page.locator("main h1")).toHaveText("Pedido recebido!");
+  await page.goto("/conta.html#pedidos");
+  await expect(page.locator(".pedido-linha")).toHaveCount(1);
+});
+
+test("gestão da loja: fora do Google e com painel de demonstração", async ({ page }) => {
+  await page.goto("/gestao-loja.html");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  await page.click("#demo");
+  await expect(page.locator(".numero")).toHaveCount(4);
+  await page.locator('[data-aba="pedidos"]').click();
+  await expect(page.locator("[data-pedido]").first()).toBeVisible();
+});
+
+test("site, loja, conta e área da equipe estão ligados entre si", async ({ page }) => {
+  const linksDe = async url => { await page.goto(url); await page.waitForLoadState("networkidle"); return page.evaluate(() => [...document.querySelectorAll("a[href]")].map(a => a.getAttribute("href"))); };
+  const tem = (links, alvo) => links.some(h => h === alvo || h.startsWith(alvo + "#") || h.startsWith(alvo + "?"));
+  const site = await linksDe("/index.html");
+  for (const alvo of ["loja.html", "conta.html", "equipe.html"]) expect(tem(site, alvo), `site → ${alvo}`).toBe(true);
+  const loja = await linksDe("/loja.html");
+  for (const alvo of ["index.html", "conta.html", "equipe.html"]) expect(tem(loja, alvo), `loja → ${alvo}`).toBe(true);
+  const conta = await linksDe("/conta.html");
+  for (const alvo of ["index.html", "loja.html"]) expect(tem(conta, alvo), `conta → ${alvo}`).toBe(true);
+  const equipe = await linksDe("/equipe.html");
+  for (const alvo of ["admin.html", "gestao-loja.html", "index.html", "loja.html"]) expect(tem(equipe, alvo), `equipe → ${alvo}`).toBe(true);
+  const agenda = await linksDe("/admin.html");
+  for (const alvo of ["equipe.html", "gestao-loja.html"]) expect(tem(agenda, alvo), `gestão da agenda → ${alvo}`).toBe(true);
+});
+
+test("o carrinho da loja aparece no topo do site", async ({ page }) => {
+  await page.goto("/loja.html");
+  await page.locator(".grade [data-comprar]:not([disabled])").first().click();
+  await page.goto("/index.html");
+  await expect(page.locator("#topo-contagem")).toHaveText("1");
+  await expect(page.locator("#topo-carrinho")).toHaveAttribute("href", "loja.html");
+});
+
+test("acessibilidade da loja (sem problemas graves)", async ({ page }) => {
+  await page.goto("/loja.html");
+  await expect(page.locator(".grade .card").first()).toBeVisible();
+  const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  const graves = r.violations.filter(v => ["critical", "serious"].includes(v.impact))
+    .map(v => `${v.id}: ${v.help} → ${v.nodes.slice(0, 3).map(n => n.target.join(" ")).join(" | ")}`);
+  expect(graves).toEqual([]);
+});
+
 test("dia sem horários aparece desativado com o aviso", async ({ page }) => {
-  const amanha = new Date(Date.now() + 864e5);
+  // depois de amanhã: amanhã sempre tem vaga, então o dia lotado nunca é o primeiro da lista (que a agenda pula)
+  const amanha = new Date(Date.now() + 2 * 864e5);
   const k = `${amanha.getFullYear()}-${String(amanha.getMonth() + 1).padStart(2, "0")}-${String(amanha.getDate()).padStart(2, "0")}`;
   await page.route("**/agenda.json*", r => r.fulfill({ contentType: "application/json", body: JSON.stringify({ ...AGENDA, ocupados: { [k]: AGENDA.horarios[0] } }) }));
   await page.goto("/index.html#agenda");

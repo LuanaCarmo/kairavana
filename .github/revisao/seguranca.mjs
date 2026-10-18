@@ -18,11 +18,17 @@ const segredos = [
   [/AKIA[0-9A-Z]{16}/, "chave da AWS"],
   [/AIza[0-9A-Za-z_-]{35}/, "chave do Google"],
   [/-----BEGIN [A-Z ]*PRIVATE KEY-----/, "chave privada"],
-  [/(senha|password|passwd|secret)\s*[:=]\s*["'][^"'\s]{6,}["']/i, "senha escrita no código"]
+  [/(senha|password|passwd|secret)\s*[:=]\s*["'][^"'\s]{6,}["']/i, "senha escrita no código"],
+  [/sb_secret_[A-Za-z0-9_-]{10,}/, "chave secreta do Supabase"],
+  [/(APP_USR|TEST)-\d{6,}-\d{6}-[0-9a-f]{32}-\d{6,}/, "token de acesso do Mercado Pago"]
 ];
-for (const f of texto){
+for (const f of [...texto, ...arquivos.filter(f => /\.(ts|sql|toml)$/.test(f))]){
   const c = readFileSync(f, "utf8");
   for (const [re, nome] of segredos) if (re.test(c)) erro(f, `possível ${nome} exposto(a). Remova e gere uma nova chave.`);
+  // chave JWT do Supabase: a "anon" é pública; a "service_role" dá acesso total e nunca pode ir para o site
+  for (const m of c.matchAll(/eyJ[\w-]+\.(eyJ[\w-]+)\.[\w-]+/g)){
+    try { if (JSON.parse(Buffer.from(m[1], "base64url").toString()).role === "service_role") erro(f, "chave service_role do Supabase exposta. Troque a chave no Supabase e use só a chave anon/publishable no site."); } catch {}
+  }
 }
 
 // 2. Links e recursos nas páginas
@@ -44,6 +50,16 @@ if (existsSync("admin.html")){
   const permitidos = ["api.github.com", "github.com", "fonts.googleapis.com", "fonts.gstatic.com", "luanacarmo.github.io", "docs.github.com"];
   for (const h of new Set(hosts)) if (!permitidos.includes(h)) erro("admin.html", `a área de gestão referencia um domínio não esperado: ${h}. A chave de acesso só pode ir para api.github.com.`);
   if (/(console\.log|alert)\([^)]*token/i.test(c)) erro("admin.html", "o token pode estar sendo mostrado no console ou em alerta");
+}
+
+// 3b. Loja: área do cliente e gestão fora do Google; o navegador nunca cria pedidos nem define preços
+for (const f of ["conta.html", "gestao-loja.html", "equipe.html"].filter(existsSync)){
+  if (!/<meta name="robots" content="[^"]*noindex/.test(readFileSync(f, "utf8"))) erro(f, "falta <meta name=\"robots\" content=\"noindex\">");
+}
+for (const f of arquivos.filter(f => /^(loja\/.*\.js|loja\.html|conta\.html|gestao-loja\.html)$/.test(f))){
+  const c = readFileSync(f, "utf8");
+  if (/from\(["']pedidos["']\)\.(insert|upsert)|from\(["']itens_pedido["']\)\.(insert|upsert)/.test(c)) erro(f, "o site não pode criar pedidos direto no banco: use a função checkout (preços calculados no servidor).");
+  if (/MP_ACCESS_TOKEN|SERVICE_ROLE_KEY/.test(c)) erro(f, "segredo do servidor referenciado no site.");
 }
 
 // 4. agenda.json é público: só pode ter datas e horários, nunca dados de clientes
@@ -70,10 +86,32 @@ if (existsSync("index.html")){
   const c = readFileSync("index.html", "utf8");
   const plano = c.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]+>/g, " ").replace(/\s+/g, " ");
   if (!/CVV[^0-9]{0,10}188/.test(plano)) erro("index.html", "falta o CVV 188 no site");
-  if (!/complementa/i.test(plano)) erro("index.html", "falta o aviso de que as terapias são complementares e não substituem tratamento");
+  if (!/complementa/i.test(plano)) erro("index.html", "falta o aviso de que as terapias integrativas complementam, e não substituem, o acompanhamento médico");
   if (!/álcool/i.test(plano)) erro("index.html", "falta o aviso de que os florais contêm álcool");
   const proibidas = [/\bcura[rs]?\b/i, /\bgarantid[oa]s?\b/i, /\bon-?line\b/i, /\btoque\b/i];
   for (const re of proibidas){ const m = plano.match(re); if (m) aviso("index.html", `revise o termo "${m[0]}": ${plano.slice(Math.max(0, m.index - 60), m.index + 60).trim()}`); }
+}
+
+// 6. Terminologia oficial: "terapias integrativas"; nada que sugira tratamento médico.
+//    Olha o texto visível, <title>, descrições, alt e rótulos das páginas públicas e os textos da loja.
+const TERMOS = [
+  [/terapias? hol[ií]stic[ao]s?/i, "use “terapias integrativas”"],
+  [/pr[aá]ticas? hol[ií]stic[ao]s?/i, "use “terapias integrativas”"],
+  [/servi[cç]os? hol[ií]stic[ao]s?/i, "use “terapias integrativas”"],
+  [/pr[aá]ticas complementares/i, "use “terapias integrativas e complementares”"],
+  [/\btratamentos?\b/i, "use “atendimento”, “sessão” ou “cuidado”"],
+  [/\bcurar\b|\bcura\b/i, "não prometa resultados"],
+  [/\bpacientes?\b/i, "use “cliente” ou “pessoa”"],
+  [/\bdiagn[oó]stic(o|os|ar)\b/i, "evite termos clínicos"],
+  [/\bterap[eê]utic[oa]s?\b/i, "evite termos clínicos"]
+];
+for (const f of ["index.html", "loja.html", "conta.html", "loja/comum.js"].filter(existsSync)){
+  const c = readFileSync(f, "utf8");
+  const atributos = [...c.matchAll(/\b(?:content|alt|title|aria-label|placeholder)="([^"]*)"/g)].map(m => m[1]).join(" ");
+  const texto = f.endsWith(".js") ? c.replace(/\/\/.*$|\/\*[\s\S]*?\*\//gm, " ")
+    : c.replace(/<style[\s\S]*?<\/style>|<[^>]+>/g, " ").replace(/\/\/.*$|\/\*[\s\S]*?\*\//gm, " ");
+  const plano = (texto + " " + atributos).replace(/\s+/g, " ");
+  for (const [re, dica] of TERMOS){ const m = plano.match(re); if (m) erro(f, `termo fora do padrão "${m[0]}" (${dica}): …${plano.slice(Math.max(0, m.index - 50), m.index + 50).trim()}…`); }
 }
 
 console.log(`\nSegurança: ${erros.length} erro(s), ${avisos.length} aviso(s).`);

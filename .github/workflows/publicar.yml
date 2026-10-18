@@ -53,8 +53,8 @@ jobs:
       - name: Montar o site
         run: |
           mkdir -p _site/dev
-          rsync -a --exclude .git --exclude .github main/ _site/
-          rsync -a --exclude .git --exclude .github dev/ _site/dev/
+          rsync -a --exclude .git --exclude .github --exclude supabase --exclude .claude --exclude .gitleaks.toml main/ _site/
+          rsync -a --exclude .git --exclude .github --exclude supabase --exclude .claude --exclude .gitleaks.toml dev/ _site/dev/
           # ambiente de testes: fora do Google e com uma faixa avisando
           for f in _site/dev/*.html; do
             sed -i '0,/<head>/s||<head>\n<meta name="robots" content="noindex, nofollow">|' "$f"
